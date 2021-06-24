@@ -68,10 +68,9 @@ class LoginPage extends React.Component {
 						</Grid>
 						<Divider></Divider>
 						<form name="form" onSubmit={this.handleSubmit}>
-							<div className="input-group form-group">
 								<Person />
 								<input style={{ height: '40px', }} type="text" className="form-control" name="username" placeholder="username" value={username} onChange={this.handleChange} />
-							</div>
+							
 							{submitted && !username &&
 								<div style={{ color: 'red', }} className="help-block">Username is required</div>
 							}

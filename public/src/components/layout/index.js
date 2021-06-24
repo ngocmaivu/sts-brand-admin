@@ -125,11 +125,49 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 var webName = "STS Store Manager"
-if (user.role === "brand manager") webName = "STS Brand Manager"
 const INIT_DATA = {
   items: [
   ]
 };
+if(user === null) {
+  INIT_DATA.items.push(
+    {
+      id: 'store',
+      title: 'Store',
+      type: 'item',
+      url: '/store',
+      icon: <Store />
+    },
+    {
+      id: 'staffs',
+      title: 'Staff',
+      type: 'item',
+      url: '/staffs',
+      icon: <GroupOutlinedIcon />
+    },
+    {
+      id: 'schedule',
+      title: 'Schedule',
+      url: '/schedule',
+      type: 'item',
+      icon: <EventNoteOutlined />
+    },
+    {
+      id: 'timekeeping',
+      title: 'Timekeeping',
+      url: '/timekeeping',
+      type: 'item',
+      icon: <CalendarTodayOutlined />
+    },
+    {
+      id: 'profile',
+      title: 'Profile',
+      type: 'item',
+      url: "/profile",
+      icon: <ProfileIcon />
+    })
+}else{
+if (user.role === "brand manager") webName = "STS Brand Manager"
 if (user.role === "brand manager") INIT_DATA.items.push(
   {
     id: 'store',
@@ -171,7 +209,7 @@ else INIT_DATA.items.push(
     id: 'staffs',
     title: 'Staff',
     type: 'item',
-    url: '/staffs',
+    url: '/staff',
     icon: <GroupOutlinedIcon />
   },
   {
@@ -211,7 +249,7 @@ else INIT_DATA.items.push(
     url: "/profile",
     icon: <ProfileIcon />
   }
-)
+)}
 
 export default function MainLayout(props) {
   const classes = useStyles();

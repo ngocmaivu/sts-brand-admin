@@ -55,42 +55,43 @@ class LoginPage extends React.Component {
 						// display: '-ms-flexbox',
 						width: '35vw',
 						transitionDuration: '0.3s',
-						height: '20vw'
-					}}>
+						height: '25vw'
+					}}><br/>
 						<Grid item xs={12}>
-							<Grid item xs={12} container alignItems="center" justifyContent="center">
+							<Grid item xs={12} container alignItems="center">
 								{/* <Box mb={2}> */}
-								<Typography variant="subtitle1">
-									Login
-                        </Typography>
+								<Typography style={{marginLeft: '230px'}} variant="h2">Login</Typography>
 								{/* </Box> */}
 							</Grid>
 						</Grid>
+						<br/>
 						<Divider></Divider>
+						<br/>
 						<form name="form" onSubmit={this.handleSubmit}>
-							<div className="input-group form-group">
-								<div className="input-group-prepend">
+							<div style={{marginLeft: '50px'}} className="input-group form-group">
 									<span className="input-group-text"><Person /></span>
-								</div>
-								<input style={{ height: '40px', }} type="text" className="form-control" name="username" placeholder="username" value={username} onChange={this.handleChange} />
+								<input style={{ height: '40px', width: '380px' }} type="text" className="form-control" name="username" placeholder="username" value={username} onChange={this.handleChange} />
 							</div>
 							{submitted && !username &&
 								<div style={{ color: 'red', }} className="help-block">Username is required</div>
 							}
-							<div className="input-group form-group">
+							<br/>
+							<div style={{marginLeft: '50px'}} className="input-group form-group">
 								<Lock />
-								<input style={{ height: '40px', }} type="password" className="form-control" name="password" placeholder="password" value={password} onChange={this.handleChange} />
+								<input style={{ height: '40px',  width: '380px'}} type="password" className="form-control" name="password" placeholder="password" value={password} onChange={this.handleChange} />
 							</div>
 							{submitted && !password &&
 								<div style={{ color: 'red', }} className="help-block">Password is required</div>
 							}
-							<div className="form-group">
-								<button className="login_btn">Login</button>
+							<br/>
+							<div style={{ height: '40px',  width: '380px'}} className="form-group">
+								<button style={{ height: '30px',  width: '80px', backgroundColor: 'burlywood', marginLeft: '230'}} className="login_btn">Login</button>
 								{loggingIn}
 							</div>
 						</form>
 						<Divider></Divider>
-						<div className="card-footer">
+						<br/><br/>
+						<div style={{marginLeft: '50px', }} className="card-footer">
 							<div className="d-flex justify-content-center links">
 								Don't have an account?<a href="/register">Sign Up</a>
 							</div>
@@ -98,6 +99,7 @@ class LoginPage extends React.Component {
 								<a href="#">Forgot your password?</a>
 							</div>
 						</div>
+						<br/>
 					</Card>
 				</Grid>
 			</Grid>

@@ -68,9 +68,6 @@ class App extends React.Component {
                 <Route path="/schedule">
                   <ScheduleMain />
                 </Route>
-                <Route path="/staffs/new" >
-                  <StaffNew />
-                </Route>
               </Layout>
               <Redirect from="*" to="/" />
             </Switch>

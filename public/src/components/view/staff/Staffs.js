@@ -206,15 +206,15 @@ class Staffs extends React.Component {
         //     return <p>...Loading</p>;
         // }
         // var items = stores.items;
-        console.log(stores)
+        // console.log(stores)
         return (
             <Paper className={this.props.classes.container}>
                 <h2>Staffs</h2>
 
                 {this.renderToolbar()}
                 <div style={{ height: 480, width: '100%' }}>
-                    {/* <DataGrid disableColumnFilter rows={stores} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
-                        paginationMode="server" rowCount={100} /> */}
+                    <DataGrid disableColumnFilter rows={dataStaff} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
+                        paginationMode="server" rowCount={100} />
                 </div>
                 {this.renderDeleteDialog()}
                 <AddUser open={this.state.openAddDialog} handleClose={() => { this.setState({ openAddDialog: false }) }} />

@@ -213,8 +213,7 @@ class Stores extends React.Component {
         console.log(stores)
         return (
             <Paper className={this.props.classes.container}>
-                {/* <<<<<<< Updated upstream:src/components/view/staff/Staffs.js */}
-                <h2>Staffs</h2>
+                <h2>Store</h2>
                 {this.renderToolbar()}
                 <div style={{ height: 480, width: '100%' }}>
                     <DataGrid disableColumnFilter rows={dataTable} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
