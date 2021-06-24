@@ -1,8 +1,8 @@
 {
-  "name": "sts-store",
+  "name": "sts-brand",
   "version": "0.1.0",
   "private": true,
-  "homepage": "/login",
+  "homepage": "https://manager-sts.herokuapp.com/",
   "dependencies": {
     "@material-ui/core": "^4.11.4",
     "@material-ui/data-grid": "^4.0.0-alpha.28",
