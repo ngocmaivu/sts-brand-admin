@@ -14,7 +14,14 @@ function getAllByPage(pageNumber, pageSize) {
         headers: authHeader(),
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/stores?PageNumber=${pageNumber}&PageSize=${pageSize}`, requestOptions).then(handleResponse);
+    return fetch(`https://sts-project.azurewebsites.net/api/stores?PageNumber=${pageNumber}&PageSize=${pageSize}`, requestOptions)
+    .then(handleResponse)
+    .then(store => {
+        // store user details and jwt token in local storage to keep user logged in between page refreshes
+        localStorage.setItem('stores', JSON.stringify(store));
+        // localStorage.setItem('jwt_decode', JSON.stringify(jwt_decode(user.token)));
+        return store;
+    });
 }
 
 function getById(id) {

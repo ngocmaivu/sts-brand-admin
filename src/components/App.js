@@ -6,14 +6,17 @@ import { connect } from "react-redux";
 import Layout from './layout';
 import theme from '../themes/Theme';
 import { ThemeProvider } from '@material-ui/styles';
-import Staffs from './view/Staff';
+import Staffs from './view/staff/Staffs';
 import Stores from './view/Stores';
 import StoreNew from './view/StoreNew';
 import { PrivateRoute } from './PrivateRoute';
 import Profile from './ProfilePage/Profile';
 import EditProfile from './ProfilePage/EditProfile';
 import { LoginPage } from './LoginPage/LoginPage';
-import StaffNew from './view/StaffNew';
+import StaffNew from './view/staff/StaffNew';
+import Staff from './view/staff/Staff';
+import ScheduleMain from './view/schedule';
+import Notification from './view/notification';
 
 class App extends React.Component {
 
@@ -22,9 +25,9 @@ class App extends React.Component {
       <div>
         <ThemeProvider theme={theme}>
           <Router history={history} >
-          
+
             <Switch>
-            <Route path="/login" component={LoginPage} />
+              <Route path="/login" component={LoginPage} />
               <Layout>
                 <PrivateRoute path="/" exact> <Stores /> </PrivateRoute>
                 <Route path="/stores" exact>
@@ -39,11 +42,20 @@ class App extends React.Component {
                 <Route path="/stores/new" >
                   <StoreNew />
                 </Route>
-                <Route path="/staffs" exact>
+                <Route path="/staff" exact>
                   <Staffs />
                 </Route>
-                <Route path="/staffs/new" >
+                <Route path="/staff/new" exact>
                   <StaffNew />
+                </Route>
+                <Route path="/staff/:id" >
+                  <Staff />
+                </Route>
+                <Route path="/notify">
+                  <Notification />
+                </Route>
+                <Route path="/schedule">
+                  <ScheduleMain />
                 </Route>
               </Layout>
               <Redirect from="*" to="/" />

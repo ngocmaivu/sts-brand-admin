@@ -1,6 +1,6 @@
 import { Button, Card, CardContent, CardHeader, Chip, Divider, FormControl, FormLabel, Grid, makeStyles, MenuItem, OutlinedInput, Paper, Select, TextField, Typography, useTheme } from '@material-ui/core';
 import React from 'react';
-import { CardCustom } from '../CardCustom';
+import { CardCustom } from '../../CardCustom';
 import { Link } from 'react-router-dom';
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -91,7 +91,7 @@ export default function StaffNew() {
                 <Typography variant="h2">
                     Add New Staff
                 </Typography>
-            } disableTypography="true"
+            } disableTypography={false}
             />
 
             <Divider />
@@ -236,10 +236,10 @@ export default function StaffNew() {
                             </CardCustom>
                         </Grid>
                         <Grid item container xs={12} justify="flex-end" spacing={1} direction="row">
-                            <Grid item xs={1.5} >
+                            <Grid item xs={2} >
                                 <Button variant="contained" color="primary">Save change</Button>
                             </Grid>
-                            <Grid item xs={1.5}>
+                            <Grid item xs={2}>
                                 <Button variant="outlined" color="primary">Cancel </Button>
                             </Grid>
                         </Grid>

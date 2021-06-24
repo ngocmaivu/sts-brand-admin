@@ -117,19 +117,19 @@ class Profile extends React.Component {
                                 </Grid>
                             </form>
                             <Button style={{ backgroundColor: 'whitesmoke' }} type="submit"><a className="nav-link" href="/editprofile">
-                                <p>Edit Brand</p>
+                                <p>Edit Profile</p>
                             </a> </Button>
                         </Card>
                     </Grid>
-                        <Grid item xs={4}>
-                            <Card className={this.props.classes.container}>
-                                <h2>Brand</h2>
-                                <form>
-                                    <Grid container direction="column" spacing={1}>
-
+                    <Grid item xs={4}>
+                        <Card className={this.props.classes.container}>
+                            <h2>Brand</h2>
+                            <form>
+                                <Grid container direction="column" spacing={1}>
+                                    <Card>
                                         <Grid item xs={6}>
                                             <FormControl margin="normal" className={classes.input} fullWidth>
-                                                <FormLabel >The Coffee House</FormLabel>
+                                                <FormLabel >Effoc coffee</FormLabel>
                                             </FormControl>
                                         </Grid>
                                         <Grid item xs={6}>
@@ -142,23 +142,24 @@ class Profile extends React.Component {
                                                 <FormLabel >0166542335</FormLabel>
                                             </FormControl>
                                         </Grid>
-                                    </Grid>
-                                </form>
-                                <Button style={{ backgroundColor: 'white' }} type="submit"><a className="nav-link" href="/editprofile">
-                                    <p>Edit Brand</p>
-                                </a></Button>
-                            </Card>
-                        </Grid>
+                                    </Card>
+                                </Grid>
+                            </form>
+                            <Button style={{ backgroundColor: 'white' }} type="submit"><a className="nav-link" href="/editprofile">
+                                <p>Edit Brand</p>
+                            </a></Button>
+                        </Card>
                     </Grid>
+                </Grid>
             </React.Fragment>
-                );
+        );
     }
 }
 const mapStateToProps = (state) => {
-    return { };
+    return {};
 }
 
-                export default connect(mapStateToProps, {
+export default connect(mapStateToProps, {
 
-                })(withStyles(styles, {withTheme: true })(Profile));
+})(withStyles(styles, { withTheme: true })(Profile));
 

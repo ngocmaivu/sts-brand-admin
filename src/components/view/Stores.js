@@ -9,9 +9,14 @@ import CloseOutlinedIcon from '@material-ui/icons/CloseOutlined';
 import VisibilityOutlined from '@material-ui/icons/VisibilityOutlined';
 import AddUser from '../dialogs/AddUser';
 import { Link } from 'react-router-dom';
-import { users } from "../../dataTest/user"
+// import { users } from "../../../dataTest/user"
 import { storeActions } from '../../_actions';
 
+const dataTable = [
+    { id: 2, name: "Chi Nhanh 1", address: "abc", phone: "023578951" },
+    { id: 3, name: "Chi Nhanh 1", address: "Quan Phu Nhuan", phone: "023578951" },
+    { id: 1, name: "Effoc 1", address: "676 Le Duan", phone: "098987667" },
+]
 const styles = (Theme) => createStyles({
     root: {
         '& .header-table': {
@@ -20,17 +25,11 @@ const styles = (Theme) => createStyles({
     },
 
     button: {
-        //    backgroundColor:'#FA0000',
         minWidth: 46,
         fontSize: '1em',
-        // color: "#FA0000",
         padding: 0,
-        // borderColor: '#FA0000',
         marginRight: 5,
         '&:hover': {
-            // color: "#FFFFFF",
-            // backgroundColor: '#FA0000',
-            // borderColor: '#FFFFFF',
             boxShadow: 'none',
         },
     },
@@ -80,16 +79,17 @@ class Stores extends React.Component {
 
     state = {
         searchValue: '', openDeleteDialog: false, deleteUserId: null, openAddDialog: false,
-        pageSize: 10, rowCount: 0, pageIndex: 1, loading: false, datas: this.props.users
+        pageSize: 10, rowCount: 0, pageIndex: 1, loading: false,
     };
 
     handleSearchValueChange = (event) => {
         this.setState({ searchValue: event.target.value });
     }
 
-    handleSearchSubmit = (e) => {}
+    handleSearchSubmit = (e) => { }
     componentDidMount() {
-        this.props.getAllByPage(this.state.pageIndex,this.state.pageSize);
+        // this.props.getAllByPage(this.state.pageIndex,this.state.pageSize);
+        this.props.getAllByPage(1, 3)
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -111,15 +111,15 @@ class Stores extends React.Component {
     renderToolbar = () => {
         return (
             <div className={this.props.classes.toolbar}>
-                <TextField  size='small' label="search" variant="outlined" InputProps={{
+                <TextField size='small' label="search" variant="outlined" InputProps={{
                     startAdornment: (<InputAdornment position="end">
                         <SearchOutlinedIcon />
                     </InputAdornment>)
-                }} 
+                }}
                 // value={this.state.searchValue}
                 //     onChange={this.handleSearchValueChange}
                 //     onKeyPress={this.handleSearchSubmit} 
-                    />
+                />
 
                 <Button variant="outlined" className={this.props.classes.searchButton} component={Link}
                     to="/stores/new"> <AddIcon />Add Store</Button>
@@ -149,10 +149,10 @@ class Stores extends React.Component {
                 <DialogActions>
                     <Button onClick={handleClose} color="primary">
                         Cancel
-  </Button>
+                    </Button>
                     <Button onClick={() => { this.props.deleteUser(this.state.deleteUserId); this.setState({ deleteUserId: null }); handleClose(); }} color="primary" autoFocus>
                         Confirm
-  </Button>
+                    </Button>
 
                 </DialogActions>
             </Dialog>
@@ -165,7 +165,7 @@ class Stores extends React.Component {
 
 
     render() {
-        const { classes } = this.props;
+        const { classes, stores } = this.props;
         const columns = [
             { field: 'id', headerName: 'Store ID', width: 100 },
             { field: 'name', headerName: 'Name', width: 250 },
@@ -206,17 +206,18 @@ class Stores extends React.Component {
             }
         ];
 
-        if (!this.props.stores) {
-            return <p>...Loading</p>;
-        }
-
-        const rows = this.props.stores;
+        // if (!this.props.stores) {
+        //     return <p>...Loading</p>;
+        // }
+        // var items = JSON.stringify(stores);
+        console.log(stores)
         return (
             <Paper className={this.props.classes.container}>
-                <h2>Store</h2>
+                {/* <<<<<<< Updated upstream:src/components/view/staff/Staffs.js */}
+                <h2>Staffs</h2>
                 {this.renderToolbar()}
                 <div style={{ height: 480, width: '100%' }}>
-                    <DataGrid disableColumnFilter rows={rows} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
+                    <DataGrid disableColumnFilter rows={dataTable} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
                         paginationMode="server" rowCount={100} />
                 </div>
                 {this.renderDeleteDialog()}
@@ -227,9 +228,8 @@ class Stores extends React.Component {
     }
 }
 function mapState(state) {
-    const { stores, authentication } = state;
-    const { store } = authentication;
-    return { store, stores };
+    // const { stores } = state;
+    return {};
 }
 
 export default connect(mapState, {

@@ -1,6 +1,6 @@
 import React from "react";
 import clsx from "clsx";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, Route, useLocation } from "react-router-dom";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "@material-ui/core/AppBar";
@@ -11,20 +11,24 @@ import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import ListItem from "@material-ui/core/ListItem";
-import { Chip, Drawer, Icon, useMediaQuery } from "@material-ui/core";
+import { Button, Chip, Drawer, Icon, useMediaQuery } from "@material-ui/core";
 import GroupOutlinedIcon from '@material-ui/icons/GroupOutlined';
 import EventNoteOutlined from '@material-ui/icons/EventNoteOutlined';
 import ProfileIcon from "@material-ui/icons/Person";
-
-
+import jwt_decode from "jwt-decode";
+// import Logout from "../auth/Logout";
 import ProfileSection from "./ProfileSection";
-import { Store } from "@material-ui/icons";
+import { CalendarTodayOutlined, FiberDvr, FiberManualRecord, Home, NotificationsNoneOutlined, Store } from "@material-ui/icons";
+import NavItem from "./NavItem";
+import NavCollapse from "./NavCollapse";
+import { LoginPage } from "../LoginPage/LoginPage";
+import { Link } from 'react-router-dom';
 
-
-const drawerWidth = 253;
-const appBarHeight = '5em';
+const drawerWidth = 240;
+const appBarHeight = '4em';
+const user = JSON.parse(localStorage.getItem("jwt_decode"))
 const useStyles = makeStyles((theme) => ({
-  app: {
+  root: {
     display: "flex"
   },
   grow: {
@@ -121,31 +125,99 @@ const useStyles = makeStyles((theme) => ({
     ...theme.typography.menuCaption
   },
 }));
-
+var webName = "STS Store Manager"
+if (user.role === "brand manager") webName = "STS Brand Manager"
 const INIT_DATA = {
   items: [
-    {
-      title: 'Store',
-      url: '/stores',
-      icon: <Store />
-    },
-    {
-      title: 'Staff',
-      url: '/staffs',
-      icon: <GroupOutlinedIcon />
-    },
-    {
-      title: 'Profile',
-      url: "/profile",
-      icon: <ProfileIcon />
-    }
   ]
 };
+if (user.role === "brand manager") INIT_DATA.items.push(
+  {
+    id: 'home',
+    title: 'Home',
+    type: 'item',
+    url: '/home',
+    icon: <Home />
+  },
+  {
+    id: 'store',
+    title: 'Store',
+    type: 'item',
+    url: '/stores',
+    icon: <Store />
+  },
+  {
+    id: 'staffs',
+    title: 'Staff',
+    type: 'item',
+    url: '/staff',
+    icon: <GroupOutlinedIcon />
+  },
+  {
+    id: 'timekeeping',
+    title: 'Timekeeping',
+    url: '/timekeeping',
+    type: 'item',
+    icon: <CalendarTodayOutlined />
+  },
+  {
+    id: 'profile',
+    title: 'Profile',
+    type: 'item',
+    url: "/profile",
+    icon: <ProfileIcon />
+  })
+else INIT_DATA.items.push(
+  {
+    id: 'staffs',
+    title: 'Staff',
+    type: 'item',
+    url: '/staffs',
+    icon: <GroupOutlinedIcon />
+  },
+  {
+    id: 'schedule',
+    title: 'Schedule',
+    url: '/schedule',
+    type: 'item',
+    icon: <EventNoteOutlined />
+  },
+  {
+    type: 'collapse',
+    id: 'notify',
+    title: 'Notification',
+    url: '/notify/1',
+    icon: <NotificationsNoneOutlined />,
+    children: [
+      {
+        type: 'item',
+        id: 'request',
+        title: 'Request',
+        url: '/notify/request',
+        icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+      },
+      {
+        type: 'item',
+        id: 'activity',
+        title: 'Activity',
+        url: '/notify/activity',
+        icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+      }
+    ]
+  },
+  {
+    id: 'profile',
+    title: 'Profile',
+    type: 'item',
+    url: "/profile",
+    icon: <ProfileIcon />
+  }
+)
 
 export default function MainLayout(props) {
   const classes = useStyles();
   const theme = useTheme();
-  const [openSideBar, setOpenSideBar] = React.useState(false);
+  const [openSideBar, setOpenSideBar] = React.useState(true);
   const matchUpMd = useMediaQuery(theme.breakpoints.up('md'));
 
   const handleDrawerToggle = () => {
@@ -156,8 +228,24 @@ export default function MainLayout(props) {
     setOpenSideBar(false);
   };
 
+
+
+  const menus = INIT_DATA.items.map((item) => {
+    switch (item.type) {
+      case 'collapse':
+        return (<NavCollapse key={item.id} item={item} level={1} />)
+      case 'item':
+        return (<NavItem key={item.id} item={item} level={1} />);
+      default:
+        return (
+          <Typography key={item.id} variant="h6" color="error" align="center">
+            Menu Items Error
+          </Typography>
+        );
+    }
+  });
   return (
-    <div className={classes.app}>
+    <div className={classes.root}>
       <CssBaseline />
       <AppBar
         position="fixed"
@@ -165,7 +253,7 @@ export default function MainLayout(props) {
         className={openSideBar ? classes.appBarWidth : classes.appBar}
         color="primary"
       >
-        <Toolbar style={{height: '100%'}}>
+        <Toolbar style={{ height: '100%' }}>
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -175,8 +263,8 @@ export default function MainLayout(props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h5" noWrap color="textPrimary" >
-            STS Brand Manager
+          <Typography variant="h6" noWrap color="textPrimary" >
+            {webName}
           </Typography>
           <div className={classes.grow} />
           <div>
@@ -198,32 +286,17 @@ export default function MainLayout(props) {
           paper: classes.drawerPaper
         }}
       >
-
-
         <List subheader={
           <Typography variant="caption" className={classes.menuCaption} style={{ marginTop: 10 }} display="block" gutterBottom>
             Dashboard
-           </Typography>
+          </Typography>
         }>
-          {INIT_DATA.items.map(({ title, url, icon }) => (
-            <ListItem button key={title} className={classes.sidebarItem} component={NavLink} to={url}
-              activeStyle={{
-                fontWeight: "bold",
-                color: "blue",
-                backgroundColor: "#ede7f6"
-              }}>
-              <span><Icon className={classes.sidebarItemIcon}>{icon}</Icon> </span>
-              <Typography variant="h5" color="inherit">{title}</Typography>
-              {/* <ListItemText primary={text}  className={classes.sidebarItemIconText}/> */}
-              {/* link để ở đây nè */}
-              {/* <NavLink to={ INIT_DATA.path[index]}
-                activeClassName="active"
-                key={index} /> */}
-            </ListItem>
-          ))}
+          {menus}
         </List>
+
+
         <Divider />
-        {/* <Logout /> */}
+        <Button component={Link} to="/login"> Logout</Button>
       </Drawer>
       <main
         className={clsx(classes.content, {
