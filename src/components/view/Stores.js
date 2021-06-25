@@ -167,14 +167,13 @@ class Stores extends React.Component {
     render() {
         const { classes, stores } = this.props;
         const columns = [
-            { field: 'id', headerName: 'Store ID', width: 100 },
+            { field: 'id', headerName: 'Store ID', width: 150 },
             { field: 'name', headerName: 'Name', width: 250 },
-            { field: 'address', headerName: 'Address', width: 150 },
+            { field: 'address', headerName: 'Address', width: 300 },
             {
                 field: 'phone',
                 headerName: 'Phone',
-                // type: 'number',
-                width: 150,
+                width: 200,
             },
             // {
             //     field: 'storeManager',
@@ -213,9 +212,9 @@ class Stores extends React.Component {
         console.log(stores)
         return (
             <Paper className={this.props.classes.container}>
-                <h2>Store</h2>
+                <h1>Store</h1>
                 {this.renderToolbar()}
-                <div style={{ height: 480, width: '100%' }}>
+                <div style={{ height: 495, width: '100%' }}>
                     <DataGrid disableColumnFilter rows={dataTable} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
                         paginationMode="server" rowCount={100} />
                 </div>

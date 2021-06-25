@@ -85,7 +85,7 @@ class LoginPage extends React.Component {
 							}
 							<br/>
 							<div style={{ height: '40px',  width: '380px'}} className="form-group">
-								<button style={{ height: '30px',  width: '80px', backgroundColor: 'burlywood', marginLeft: '230'}} className="login_btn">Login</button>
+								<button style={{ height: '30px',  width: '80px', backgroundColor: 'burlywood', marginLeft: '230px'}} className="login_btn">Login</button>
 								{loggingIn}
 							</div>
 						</form>

@@ -1,6 +1,6 @@
 import React from "react";
 import clsx from "clsx";
-import { NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { makeStyles, useTheme } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import AppBar from "@material-ui/core/AppBar";
@@ -11,7 +11,7 @@ import Divider from "@material-ui/core/Divider";
 import IconButton from "@material-ui/core/IconButton";
 import MenuIcon from "@material-ui/icons/Menu";
 import ListItem from "@material-ui/core/ListItem";
-import { Chip, Drawer, Icon, useMediaQuery } from "@material-ui/core";
+import { Button, Chip, Drawer, Icon, useMediaQuery } from "@material-ui/core";
 import GroupOutlinedIcon from '@material-ui/icons/GroupOutlined';
 import EventNoteOutlined from '@material-ui/icons/EventNoteOutlined';
 import ProfileIcon from "@material-ui/icons/Person";
@@ -24,7 +24,7 @@ import NavCollapse from "./NavCollapse";
 
 
 const drawerWidth = 240;
-const appBarHeight = '4em';
+const appBarHeight = '4.5em';
 const user = JSON.parse(localStorage.getItem("jwt_decode"))
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -314,7 +314,7 @@ export default function MainLayout(props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap color="textPrimary" >
+          <Typography variant="h5" noWrap color="textPrimary" >
             {webName}
           </Typography>
           <div className={classes.grow} />
@@ -347,7 +347,7 @@ export default function MainLayout(props) {
 
 
         <Divider />
-        {/* <Logout /> */}
+        <Button component={Link} to="/login">Logout</Button>
       </Drawer>
       <main
         className={clsx(classes.content, {

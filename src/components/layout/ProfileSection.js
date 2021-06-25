@@ -1,7 +1,9 @@
-import { Button, Card, CardContent, Chip, ClickAwayListener, Divider, Fade, Grid, Link, List, ListItem, ListItemIcon, ListItemText, makeStyles, Paper, Popper } from '@material-ui/core';
+import { Button, Card, CardContent, Chip, ClickAwayListener, Divider, Fade, Grid,List, ListItem, ListItemIcon, ListItemText, makeStyles, Paper, Popper } from '@material-ui/core';
 import { AccountCircle, ExitToApp, Translate } from '@material-ui/icons';
 import Typography from "@material-ui/core/Typography";
 import React from 'react';
+import { Link } from 'react-router-dom';
+import Person from '@material-ui/icons/Person';
 
 const useStyles = makeStyles((theme) => ({
     navContainer: {
@@ -154,21 +156,23 @@ const ProfileSection = () => {
                                             <ListItem
                                                 className={classes.listItem}
                                                 button
+                                                component={Link} to="/profile"
                                             >
                                                 <ListItemIcon>
-                                                    <ExitToApp stroke={1.5} size="1.3rem" />
+                                                    <Person stroke={1.5} size="1.3rem" />
                                                 </ListItemIcon>
                                                 <ListItemText primary={<Typography variant="body2">Profile</Typography>} />
                                             </ListItem>
                                             <ListItem
                                                 className={classes.listItem}
                                                 button
+                                                component={Link} to="/login"
                                             >
                                                 <ListItemIcon>
                                                     <ExitToApp stroke={1.5} size="1.3rem" />
                                                 </ListItemIcon>
-                                                <Button><Link style={{ textDecoration: 'none'}} href='/login'> Logout </Link></Button>
-                                                {/* <ListItemText primary={<Typography variant="body2">Logout</Typography>} /> */}
+                                                {/* <Button component={Link} to="/login">Logout </Button> */}
+                                                <ListItemText primary={<Typography variant="body2">Logout</Typography>} />
                                             </ListItem>
                                         </List>
 
