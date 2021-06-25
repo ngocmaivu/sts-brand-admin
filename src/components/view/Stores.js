@@ -1,7 +1,7 @@
 import React from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import { connect } from 'react-redux';
-import { Button, createStyles, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, InputAdornment, TextField, withStyles, Paper } from '@material-ui/core';
+import { Button, createStyles, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, InputAdornment, TextField, withStyles, Paper, Card } from '@material-ui/core';
 // import { getUsers, deleteUser } from "../actions";
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 import AddIcon from '@material-ui/icons/Add';
@@ -211,16 +211,21 @@ class Stores extends React.Component {
         // var items = JSON.stringify(stores);
         console.log(stores)
         return (
-            <Paper className={this.props.classes.container}>
-                <h1>Store</h1>
-                {this.renderToolbar()}
-                <div style={{ height: 495, width: '100%' }}>
-                    <DataGrid disableColumnFilter rows={dataTable} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
-                        paginationMode="server" rowCount={100} />
-                </div>
-                {this.renderDeleteDialog()}
-                <AddUser open={this.state.openAddDialog} handleClose={() => { this.setState({ openAddDialog: false }) }} />
-            </Paper>
+            <React.Fragment>
+                <Card style={{ padding: '10px', marginBottom: '20px' }}>
+                    <h1>Store page</h1>
+                </Card>
+                <Paper className={this.props.classes.container}>
+
+                    {this.renderToolbar()}
+                    <div style={{ height: 495, width: '100%' }}>
+                        <DataGrid disableColumnFilter rows={dataTable} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
+                            paginationMode="server" rowCount={100} />
+                    </div>
+                    {this.renderDeleteDialog()}
+                    <AddUser open={this.state.openAddDialog} handleClose={() => { this.setState({ openAddDialog: false }) }} />
+                </Paper>
+            </React.Fragment>
 
         );
     }

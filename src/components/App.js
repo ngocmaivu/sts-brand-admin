@@ -17,6 +17,7 @@ import StaffNew from './view/staff/StaffNew';
 import Staff from './view/staff/Staff';
 import ScheduleMain from './view/schedule';
 import Notification from './view/notification';
+import BrandHome from './BrandHome/BrandHome';
 
 class App extends React.Component {
 
@@ -56,6 +57,9 @@ class App extends React.Component {
                 </Route>
                 <Route path="/schedule">
                   <ScheduleMain />
+                </Route>
+                <Route path="/brandhome">
+                  <BrandHome />
                 </Route>
               </Layout>
               <Redirect from="*" to="/" />

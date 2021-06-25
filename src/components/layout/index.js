@@ -191,13 +191,6 @@ if (user.role === "brand manager") INIT_DATA.items.push(
     icon: <GroupOutlinedIcon />
   },
   {
-    id: 'schedule',
-    title: 'Schedule',
-    url: '/schedule',
-    type: 'item',
-    icon: <EventNoteOutlined />
-  },
-  {
     id: 'timekeeping',
     title: 'Timekeeping',
     url: '/timekeeping',
