@@ -111,16 +111,10 @@ class Stores extends React.Component {
     renderToolbar = () => {
         return (
             <div className={this.props.classes.toolbar}>
-                <TextField size='small' label="search" variant="outlined" InputProps={{
-                    startAdornment: (<InputAdornment position="end">
-                        <SearchOutlinedIcon />
-                    </InputAdornment>)
-                }}
-                // value={this.state.searchValue}
-                //     onChange={this.handleSearchValueChange}
-                //     onKeyPress={this.handleSearchSubmit} 
-                />
-
+                <TextField style={{ height: '40px', width: '600px' }} placeholder="search" size='small' variant="outlined" InputProps={{
+                    startAdornment: (<InputAdornment position="end"></InputAdornment>)
+                }} />
+                <SearchOutlinedIcon style={{marginLeft: '-350px', color: '#50A625'}} />
                 <Button variant="outlined" className={this.props.classes.searchButton} component={Link}
                     to="/stores/new"> <AddIcon />Add Store</Button>
             </div>
@@ -215,10 +209,13 @@ class Stores extends React.Component {
                 <Card style={{ padding: '10px', marginBottom: '20px' }}>
                     <h1>Store page</h1>
                 </Card>
+                <Card style={{ padding: '10px', marginBottom: '20px' }}>
+                    {this.renderToolbar()}
+                </Card>
                 <Paper className={this.props.classes.container}>
 
-                    {this.renderToolbar()}
-                    <div style={{ height: 495, width: '100%' }}>
+                   
+                    <div style={{ height: 452, width: '100%' }}>
                         <DataGrid disableColumnFilter rows={dataTable} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
                             paginationMode="server" rowCount={100} />
                     </div>
