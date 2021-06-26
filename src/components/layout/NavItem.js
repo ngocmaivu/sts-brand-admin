@@ -46,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 export default function NavItem({ item, level }) {
     const classes = useStyles();
-    return (<ListItem button key={item.title} c className={level > 1 ? classes.listItemNoBack : classes.listItem} component={NavLink} to={item.url}
+    return (<ListItem button key={item.title} className={level > 1 ? classes.listItemNoBack : classes.listItem} component={NavLink} to={item.url}
         activeStyle={{
             fontWeight: "bold",
             color: "blue",

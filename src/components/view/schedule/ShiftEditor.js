@@ -17,18 +17,20 @@ export function ShiftEditor({ parentProps, setStartTime, setEndTime, setStaffId,
 
     const handleStart = (e) => {
         setStart(e.target.value);
+        if (e.target.value) {
         const StartTime = new Date(parentProps.startTime || parentProps.StartTime);
-
         StartTime.setHours(e.target.value.getHours(), e.target.value.getMinutes());
-
         setStartTime(StartTime);
+        }
     }
     const handleEnd = (e) => {
         setEnd(e.target.value);
-        const EndTime = new Date(parentProps.startTime || parentProps.StartTime);
+        if (e.target.value) {
+            const EndTime = new Date(parentProps.startTime || parentProps.StartTime);
+            EndTime.setHours(e.target.value.getHours(), e.target.value.getMinutes());
+            setEndTime(EndTime);
+        }
 
-        EndTime.setHours(e.target.value.getHours(), e.target.value.getMinutes());
-        setEndTime(EndTime);
     }
 
     useEffect(() => {
@@ -68,7 +70,7 @@ export function ShiftEditor({ parentProps, setStartTime, setEndTime, setStaffId,
                             <Select variant="outlined"
                                 value={skill ? skill : "0"}
                                 inputProps={{ id: "Skill" }}
-                                onChange={(e)=>{setSkill(e.target.value)}}
+                                onChange={(e) => { setSkill(e.target.value) }}
                                 required
                             >
                                 {
@@ -89,14 +91,14 @@ export function ShiftEditor({ parentProps, setStartTime, setEndTime, setStaffId,
                             <FormControl fullWidth>
                                 <FormLabel >From</FormLabel>
 
-                                <TimePickerComponent format='HH:mm' value={start} onChange={handleStart} min="0:00" strictMode={true} allowEdit={false} />
+                                <TimePickerComponent format='HH:mm' value={start} required onChange={handleStart} min="0:00" strictMode={true} allowEdit={false} />
                             </FormControl>
                         </Grid>
                         <Grid item xs={6}>
                             <FormControl fullWidth>
                                 <FormLabel >To</FormLabel>
 
-                                <TimePickerComponent format='HH:mm' value={end} min="0:00" onChange={handleEnd} strictMode={true} allowEdit={false} />
+                                <TimePickerComponent format='HH:mm' value={end} required min="0:00" onChange={handleEnd} strictMode={true} allowEdit={false} />
                             </FormControl>
                         </Grid>
                     </Grid>

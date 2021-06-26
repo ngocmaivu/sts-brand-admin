@@ -97,9 +97,15 @@ class ScheduleMain extends React.Component {
 
 
     }
+
+
     componentDidMount = () => {
         this.getDataSource();
     }
+    componentWillUnmount() {
+        this.unSub();
+    }
+
 
     getDataSource = async () => {
         const ref = firebase.firestore().collection("brands");
@@ -127,8 +133,7 @@ class ScheduleMain extends React.Component {
                             //Get DataSource
                             console.log(querySnapshot.docs);
                             //  let src = [];
-                            if(!querySnapshot.docs.exists)
-                            {
+                            if (!querySnapshot.docs.exists) {
                                 console.log("Not Exist");
 
                             }
@@ -141,8 +146,9 @@ class ScheduleMain extends React.Component {
 
 
                             //this.dataSource = src;
-                            let schObj = document.querySelector('.e-schedule').ej2_instances[0];
-                            schObj.eventSettings.dataSource = src;
+                            // let schObj = document.querySelector('.e-schedule').ej2_instances[0];
+                            this.scheduleObj.eventSettings.dataSource = src;
+                            //schObj.eventSettings.dataSource = src;
 
                         });
                     //  console.log(doc.collection("shifts"));
@@ -165,9 +171,9 @@ class ScheduleMain extends React.Component {
                             });
 
                             //this.dataSource = src;
-                            let schObj = document.querySelector('.e-schedule').ej2_instances[0];
-                            schObj.eventSettings.dataSource = src;
-
+                            // let schObj = document.querySelector('.e-schedule').ej2_instances[0];
+                            // schObj.eventSettings.dataSource = src;
+                            this.scheduleObj.eventSettings.dataSource = src;
                         });
                 });
 
@@ -176,7 +182,7 @@ class ScheduleMain extends React.Component {
             }
         });
     }
- 
+
     unSubDataSource = () => {
         this.unSub();
     }
@@ -252,7 +258,7 @@ class ScheduleMain extends React.Component {
 
     navigatingEvent = (args) => {
         console.log(args);
-        if(args.action==="view") return;
+        if (args.action === "view") return;
 
         if (!isSameDay(getFirstDayOfWeek(this.currentDate), getFirstDayOfWeek(args.currentDate))) {
             this.currentDate = args.currentDate;
@@ -263,7 +269,7 @@ class ScheduleMain extends React.Component {
             //Update Ref Schedule
             this.currentDate = args.currentDate;
         }
-       
+
     }
 
     onActionBegin = async (args) => {
