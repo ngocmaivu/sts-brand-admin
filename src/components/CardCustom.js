@@ -10,7 +10,7 @@ const useStyles = makeStyles((theme) => ({
 export function CardCustom({ children, header }) {
     const classes = useStyles();
     return (<Card className={classes.container}>
-        <CardHeader disableTypography="false" title={<Typography variant="h4">
+        <CardHeader disableTypography={false} title={<Typography variant="h4">
             {header}
         </Typography>} />
         <Divider />
