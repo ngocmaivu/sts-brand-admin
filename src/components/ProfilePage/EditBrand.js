@@ -71,7 +71,7 @@ const EditBrand = () => {
                 className={classes.tabs}
             >
                 <Tab label="Edit Brand" />
-                <Tab label="Change Password" />
+                <Tab label="Setting Brand" />
             </Tabs>
             <TabPanel value={value} index={0}>
                 <h2>Edit Brand</h2>
@@ -80,30 +80,25 @@ const EditBrand = () => {
                         <Grid container item spacing={3} >
                             <Grid item xs={6}>
                                 <FormControl margin="normal" className={classes.input} fullWidth>
-                                    <FormLabel >First name</FormLabel>
-                                    <TextField size="small" variant="outlined" defaultValue="Ngọc Mai" />
+                                    <FormLabel >Brand name</FormLabel>
+                                    <TextField size="small" variant="outlined" defaultValue="Passio" />
                                 </FormControl>
                             </Grid>
-                            <Grid item xs={6}>
-                                <FormControl margin="normal" fullWidth>
-                                    <FormLabel >Last name</FormLabel>
-                                    <TextField size="small" variant="outlined" defaultValue="Vũ Thị" />
-                                </FormControl>
-                            </Grid>
+                            
 
                         </Grid>
 
                         <Grid item xs={12}>
                             <FormControl margin="normal" fullWidth>
-                                <FormLabel >Your Address</FormLabel>
-                                <TextField size="small" variant="outlined" defaultValue="Xuân Lộc - Đồng Nai - Việt Nam" />
+                                <FormLabel >Brand's Address</FormLabel>
+                                <TextField size="small" variant="outlined" defaultValue="Quan 1 - TP HCM" />
                             </FormControl>
                         </Grid>
 
                         <Grid item xs={12} >
                             <FormControl margin="normal" fullWidth>
                                 <FormLabel >Email Address</FormLabel>
-                                <TextField size="small" variant="outlined" defaultValue="maivu629@gmail.com" />
+                                <TextField size="small" variant="outlined" defaultValue="passio@gmail.com" />
                             </FormControl>
                         </Grid>
                         <Grid item xs={12}>
@@ -115,7 +110,7 @@ const EditBrand = () => {
                 </form>
             </TabPanel>
             <TabPanel value={value} index={1}>
-                <h2>Change Password</h2>
+                <h2>Setting Brand</h2>
                 <form>
 
                     <Grid container direction="column" spacing={1}>

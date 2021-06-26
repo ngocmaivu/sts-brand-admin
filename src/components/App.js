@@ -18,6 +18,7 @@ import Staff from './view/staff/Staff';
 import ScheduleMain from './view/schedule';
 import Notification from './view/notification';
 import BrandHome from './BrandHome/BrandHome';
+import EditBrand from './ProfilePage/EditBrand';
 
 class App extends React.Component {
 
@@ -39,6 +40,9 @@ class App extends React.Component {
                 </Route>
                 <Route path="/editprofile" exact>
                   <EditProfile />
+                </Route>
+                <Route path="/editbrand" exact>
+                  <EditBrand />
                 </Route>
                 <Route path="/stores/new" >
                   <StoreNew />
