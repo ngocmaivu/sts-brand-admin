@@ -84,7 +84,7 @@ const EditBrand = () => {
                                     <TextField size="small" variant="outlined" defaultValue="Passio" />
                                 </FormControl>
                             </Grid>
-                            
+
 
                         </Grid>
 
@@ -114,30 +114,41 @@ const EditBrand = () => {
                 <form>
 
                     <Grid container direction="column" spacing={1}>
-                        <Grid item xs={12}>
-                            <FormControl margin="normal" fullWidth>
-                                <FormLabel >Current Password</FormLabel>
-                                <TextField size="small" variant="outlined" type='password' />
-                            </FormControl>
+                        <Grid container item spacing={3} >
+                            <Grid item xs={6}>
+                                <FormControl margin="normal" className={classes.input} fullWidth>
+                                    <FormLabel >Skill</FormLabel>
+                                    <TextField size="small" variant="outlined" />
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <FormControl margin="normal">
+                                    <Button style={{marginTop: '22px', backgroundColor: '#66CCFF'}} variant="contained" >Add</Button>
+                                </FormControl>
+
+                            </Grid>
+
+
                         </Grid>
 
                         <Grid item xs={12} >
                             <FormControl margin="normal" fullWidth>
-                                <FormLabel >New Password</FormLabel>
+                                <FormLabel >New skill</FormLabel>
                                 <TextField size="small" variant="outlined" type='password' />
+                                
                             </FormControl>
                         </Grid>
 
-                        <Grid item xs={12} >
+                        {/* <Grid item xs={12} >
                             <FormControl margin="normal" fullWidth>
                                 <FormLabel >Confirm</FormLabel>
                                 <TextField size="small" variant="outlined" type='password' />
                             </FormControl>
-                        </Grid>
-                        <Grid item xs={12}>
+                        </Grid> */}
+                        {/* <Grid item xs={12}>
                             <Button variant="contained" color="primary">Save change</Button>
                             <Button variant="outlined" color="primary" type="submit">Cancel</Button>
-                        </Grid>
+                        </Grid> */}
                     </Grid>
 
                 </form>
