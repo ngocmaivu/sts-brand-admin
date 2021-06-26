@@ -278,7 +278,7 @@ if (user === null) {
 export default function MainLayout(props) {
   const classes = useStyles();
   const theme = useTheme();
-  const [openSideBar, setOpenSideBar] = React.useState(true);
+  const [openSideBar, setOpenSideBar] = React.useState(false);
   const matchUpMd = useMediaQuery(theme.breakpoints.up('md'));
 
   const handleDrawerToggle = () => {
