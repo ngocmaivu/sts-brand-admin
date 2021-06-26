@@ -1,7 +1,7 @@
 import React from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import { connect } from 'react-redux';
-import { Button, createStyles, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, InputAdornment, TextField, withStyles, Paper } from '@material-ui/core';
+import { Button, createStyles, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, InputAdornment, TextField, withStyles, Paper, Card } from '@material-ui/core';
 // import { getUsers, deleteUser } from "../actions";
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 import AddIcon from '@material-ui/icons/Add';
@@ -11,6 +11,7 @@ import AddUser from '../../dialogs/AddUser';
 import { Link } from 'react-router-dom';
 import { users } from "../../../dataTest/user"
 import { storeActions } from '../../../_actions';
+import { Search } from '@material-ui/icons';
 
 const styles = (Theme) => createStyles({
     root: {
@@ -69,6 +70,11 @@ const styles = (Theme) => createStyles({
     }
 })
 
+const dataTable = [
+    { id: 2, name: "Chi Nhanh 1", address: "abc", phone: "023578951" },
+    { id: 3, name: "Chi Nhanh 1", address: "Quan Phu Nhuan", phone: "023578951" },
+    { id: 1, name: "Effoc 1", address: "676 Le Duan", phone: "098987667" },
+]
 
 class Staffs extends React.Component {
 
@@ -81,7 +87,7 @@ class Staffs extends React.Component {
         this.setState({ searchValue: event.target.value });
     }
 
-    handleSearchSubmit = (e) => {}
+    handleSearchSubmit = (e) => { }
     componentDidMount() {
         // this.props.getAllByPage(this.state.pageIndex,this.state.pageSize);
         this.props.getAllByPage(1, 3)
@@ -106,15 +112,11 @@ class Staffs extends React.Component {
     renderToolbar = () => {
         return (
             <div className={this.props.classes.toolbar}>
-                <TextField  size='small' label="search" variant="outlined" InputProps={{
-                    startAdornment: (<InputAdornment position="end">
-                        <SearchOutlinedIcon />
-                    </InputAdornment>)
-                }} 
-                // value={this.state.searchValue}
-                //     onChange={this.handleSearchValueChange}
-                //     onKeyPress={this.handleSearchSubmit} 
-                    />
+                <TextField style={{ height: '40px', width: '600px' }} placeholder="search" size='small' variant="outlined" InputProps={{
+                    startAdornment: (<InputAdornment position="end"></InputAdornment>)
+                }} />
+                {/* <SearchOutlinedIcon style={{marginLeft: '-350px', color: '#50A625'}} /> */}
+                <Button style={{ marginLeft: '-350px', color: '#009966' }}> <Search fontSize='small' /></Button>
 
                 <Button variant="outlined" className={this.props.classes.searchButton} component={Link}
                     to="/staff/new"> <AddIcon />ADD STAFF</Button>
@@ -145,10 +147,10 @@ class Staffs extends React.Component {
                 <DialogActions>
                     <Button onClick={handleClose} color="primary">
                         Cancel
-  </Button>
+                    </Button>
                     <Button onClick={() => { this.props.deleteUser(this.state.deleteUserId); this.setState({ deleteUserId: null }); handleClose(); }} color="primary" autoFocus>
                         Confirm
-  </Button>
+                    </Button>
 
                 </DialogActions>
             </Dialog>
@@ -163,15 +165,16 @@ class Staffs extends React.Component {
     render() {
         const { classes, stores } = this.props;
         const columns = [
-            { field: 'id', headerName: 'Store ID', width: 100 },
-            { field: 'name', headerName: 'Name', width: 250 },
-            { field: 'address', headerName: 'Address', width: 150 },
+            { field: 'id', headerName: 'Staff ID', width: 150 },
+            { field: 'name', headerName: 'Staff Name', width: 250 },
+            { field: 'address', headerName: 'Address', width: 200 },
             {
                 field: 'phone',
                 headerName: 'Phone',
                 // type: 'number',
                 width: 150,
             },
+            { field: 'store', headerName: 'Store', width: 150 },
             // {
             //     field: 'storeManager',
             //     headerName: 'Store Manager',
@@ -208,17 +211,19 @@ class Staffs extends React.Component {
         // var items = stores.items;
         console.log(stores)
         return (
-            <Paper className={this.props.classes.container}>
-                <h2>Staffs</h2>
+            <React.Fragment><Card style={{ padding: '10px', marginBottom: '15px' }}>
+                <div> <h1>Staffs page</h1> {this.renderToolbar()}</div>
+            </Card>
+                <Paper className={this.props.classes.container}>
+                    <div style={{ height: 480, width: '100%' }}>
+                        <DataGrid disableColumnFilter rows={dataTable} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
+                            paginationMode="server" rowCount={100} />
+                    </div>
+                    {this.renderDeleteDialog()}
+                    <AddUser open={this.state.openAddDialog} handleClose={() => { this.setState({ openAddDialog: false }) }} />
+                </Paper>
+            </React.Fragment>
 
-                {this.renderToolbar()}
-                <div style={{ height: 480, width: '100%' }}>
-                    {/* <DataGrid disableColumnFilter rows={stores} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
-                        paginationMode="server" rowCount={100} /> */}
-                </div>
-                {this.renderDeleteDialog()}
-                <AddUser open={this.state.openAddDialog} handleClose={() => { this.setState({ openAddDialog: false }) }} />
-            </Paper>
 
         );
     }

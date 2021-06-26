@@ -221,8 +221,8 @@ class Stores extends React.Component {
                         <DataGrid disableColumnFilter rows={dataTable} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
                             paginationMode="server" rowCount={100} />
                     </div>
-                    {this.renderDeleteDialog()}
-                    <AddUser open={this.state.openAddDialog} handleClose={() => { this.setState({ openAddDialog: false }) }} />
+                    {/* {this.renderDeleteDialog()}
+                    <AddUser open={this.state.openAddDialog} handleClose={() => { this.setState({ openAddDialog: false }) }} /> */}
                 </Paper>
             </React.Fragment>
 
