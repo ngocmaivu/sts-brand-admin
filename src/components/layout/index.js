@@ -129,7 +129,7 @@ const INIT_DATA = {
   items: [
   ]
 };
-if(user === null) {
+if (user === null) {
   INIT_DATA.items.push(
     {
       id: 'store',
@@ -166,97 +166,114 @@ if(user === null) {
       url: "/profile",
       icon: <ProfileIcon />
     })
-}else{
-if (user.role === "brand manager") webName = "STS Brand Manager"
-if (user.role === "brand manager") INIT_DATA.items.push(
-  {
-    id: 'brandhome',
-    title: 'Home',
-    type: 'item',
-    url: '/brandhome',
-    icon: <Home />
-  },
-  {
-    id: 'store',
-    title: 'Stores',
-    type: 'item',
-    url: '/stores',
-    icon: <Store />
-  },
-  {
-    id: 'staffs',
-    title: 'Staff',
-    type: 'item',
-    url: '/staff',
-    icon: <GroupOutlinedIcon />
-  },
-  {
-    id: 'timekeeping',
-    title: 'Timekeeping',
-    url: '/timekeeping',
-    type: 'item',
-    icon: <CalendarTodayOutlined />
-  },
-  {
-    id: 'profile',
-    title: 'Profile',
-    type: 'item',
-    url: "/profile",
-    icon: <ProfileIcon />
-  })
-else INIT_DATA.items.push(
-  {
-    id: 'home',
-    title: 'Home',
-    type: 'item',
-    url: '/storehome',
-    icon: <Home />
-  },
-  {
-    id: 'staffs',
-    title: 'Staff',
-    type: 'item',
-    url: '/staff',
-    icon: <GroupOutlinedIcon />
-  },
-  {
-    id: 'schedule',
-    title: 'Schedule',
-    url: '/schedule',
-    type: 'item',
-    icon: <EventNoteOutlined />
-  },
-  {
-    type: 'collapse',
-    id: 'notify',
-    title: 'Notification',
-    url: '/notify/1',
-    icon: <NotificationsNoneOutlined />,
-    children: [
-      {
-        type: 'item',
-        id: 'request',
-        title: 'Request',
-        url: '/notify/request',
-        icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
-      },
-      {
-        type: 'item',
-        id: 'activity',
-        title: 'Activity',
-        url: '/notify/activity',
-        icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
-      }
-    ]
-  },
-  {
-    id: 'profile',
-    title: 'Profile',
-    type: 'item',
-    url: "/profile",
-    icon: <ProfileIcon />
-  }
-)}
+} else {
+  if (user.role === "brand manager") webName = "STS Brand Manager"
+  if (user.role === "brand manager") INIT_DATA.items.push(
+    {
+      id: 'brandhome',
+      title: 'Home',
+      type: 'item',
+      url: '/brandhome',
+      icon: <Home />
+    },
+    {
+      id: 'store',
+      title: 'Stores',
+      type: 'item',
+      url: '/stores',
+      icon: <Store />
+    },
+    {
+      id: 'staffs',
+      title: 'Staff',
+      type: 'item',
+      url: '/staff',
+      icon: <GroupOutlinedIcon />
+    },
+    {
+      id: 'timekeeping',
+      title: 'Timekeeping',
+      url: '/timekeeping',
+      type: 'item',
+      icon: <CalendarTodayOutlined />
+    },
+    {
+      id: 'profile',
+      title: 'Profile',
+      type: 'item',
+      url: "/profile",
+      icon: <ProfileIcon />
+    })
+  else INIT_DATA.items.push(
+    {
+      id: 'home',
+      title: 'Home',
+      type: 'item',
+      url: '/storehome',
+      icon: <Home />
+    },
+    {
+      id: 'staffs',
+      title: 'Staff',
+      type: 'item',
+      url: '/staff',
+      icon: <GroupOutlinedIcon />
+    },
+    {
+      id: 'schedule',
+      title: 'Schedule',
+      url: '/schedule',
+      type: 'collapse',
+      icon: <EventNoteOutlined />,
+      children: [
+        {
+          type: 'item',
+          id: 'request',
+          title: 'View',
+          url: '/schedule/view',
+          icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+        },
+        {
+          type: 'item',
+          id: 'activity',
+          title: 'Setting',
+          url: '/schedule/setting',
+          icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+        }
+      ]
+    },
+    {
+      type: 'collapse',
+      id: 'notify',
+      title: 'Notification',
+      url: '/notify/1',
+      icon: <NotificationsNoneOutlined />,
+      children: [
+        {
+          type: 'item',
+          id: 'request',
+          title: 'Request',
+          url: '/notify/request',
+          icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+        },
+        {
+          type: 'item',
+          id: 'activity',
+          title: 'Activity',
+          url: '/notify/activity',
+          icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+        }
+      ]
+    },
+    {
+      id: 'profile',
+      title: 'Profile',
+      type: 'item',
+      url: "/profile",
+      icon: <ProfileIcon />
+    }
+  )
+}
 
 export default function MainLayout(props) {
   const classes = useStyles();

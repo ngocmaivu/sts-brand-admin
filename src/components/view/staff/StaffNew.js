@@ -1,7 +1,8 @@
-import { Button, Card, CardContent, CardHeader, Chip, Divider, FormControl, FormLabel, Grid, makeStyles, MenuItem, OutlinedInput, Paper, Select, TextField, Typography, useTheme } from '@material-ui/core';
+import { Accordion, AccordionDetails, AccordionSummary, Button, Card, CardContent, CardHeader, Checkbox, Chip, Divider, FormControl, FormControlLabel, FormLabel, Grid, makeStyles, MenuItem, OutlinedInput, Paper, Select, TextField, Typography, useTheme } from '@material-ui/core';
 import React from 'react';
 import { CardCustom } from '../../CardCustom';
 import { Link } from 'react-router-dom';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 const useStyles = makeStyles((theme) => ({
     container: {
 
@@ -91,13 +92,13 @@ export default function StaffNew() {
                 <Typography variant="h2">
                     Add New Staff
                 </Typography>
-            } disableTypography={false}
+            } disableTypography={true}
             />
 
             <Divider />
             <CardContent className={classes.containerContent}>
                 <form>
-                    <Grid container direction="column" spacing={5} >
+                    <Grid container  spacing={5} >
                         <Grid item xs={12}>
                             <CardCustom header='General'>
                                 <Grid container direction="column" spacing={1} >
@@ -156,7 +157,7 @@ export default function StaffNew() {
                                 </Grid>
                             </CardCustom>
                         </Grid>
-                        <Grid item xs={12}>
+                        <Grid item xs={6}>
                             <CardCustom header='Job Information'>
                                 <Grid container direction="column" spacing={1} >
                                     <Grid container item spacing={3} >
@@ -173,34 +174,6 @@ export default function StaffNew() {
                                                 </Select>
                                             </FormControl>
                                         </Grid>
-                                        <Grid item xs={6}>
-                                            <FormControl margin="normal" className={classes.input} fullWidth>
-                                                <FormLabel id="skills-mutiple-chip-label" >Skills</FormLabel>
-                                                <Select
-                                                    labelId="skills-mutiple-chip-label"
-                                                    id="skills-mutiple-chip"
-                                                    multiple
-                                                    value={skillSelect}
-                                                    onChange={handleSkillSelectChange}
-                                                    input={<OutlinedInput id="select-multiple-chip" variant="outline" />}
-                                                    renderValue={(selected) => (
-                                                        <div className={classes.chips}>
-                                                            {selected.map((value) => (
-                                                                <Chip key={value} label={value} className={classes.chip} />
-                                                            ))}
-                                                        </div>
-                                                    )}
-                                                    MenuProps={MenuProps}
-                                                >
-                                                    {skills.map((name) => (
-                                                        <MenuItem key={name} value={name} style={getStyles(name, skillSelect, theme)}>
-                                                            {name}
-                                                        </MenuItem>
-                                                    ))}
-                                                </Select>
-                                            </FormControl>
-                                        </Grid>
-
                                     </Grid>
 
 
@@ -235,17 +208,108 @@ export default function StaffNew() {
                                 </Grid>
                             </CardCustom>
                         </Grid>
+                        <Grid item xs={6}>
+                            <CardCustom header='Skills'>
+                                <Grid container direction="column" spacing={1} >
+                                    <Grid item>
+
+                                        <Accordion>
+                                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                                <FormControlLabel
+                                                    onClick={(event) => event.stopPropagation()}
+                                                    onFocus={(event) => event.stopPropagation()}
+                                                    control={<Checkbox />}
+                                                    label="Bartender"
+                                                />
+                                            </AccordionSummary>
+                                            <AccordionDetails>
+                                                <FormControl margin="normal" className={classes.input} fullWidth>
+                                                    <FormLabel >Skill level</FormLabel>
+                                                    <Select
+                                                        labelId="demo-simple-select-label"
+                                                        id="demo-simple-select"
+                                                        value={0}
+
+                                                    >
+                                                        <MenuItem value={0}>Beginner</MenuItem>
+                                                        <MenuItem value={1}>Immegiate</MenuItem>
+                                                        <MenuItem value={2}>Experience</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+                                            </AccordionDetails>
+
+                                        </Accordion>
+                                    </Grid>
+                                    <Grid item>
+                                        <Accordion>
+                                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                            <FormControlLabel
+                                                    onClick={(event) => event.stopPropagation()}
+                                                    onFocus={(event) => event.stopPropagation()}
+                                                    control={<Checkbox />}
+                                                    label="Waiter"
+                                                />
+                                            </AccordionSummary>
+                                            <AccordionDetails>
+                                                <FormControl margin="normal" className={classes.input} fullWidth>
+                                                    <FormLabel >Skill level</FormLabel>
+                                                    <Select
+                                                        labelId="demo-simple-select-label"
+                                                        id="demo-simple-select"
+                                                        value={0}
+
+                                                    >
+                                                        <MenuItem value={0}>Beginner</MenuItem>
+                                                        <MenuItem value={1}>Immegiate</MenuItem>
+                                                        <MenuItem value={2}>Experience</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+                                            </AccordionDetails>
+
+                                        </Accordion>
+                                    </Grid>
+                                    <Grid item>
+                                        <Accordion>
+                                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                            <FormControlLabel
+                                                    onClick={(event) => event.stopPropagation()}
+                                                    onFocus={(event) => event.stopPropagation()}
+                                                    control={<Checkbox />}
+                                                    label="Cashier"
+                                                />
+                                            </AccordionSummary>
+                                            <AccordionDetails>
+                                                <FormControl margin="normal" className={classes.input} fullWidth>
+                                                    <FormLabel >Skill level</FormLabel>
+                                                    <Select
+                                                        labelId="demo-simple-select-label"
+                                                        id="demo-simple-select"
+                                                        value={0}
+
+                                                    >
+                                                        <MenuItem value={0}>Beginner</MenuItem>
+                                                        <MenuItem value={1}>Immegiate</MenuItem>
+                                                        <MenuItem value={2}>Experience</MenuItem>
+                                                    </Select>
+                                                </FormControl>
+                                            </AccordionDetails>
+
+                                        </Accordion>
+                                    </Grid>
+                                </Grid>
+                            </CardCustom>
+                        </Grid>
                         <Grid item container xs={12} justify="flex-end" spacing={1} direction="row">
-                            <Grid item xs={2} >
+                            <Grid item >
                                 <Button variant="contained" color="primary">Save change</Button>
                             </Grid>
-                            <Grid item xs={2}>
+                            <Grid item>
                                 <Button variant="outlined" color="primary">Cancel </Button>
                             </Grid>
                         </Grid>
                     </Grid>
                 </form>
             </CardContent>
-        </Paper>
+        </Paper >
     );
 }

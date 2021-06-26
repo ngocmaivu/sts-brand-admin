@@ -18,6 +18,9 @@ import Staff from './view/staff/Staff';
 import ScheduleMain from './view/schedule';
 import Notification from './view/notification';
 import BrandHome from './BrandHome/BrandHome';
+import SettingSchedule from './view/schedule/SettingSchedule';
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+import { DatePicker } from '@syncfusion/ej2-react-calendars';
 import EditBrand from './ProfilePage/EditBrand';
 
 class App extends React.Component {
@@ -26,6 +29,7 @@ class App extends React.Component {
     return (
       <div>
         <ThemeProvider theme={theme}>
+          <MuiPickersUtilsProvider utils={DatePicker}>
           <Router history={history} >
 
             <Switch>
@@ -59,8 +63,11 @@ class App extends React.Component {
                 <Route path="/notify">
                   <Notification />
                 </Route>
-                <Route path="/schedule">
+                <Route path="/schedule/view">
                   <ScheduleMain />
+                </Route>
+                <Route path="/schedule/setting">
+                  <SettingSchedule />
                 </Route>
                 <Route path="/brandhome">
                   <BrandHome />
@@ -69,6 +76,7 @@ class App extends React.Component {
               <Redirect from="*" to="/" />
             </Switch>
           </Router>
+          </MuiPickersUtilsProvider>
         </ThemeProvider>
       </div>
     );
