@@ -1,8 +1,10 @@
 import React from 'react';
-import { DataGrid } from '@material-ui/data-grid';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { Button, Container, createStyles, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, InputAdornment, TextField, withStyles, Card, FormControl, FormLabel, Grid } from '@material-ui/core';
+import { createStyles, withStyles, Card, Grid, Typography, Button, ListItem, ListItemText, ListItemIcon } from '@material-ui/core';
+import { AccountTreeTwoTone, LocalCafeSharp, LocationOffOutlined, LocationOn, Mail, MailOutline, Phone, Store, WatchLaterRounded } from '@material-ui/icons';
+import EditSharpIcon from '@material-ui/icons/EditSharp';
+import AccountCircleRoundedIcon from '@material-ui/icons/AccountCircleRounded';
 
 const styles = (Theme) => createStyles({
     root: {
@@ -62,92 +64,71 @@ const styles = (Theme) => createStyles({
 })
 
 class Profile extends React.Component {
-
-    handleSearchValueChange = (event) => {
-        this.setState({ searchValue: event.target.value });
-    }
-
-    handleSearchSubmit = (e) => {
-        if (e.which == 13) {
-            console.log('enter');
-        }
-    }
     componentDidMount() {
     }
-
-    componentDidUpdate(prevProps, prevState) {
-        if (prevState.pageSize !== this.state.pageSize || prevState.pageIndex !== this.state.pageIndex) {
-            const { searchValue, pageSize, pageIndex } = this.state;
-            const response = this.loadData(searchValue, pageSize, pageIndex);
-        }
-    }
-
-    handlePageSizeChange = (params) => {
-        // setPageSize(params.pageSize);
-    };
-
     render() {
         const { classes } = this.props;
-
-
-
         return (
             <React.Fragment>
-                <Grid container direction="row" spacing={3}>
-                    <Grid item xs={4}>
-                        <Card className={this.props.classes.container}>
-                            <h2>Profile</h2>
-                            <form>
-                                <Grid container direction="column" spacing={1}>
-                                    <Grid item xs={6}>
-                                        <FormControl margin="normal" fullWidth>
-                                            <FormLabel >Vu Thi Ngoc Mai</FormLabel>
-                                        </FormControl>
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <FormControl margin="normal" fullWidth>
-                                            <FormLabel >maivu629@gmail.com</FormLabel>
-                                        </FormControl>
-                                    </Grid>
-                                    <Grid item xs={10}>
-                                        <FormControl margin="normal" fullWidth>
-                                            <FormLabel >Xuân lộc - Đồng Nai - Việt Nam</FormLabel>
-                                        </FormControl>
-                                    </Grid>
-                                </Grid>
-                            </form>
-                            <Button style={{ backgroundColor: 'whitesmoke' }} type="submit"><a className="nav-link" href="/editprofile">
-                                <p>Edit Profile</p>
-                            </a> </Button>
+                <Card style={{ padding: '10px', marginBottom: '20px' }}>
+                    <h1>Profile page</h1>
+                </Card>
+                <Grid container direction="row" spacing={2} style={{ flexWrap: 'nowrap' }}>
+                    <Grid xs={12} sm={6} md={6}>
+                        <Card style={{ paddingTop: '5px', backgroundColor: '#FFFFCC' }}>
+                            <Typography style={{ marginLeft: '60px', }} variant="h3"> <AccountCircleRoundedIcon style={{ color: 'green', marginBottom: '-3px' }} /> Account Profile</Typography>
+                            <Card style={{ padding: '10px', backgroundColor: '' }}>
+                                
+                                <br/><br/>
+                                <Typography variant="h4"> <AccountCircleRoundedIcon style={{ color: '#006241', marginBottom: '-3px' }} /> Brand Manager: </Typography>
+                                <br/>
+                                <Typography variant="h4"> <LocationOn style={{ color: 'red', marginBottom: '-3px' }} /> Address: </Typography>
+                                <br/>
+                                <Typography variant="h4"> <Phone style={{ color: '#006241', marginBottom: '-3px' }} /> Number phone: </Typography>
+                                <br/>
+                                <Typography variant="h4"> <MailOutline style={{ color: '#006241', marginBottom: '-3px' }} /> Mail: </Typography>
+                                <br/>
+                                <ListItem
+                                    className={classes.listItem}
+                                    button
+                                    component={Link} to="/editprofile"
+                                >
+                                    <ListItemIcon>
+                                        <EditSharpIcon stroke={1.5} size="1.3rem" />
+                                    </ListItemIcon>
+                                    {/* <Button component={Link} to="/login">Logout </Button> */}
+                                    <ListItemText primary={<Typography variant="body2">Edit Account Profile and Change Password</Typography>} />
+                                </ListItem>
+                            </Card>
+
                         </Card>
                     </Grid>
-                    <Grid item xs={4}>
-                        <Card className={this.props.classes.container}>
-                            <h2>Brand</h2>
-                            <form>
-                                <Grid container direction="column" spacing={1}>
-                                    <Card>
-                                        <Grid item xs={6}>
-                                            <FormControl margin="normal" className={classes.input} fullWidth>
-                                                <FormLabel >Effoc coffee</FormLabel>
-                                            </FormControl>
-                                        </Grid>
-                                        <Grid item xs={6}>
-                                            <FormControl margin="normal" fullWidth>
-                                                <FormLabel >thecfhouse@gmail.com</FormLabel>
-                                            </FormControl>
-                                        </Grid>
-                                        <Grid item xs={10}>
-                                            <FormControl margin="normal" fullWidth>
-                                                <FormLabel >0166542335</FormLabel>
-                                            </FormControl>
-                                        </Grid>
-                                    </Card>
-                                </Grid>
-                            </form>
-                            <Button style={{ backgroundColor: 'white' }} type="submit"><a className="nav-link" href="/editprofile">
-                                <p>Edit Brand</p>
-                            </a></Button>
+                    <Grid xs={12} sm={6} md={6} style={{ marginLeft: '10px' }}>
+                        <Card style={{ paddingTop: '5px', backgroundColor: '#FFFFCC' }}>
+                            <Typography style={{ marginLeft: '60px', }} variant="h3"> <AccountCircleRoundedIcon style={{ color: 'red', marginBottom: '-3px' }} /> Brand Profile</Typography>
+                            <Card style={{ padding: '10px' }}>
+                            <br/><br/>
+                                <Typography variant="h4"> <AccountCircleRoundedIcon style={{ color: '#006241', marginBottom: '-3px' }} /> Brand Name: </Typography>
+                                <br/>
+                                <Typography variant="h4"> <LocationOn style={{ color: 'red', marginBottom: '-3px' }} /> Address: </Typography>
+                                <br/>
+                                <Typography variant="h4"> <Phone style={{ color: '#006241', marginBottom: '-3px' }} /> Number phone: </Typography>
+                                <br/>
+                                <Typography variant="h4"> <MailOutline style={{ color: '#006241', marginBottom: '-3px' }} /> Mail: </Typography>
+                                <br/>
+                                <ListItem
+                                    className={classes.listItem}
+                                    button
+                                    component={Link} to="/editbrand"
+                                >
+                                    <ListItemIcon>
+                                        <EditSharpIcon stroke={1.5} size="1.3rem" />
+                                    </ListItemIcon>
+                                    {/* <Button component={Link} to="/login">Logout </Button> */}
+                                    <ListItemText primary={<Typography variant="body2">Edit Brand Profile and Setting Brand</Typography>} />
+                                </ListItem>
+                                
+                            </Card>
                         </Card>
                     </Grid>
                 </Grid>

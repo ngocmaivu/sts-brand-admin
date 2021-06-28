@@ -11,6 +11,7 @@ import AddUser from '../dialogs/AddUser';
 import { Link } from 'react-router-dom';
 // import { users } from "../../../dataTest/user"
 import { storeActions } from '../../_actions';
+import { Delete, Edit, ImageSearch, ImageSearchTwoTone, SearchTwoTone, ViewAgenda, ViewStreamOutlined } from '@material-ui/icons';
 
 const dataTable = [
     { id: 2, name: "Chi Nhanh 1", address: "abc", phone: "023578951" },
@@ -114,7 +115,8 @@ class Stores extends React.Component {
                 <TextField style={{ height: '40px', width: '600px' }} placeholder="search" size='small' variant="outlined" InputProps={{
                     startAdornment: (<InputAdornment position="end"></InputAdornment>)
                 }} />
-                <SearchOutlinedIcon style={{marginLeft: '-350px', color: '#50A625'}} />
+                {/* <SearchOutlinedIcon style={{marginLeft: '-350px', color: '#50A625'}} /> */}
+                <Button style={{marginLeft: '-350px', color: '#009966'}}> <SearchTwoTone fontSize='small' /></Button>
                 <Button variant="outlined" className={this.props.classes.searchButton} component={Link}
                     to="/stores/new"> <AddIcon />Add Store</Button>
             </div>
@@ -161,8 +163,8 @@ class Stores extends React.Component {
     render() {
         const { classes, stores } = this.props;
         const columns = [
-            { field: 'id', headerName: 'Store ID', width: 150 },
-            { field: 'name', headerName: 'Name', width: 250 },
+            { field: 'id', headerName: 'Store ID', width: 200 },
+            { field: 'name', headerName: 'Name', width: 300 },
             { field: 'address', headerName: 'Address', width: 300 },
             {
                 field: 'phone',
@@ -183,16 +185,16 @@ class Stores extends React.Component {
             {
                 field: 'action', headerName: "Actions", flex: 0.3, sortable: false, filterable: false,
                 headerAlign: 'center',
-
+                width: 50,
                 renderCell: (params) => {
                     const onClick = () => {
                         this.setState({ openDeleteDialog: true, deleteUserId: params.getValue('id') });
                     }
 
                     return (<span>
-                        <Button className={classes.button} variant='outlined' color='primary' component={Link} to="/stores/1"
-                        > <VisibilityOutlined fontSize='small' /></Button>
-                        <Button onClick={onClick} className={`${classes.button} ${classes.deleteButton}`} variant='outlined'> <CloseOutlinedIcon fontSize='small' /></Button>
+                        <Button color='primary' component={Link} to="/changeStoreManager/"> <Edit fontSize='small' /></Button>
+                        {/* <Button color='primary' component={Link} to="/changeStoreManager/"> < fontSize='small' /></Button> */}
+                        <Button onClick={onClick} style={{color: 'red'}}> <Delete fontSize='small' /></Button>
                     </span>);
                 }
 
@@ -206,12 +208,12 @@ class Stores extends React.Component {
         console.log(stores)
         return (
             <React.Fragment>
-                <Card style={{ padding: '10px', marginBottom: '20px' }}>
-                    <h1>Store page</h1>
+                <Card style={{ padding: '10px', marginBottom: '15px' }}>
+                   <div> <h1>Store page</h1> {this.renderToolbar()}</div>
                 </Card>
-                <Card style={{ padding: '10px', marginBottom: '20px' }}>
-                    {this.renderToolbar()}
-                </Card>
+                {/* <Card style={{ padding: '10px', marginBottom: '20px' }}> */}
+                    
+                {/* </Card> */}
                 <Paper className={this.props.classes.container}>
 
                    

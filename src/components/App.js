@@ -21,6 +21,7 @@ import BrandHome from './BrandHome/BrandHome';
 import SettingSchedule from './view/schedule/SettingSchedule';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { DatePicker } from '@syncfusion/ej2-react-calendars';
+import EditBrand from './ProfilePage/EditBrand';
 
 class App extends React.Component {
 
@@ -30,7 +31,6 @@ class App extends React.Component {
         <ThemeProvider theme={theme}>
           <MuiPickersUtilsProvider utils={DatePicker}>
             <Router history={history} >
-
               <Switch>
                 <Route path="/login" component={LoginPage} />
                 <Layout>
@@ -43,6 +43,9 @@ class App extends React.Component {
                   </Route>
                   <Route path="/editprofile" exact>
                     <EditProfile />
+                  </Route>
+                  <Route path="/editbrand" exact>
+                    <EditBrand />
                   </Route>
                   <Route path="/stores/new" >
                     <StoreNew />
@@ -69,9 +72,10 @@ class App extends React.Component {
                 <Redirect from="*" to="/" />
               </Switch>
             </Router>
+
           </MuiPickersUtilsProvider>
-        </ThemeProvider>
-      </div>
+        </ThemeProvider >
+      </div >
     );
   }
 }
