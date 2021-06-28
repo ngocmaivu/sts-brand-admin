@@ -127,7 +127,7 @@ const ProfileSection = () => {
                 variant="outlined"
                 ref={anchorRef}
                 onClick={handleToggle}
-                label={<Typography > Hello {}</Typography>} />
+                label={<Typography > Hello {user.nameid}</Typography>} />
             <Popper
                 placement="bottom-end"
                 open={open}
