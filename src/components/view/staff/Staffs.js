@@ -161,6 +161,7 @@ class Staffs extends React.Component {
 
 
     render() {
+        console.log(localStorage.getItem("jwt_decode"));
         const { classes, stores } = this.props;
         const columns = [
             { field: 'id', headerName: 'Store ID', width: 100 },

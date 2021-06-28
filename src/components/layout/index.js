@@ -81,6 +81,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 12,
     marginTop: appBarHeight,
     flexGrow: 1,
+   
     padding: 20,
     backgroundColor: '#e3f2fd',
     padding: theme.spacing(3),
