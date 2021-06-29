@@ -131,7 +131,7 @@ class Stores extends React.Component {
                     <Button onClick={handleClose} color="primary">
                         Cancel
                     </Button>
-                    <Button onClick={() => { this.props.deleteUser(this.state.deleteUserId); this.setState({ deleteUserId: null }); handleClose(); }} color="primary" autoFocus>
+                    <Button onClick={() => {this.handleDeleteStore(store.id)}} >
                         Confirm
                     </Button>
 
@@ -171,14 +171,14 @@ class Stores extends React.Component {
                 headerAlign: 'center',
                 width: 50,
                 renderCell: (params) => {
-                    const onClick = () => {
-                        this.setState({ openDeleteDialog: true, deleteUserId: params.getValue('id') });
-                    }
-
+                    // const onClick = () => {
+                    //     this.setState({ openDeleteDialog: true, deleteUserId: params.getValue('id') });
+                    // }
+                    // console.log(params.id)
                     return (<span>
                         <Button color='primary' component={Link} to="/changeStoreManager/"> <Edit fontSize='small' /></Button>
                         {/* <Button color='primary' component={Link} to="/changeStoreManager/"> < fontSize='small' /></Button> */}
-                        <Button onClick={onClick} style={{color: 'red'}}> <Delete fontSize='small' /></Button>
+                        <Button onClick={this.handleDeleteStore(params.id)} style={{color: 'red'}}> <Delete fontSize='small' /></Button>
                     </span>);
                 }
 
