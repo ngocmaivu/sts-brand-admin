@@ -35,18 +35,18 @@ function create(store) {
     function failure(error) { return { type: storeConstants.STORE_CREAT_FAILURE, error } }
 }
 
-function getAllByPage(pageNumber, pageSize) {
+function getAllByPage() {
     return dispatch => {
         dispatch(request());
 
-        storeService.getAllByPage(pageNumber, pageSize)
+        storeService.getAllByPage()
             .then(
                 stores => dispatch(success(stores)),
                 error => dispatch(failure(error.toString()))
             );
     };
 
-    function request(stores) { return { type: storeConstants.STORE_GETALL_REQUEST, stores } }
+    function request() { return { type: storeConstants.STORE_GETALL_REQUEST } }
     function success(stores) { return { type: storeConstants.STORE_GETALL_SUCCESS, stores } }
     function failure(error) { return { type: storeConstants.STORE_GETALL_FAILURE, error } }
 }

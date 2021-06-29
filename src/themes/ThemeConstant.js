@@ -1,6 +1,6 @@
 // Paper & Background Color
 const paper = '#ffffff';
-const background = '#ffffff';
+// const background = '#ffffff';
 
 // Primary Colors
 const blue50 = '#e3f2fd';

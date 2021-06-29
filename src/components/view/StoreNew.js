@@ -2,6 +2,11 @@ import { Button, Card, CardContent, CardHeader, Chip, Divider, FormControl, Form
 import React from 'react';
 import { CardCustom } from '../CardCustom';
 import { Link } from 'react-router-dom';
+import { storeActions } from '../../_actions/store.action'
+import { connect } from 'react-redux';
+import { store } from '../../_helpers';
+
+const user = JSON.parse(localStorage.getItem("jwt_decode"))
 const useStyles = makeStyles((theme) => ({
     container: {
 
@@ -32,11 +37,6 @@ const MenuProps = {
     },
 };
 
-const skills = [
-    'Barista',
-    'Waiter',
-    'Cashier',
-];
 
 function getStyles(name, personName, theme) {
     return {
@@ -46,82 +46,128 @@ function getStyles(name, personName, theme) {
                 : theme.typography.fontWeightMedium,
     };
 }
-export default function StoreNew() {
 
-    const renderInput = (title) => {
-        return (<FormControl margin="normal" className={classes.input} fullWidth>
-            <FormLabel >{title}</FormLabel>
-            <TextField size="small" variant="outlined" />
-        </FormControl>);
+class StoreNew extends React.Component {
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            store: {
+                brandId: user.brandId,
+                name: '',
+                address: '',
+                phone: ''
+            },
+            submitted: false
+        };
+
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
     }
 
-    const [skillSelect, setSkillSelect] = React.useState([]);
-    const handleSkillSelectChange = (event) => {
-        setSkillSelect(event.target.value);
-    };
-
-    const handleSkillSelectChangeMultiple = (event) => {
-        const { options } = event.target;
-        const value = [];
-        for (let i = 0, l = options.length; i < l; i += 1) {
-            if (options[i].selected) {
-                value.push(options[i].value);
+    handleChange(event) {
+        const { name, value } = event.target;
+        const { store } = this.state;
+        this.setState({
+            store: {
+                ...store,
+                [name]: value
             }
+        });
+    }
+
+    handleSubmit(event) {
+        event.preventDefault();
+
+        this.setState({ submitted: true });
+        const { store } = this.state;
+        if (store.name) {
+            this.props.create(store);
         }
-        setSkillSelect(value);
-    };
+    }
+    handleClick(event) {
+        // event.preventDefault();
 
-    const classes = useStyles();
-    const theme = useTheme();
-    return (
-        <Paper className={classes.container}>
-            <CardHeader title={
-                <Typography variant="h2">
-                    Add New Store
-                </Typography>
-            } disableTypography="true"
-            />
+        this.setState({ submitted: true });
+        const { store } = this.state;
+        // if (store.name) {
+            this.props.create(store);
+        // }
+        console.log('this is:', this);
+    }
+    render() {
+        const { registering } = this.props;
+        const { store, submitted } = this.state;
+        return (
+            <Paper>
+                <CardHeader title={
+                    <Typography variant="h2">
+                        Add New Store
+                    </Typography>
+                } disableTypography={true}
+                />
 
-            <Divider />
-            <CardContent className={classes.containerContent}>
-                <form>
-                    <Grid container direction="column" spacing={5} >
-                        <Grid item xs={12}>
-                            <CardCustom header='General'>
-                                <Grid container direction="column" spacing={1} >
-                                    <Grid container item spacing={3} >
-                                        <Grid item xs={6}>
-                                            {renderInput("Store name")}
+                <Divider />
+                <CardContent>
+                    <form >
+                        <Grid container direction="column" spacing={5} >
+                            <Grid item xs={12}>
+                                <CardCustom header='General'>
+                                    <Grid container direction="column" spacing={1} >
+                                        <Grid container item spacing={3} >
+                                            <Grid item xs={6}>
+                                                <FormControl margin="normal" fullWidth>
+                                                    <FormLabel >Store Name</FormLabel>
+                                                    <TextField type="input" name="name" size="small" variant="outlined" onChange={this.handleChange} />
+                                                </FormControl>
+                                            </Grid>
+                                        </Grid>
+
+                                        <Grid item xs={12}>
+                                            <FormControl margin="normal" fullWidth>
+                                                <FormLabel >Address</FormLabel>
+                                                <TextField name="address" size="small" variant="outlined" onChange={this.handleChange} />
+                                            </FormControl>
+                                        </Grid>
+                                        <Grid container item spacing={3} >
+                                            {/* <Grid item xs={6} >
+                                                {renderInput("Email")}
+                                            </Grid> */}
+                                            <Grid item xs={6} >
+                                            <FormControl margin="normal" fullWidth>
+                                                <FormLabel >Phone</FormLabel>
+                                                <TextField name="phone" size="small" variant="outlined" onChange={this.handleChange} />
+                                            </FormControl>
+                                            </Grid>
                                         </Grid>
                                     </Grid>
-
-                                    <Grid item xs={12}>
-                                        {renderInput("Address")}
-                                    </Grid>
-                                    <Grid container item spacing={3} >
-                                        <Grid item xs={6} >
-                                            {renderInput("Email")}
-                                        </Grid>
-                                        <Grid item xs={6} >
-                                            {renderInput("Phone")}
-                                        </Grid>
-                                    </Grid>
-
-
-                                </Grid>
-                            </CardCustom>
-                        </Grid> 
-                        <Grid item container xs={12} justify="flex-end" spacing={1} direction="row">
-                            <Grid item xs={1.5} >
-                                <Button variant="contained" color="primary">Save change</Button>
+                                </CardCustom>
                             </Grid>
-                            <Grid item xs={1.5}>
-                                <Button variant="outlined" color="primary">Cancel </Button>
+                            <Grid item container xs={12} justify="flex-end" spacing={1} direction="row">
+                                <Grid item xs={2} >
+                                    <Button onClick={() => this.handleClick()} variant="contained" color="primary">Save change</Button>
+                                </Grid>
+                                <Grid item xs={2}>
+                                    <Button variant="outlined" color="primary" component={Link} to="/stores">Cancel </Button>
+                                </Grid>
                             </Grid>
                         </Grid>
-                    </Grid>
-                </form>
-            </CardContent>
-        </Paper>
-    );
+                    </form>
+                </CardContent>
+            </Paper>
+        );
+    }
 }
+
+function mapState(state) {
+    // const { creating } = state.creating;
+    return {};
+}
+
+const actionCreators = {
+    create: storeActions.create
+}
+
+const connectedStoreNew = connect(mapState, actionCreators)(StoreNew);
+export { connectedStoreNew as StoreNew };

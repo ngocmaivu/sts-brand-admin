@@ -8,20 +8,20 @@ export const storeService = {
     delete: _delete
 };
 
-function getAllByPage(pageNumber, pageSize) {
+function getAllByPage() {
     const requestOptions = {
         method: 'GET',
         headers: authHeader(),
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/stores?PageNumber=${pageNumber}&PageSize=${pageSize}`, requestOptions)
+    return fetch(`https://sts-project.azurewebsites.net/api/brands/stores`, requestOptions)
     .then(handleResponse)
-    .then(store => {
-        // store user details and jwt token in local storage to keep user logged in between page refreshes
-        localStorage.setItem('stores', JSON.stringify(store));
-        // localStorage.setItem('jwt_decode', JSON.stringify(jwt_decode(user.token)));
-        return store;
-    });
+    // .then(stores => {
+    //     // store user details and jwt token in local storage to keep user logged in between page refreshes
+    //     localStorage.setItem('stores', JSON.stringify(stores));
+    //     // localStorage.setItem('jwt_decode', JSON.stringify(jwt_decode(user.token)));
+    //     return stores;
+    // });
 }
 
 function getById(id) {

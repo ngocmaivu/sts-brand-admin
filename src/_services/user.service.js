@@ -41,7 +41,7 @@ function getAll() {
         headers: authHeader()
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/users`, requestOptions).then(handleResponse);
+    return fetch(`https://sts-project.azurewebsites.net/api/brands/users`, requestOptions).then(handleResponse);
 }
 
 function getById(id) {
