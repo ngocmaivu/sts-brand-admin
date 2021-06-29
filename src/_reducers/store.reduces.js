@@ -1,6 +1,6 @@
 import { storeConstants } from '../_constants';
 
-export function store(state = {}, action) {
+export function stores(state = {}, action) {
     switch (action.type) {
         case storeConstants.STORE_GETALL_REQUEST:
             return {
@@ -10,7 +10,7 @@ export function store(state = {}, action) {
         case storeConstants.STORE_GETALL_SUCCESS:
             return {
                 ...state,
-                ..._.mapKeys(action.payload, 'id'),
+                items: action.stores,
             };
         case storeConstants.STORE_GETBYID_FAILURE:
             return {
@@ -25,7 +25,7 @@ export function store(state = {}, action) {
         case storeConstants.STORE_GETBYID_SUCCESS:
             return {
                 ...state,
-                ..._.mapKeys(action.payload, 'id'),
+                items: action.stores,
             };
         case storeConstants.STORE_GETBYID_FAILURE:
             return {
@@ -66,30 +66,30 @@ export function store(state = {}, action) {
             // add 'deleting:true' property to user being deleted
             return {
                 ...state,
-                items: state.items.map(brand =>
-                    brand.id === action.id
-                        ? { ...user, deleting: true }
-                        : brand
+                items: state.items.map(store =>
+                    store.id === action.id
+                        ? { ...store, deleting: true }
+                        : store
                 )
             };
         case storeConstants.STORE_DELETE_SUCCESS:
             // remove deleted user from state
             return {
-                items: state.items.filter(brand => brand.id !== action.id)
+                items: state.items.filter(store => store.id !== action.id)
             };
         case storeConstants.STORE_GETALL_FAILURE:
             // remove 'deleting:true' property and add 'deleteError:[error]' property to user 
             return {
                 ...state,
-                items: state.items.map(brand => {
-                    if (brand.id === action.id) {
+                items: state.items.map(store => {
+                    if (store.id === action.id) {
                         // make copy of user without 'deleting:true' property
-                        const { deleting, ...storeCopy } = brand;
+                        const { deleting, ...storeCopy } = store;
                         // return copy of user with 'deleteError:[error]' property
                         return { ...storeCopy, deleteError: action.error };
                     }
 
-                    return brand;
+                    return store;
                 })
             };
         default:

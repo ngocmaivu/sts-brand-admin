@@ -1,16 +1,16 @@
 import React from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import { connect } from 'react-redux';
-import { Button, createStyles, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, InputAdornment, TextField, withStyles, Paper } from '@material-ui/core';
+import { Button, createStyles, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, TextField, withStyles, Paper, Card } from '@material-ui/core';
 // import { getUsers, deleteUser } from "../actions";
-import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
+// import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 import AddIcon from '@material-ui/icons/Add';
 import CloseOutlinedIcon from '@material-ui/icons/CloseOutlined';
 import VisibilityOutlined from '@material-ui/icons/VisibilityOutlined';
 import AddUser from '../../dialogs/AddUser';
 import { Link } from 'react-router-dom';
-import { users } from "../../../dataTest/user"
-import { storeActions } from '../../../_actions';
+import { userActions } from '../../../_actions';
+import { Search } from '@material-ui/icons';
 
 const styles = (Theme) => createStyles({
     root: {
@@ -69,6 +69,11 @@ const styles = (Theme) => createStyles({
     }
 })
 
+const dataTable = [
+    { id: 2, name: "Chi Nhanh 1", address: "abc", phone: "023578951" },
+    { id: 3, name: "Chi Nhanh 1", address: "Quan Phu Nhuan", phone: "023578951" },
+    { id: 1, name: "Effoc 1", address: "676 Le Duan", phone: "098987667" },
+]
 
 class Staffs extends React.Component {
 
@@ -81,40 +86,22 @@ class Staffs extends React.Component {
         this.setState({ searchValue: event.target.value });
     }
 
-    handleSearchSubmit = (e) => {}
+    handleSearchSubmit = (e) => { }
     componentDidMount() {
         // this.props.getAllByPage(this.state.pageIndex,this.state.pageSize);
-        this.props.getAllByPage(1, 3)
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        // if (prevState.pageSize !== this.state.pageSize || prevState.pageIndex !== this.state.pageIndex) {
-        //     const { searchValue, pageSize, pageIndex } = this.state;
-        //     const response = this.loadData(searchValue, pageSize, pageIndex);
-        // }
+        this.props.getAll();
     }
 
     handleDeleteStore(id) {
         return (e) => this.props.deleteUser(id);
     }
-    // loadData = (search, pageSize, pageIndex) => {
-    //     return {};
-    // }
-
-
 
     renderToolbar = () => {
         return (
             <div className={this.props.classes.toolbar}>
-                <TextField  size='small' label="search" variant="outlined" InputProps={{
-                    startAdornment: (<InputAdornment position="end">
-                        <SearchOutlinedIcon />
-                    </InputAdornment>)
-                }} 
-                // value={this.state.searchValue}
-                //     onChange={this.handleSearchValueChange}
-                //     onKeyPress={this.handleSearchSubmit} 
-                    />
+                <TextField style={{ height: '40px', width: '600px' }} placeholder="search" size='small' variant="outlined"/>
+                {/* <SearchOutlinedIcon style={{marginLeft: '-350px', color: '#50A625'}} /> */}
+                <Button style={{ marginLeft: '-350px', color: '#009966' }}> <Search fontSize='small' /></Button>
 
                 <Button variant="outlined" className={this.props.classes.searchButton} component={Link}
                     to="/staff/new"> <AddIcon />ADD STAFF</Button>
@@ -129,30 +116,30 @@ class Staffs extends React.Component {
             this.setState({ openDeleteDialog: false });
         }
 
-        return (
-            <Dialog
-                open={this.state.openDeleteDialog}
-                onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogTitle id="alert-dialog-title">{"Delete Dialog?"}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        {`Do you want to delete user: ${this.state.deleteUserId}`}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} color="primary">
-                        Cancel
-  </Button>
-                    <Button onClick={() => { this.props.deleteUser(this.state.deleteUserId); this.setState({ deleteUserId: null }); handleClose(); }} color="primary" autoFocus>
-                        Confirm
-  </Button>
+//         return (
+//             <Dialog
+//                 open={this.state.openDeleteDialog}
+//                 onClose={handleClose}
+//                 aria-labelledby="alert-dialog-title"
+//                 aria-describedby="alert-dialog-description"
+//             >
+//                 <DialogTitle id="alert-dialog-title">{"Delete Dialog?"}</DialogTitle>
+//                 <DialogContent>
+//                     <DialogContentText id="alert-dialog-description">
+//                         {`Do you want to delete user: ${this.state.deleteUserId}`}
+//                     </DialogContentText>
+//                 </DialogContent>
+//                 <DialogActions>
+//                     <Button onClick={handleClose} color="primary">
+//                         Cancel
+//                     </Button>
+//                     <Button onClick={() => { this.props.deleteUser(this.state.deleteUserId); this.setState({ deleteUserId: null }); handleClose(); }} color="primary" autoFocus>
+//                         Confirm
+//                     </Button>
 
-                </DialogActions>
-            </Dialog>
-        );
+//                 </DialogActions>
+//             </Dialog>
+//         );
     }
 
     handlePageSizeChange = (params) => {
@@ -161,18 +148,23 @@ class Staffs extends React.Component {
 
 
     render() {
-        console.log(localStorage.getItem("jwt_decode"));
-        const { classes, stores } = this.props;
+// <<<<<<< cuong
+//         console.log(localStorage.getItem("jwt_decode"));
+//         const { classes, stores } = this.props;
+// =======
+        const { classes, users } = this.props;
+// >>>>>>> main
         const columns = [
-            { field: 'id', headerName: 'Store ID', width: 100 },
-            { field: 'name', headerName: 'Name', width: 250 },
-            { field: 'address', headerName: 'Address', width: 150 },
+            { field: 'userName', headerName: 'User Name', width: 150 },
+            { field: 'name', headerName: 'Staff Name', width: 250 },
+            { field: 'address', headerName: 'Address', width: 200 },
             {
                 field: 'phone',
                 headerName: 'Phone',
                 // type: 'number',
                 width: 150,
             },
+            { field: 'store', headerName: 'Store', width: 150 },
             // {
             //     field: 'storeManager',
             //     headerName: 'Store Manager',
@@ -206,32 +198,33 @@ class Staffs extends React.Component {
         // if (!this.props.stores) {
         //     return <p>...Loading</p>;
         // }
-        // var items = stores.items;
-        console.log(stores)
+        console.log(users.items)
         return (
-            <Paper className={this.props.classes.container}>
-                <h2>Staffs</h2>
+            <React.Fragment><Card style={{ padding: '10px', marginBottom: '15px' }}>
+                <div> <h1>Staffs page</h1> {this.renderToolbar()}</div>
+            </Card>
+                <Paper className={this.props.classes.container}>
+                    <div style={{ height: 480, width: '100%' }}>
+                        <DataGrid disableColumnFilter rows={dataTable} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
+                            paginationMode="server" rowCount={100} />
+                    </div>
+                    {this.renderDeleteDialog()}
+                    <AddUser open={this.state.openAddDialog} handleClose={() => { this.setState({ openAddDialog: false }) }} />
+                </Paper>
+            </React.Fragment>
 
-                {this.renderToolbar()}
-                <div style={{ height: 480, width: '100%' }}>
-                    {/* <DataGrid disableColumnFilter rows={stores} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
-                        paginationMode="server" rowCount={100} /> */}
-                </div>
-                {this.renderDeleteDialog()}
-                <AddUser open={this.state.openAddDialog} handleClose={() => { this.setState({ openAddDialog: false }) }} />
-            </Paper>
 
         );
     }
 }
 function mapState(state) {
-    // const { stores } = state;
-    return {};
+    const { users } = state;
+    return {users};
 }
 
 export default connect(mapState, {
-    getAllByPage: storeActions.getAllByPage,
-    deleteStore: storeActions.delete
+    getAll: userActions.getAll,
+    deleteStaff: userActions.delete
 
 })(withStyles(styles, { withTheme: true })(Staffs));
 
