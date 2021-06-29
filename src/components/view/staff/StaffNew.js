@@ -1,7 +1,7 @@
-import { Accordion, AccordionDetails, AccordionSummary, Button, Card, CardContent, CardHeader, Checkbox, Chip, Divider, FormControl, FormControlLabel, FormLabel, Grid, makeStyles, MenuItem, OutlinedInput, Paper, Select, TextField, Typography, useTheme } from '@material-ui/core';
+import { Accordion, AccordionDetails, AccordionSummary, Button,  CardContent, CardHeader, Checkbox,  Divider, FormControl, FormControlLabel, FormLabel, Grid, makeStyles, MenuItem,  Paper, Select, TextField, Typography, useTheme } from '@material-ui/core';
 import React from 'react';
 import { CardCustom } from '../../CardCustom';
-import { Link } from 'react-router-dom';
+// import { Link } from 'react-router-dom';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -22,31 +22,31 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-const ITEM_HEIGHT = 48;
-const ITEM_PADDING_TOP = 8;
-const MenuProps = {
-    PaperProps: {
-        style: {
-            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-            width: 250,
-        },
-    },
-};
+// const ITEM_HEIGHT = 48;
+// const ITEM_PADDING_TOP = 8;
+// const MenuProps = {
+//     PaperProps: {
+//         style: {
+//             maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+//             width: 250,
+//         },
+//     },
+// };
 
-const skills = [
-    'Barista',
-    'Waiter',
-    'Cashier',
-];
+// const skills = [
+//     'Barista',
+//     'Waiter',
+//     'Cashier',
+// ];
 
-function getStyles(name, personName, theme) {
-    return {
-        fontWeight:
-            personName.indexOf(name) === -1
-                ? theme.typography.fontWeightRegular
-                : theme.typography.fontWeightMedium,
-    };
-}
+// function getStyles(name, personName, theme) {
+//     return {
+//         fontWeight:
+//             personName.indexOf(name) === -1
+//                 ? theme.typography.fontWeightRegular
+//                 : theme.typography.fontWeightMedium,
+//     };
+// }
 export default function StaffNew() {
 
     const renderInput = (title) => {

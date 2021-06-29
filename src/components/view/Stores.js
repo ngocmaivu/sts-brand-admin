@@ -12,12 +12,8 @@ import { Link } from 'react-router-dom';
 // import { users } from "../../../dataTest/user"
 import { storeActions } from '../../_actions';
 import { Delete, Edit, ImageSearch, ImageSearchTwoTone, SearchTwoTone, ViewAgenda, ViewStreamOutlined } from '@material-ui/icons';
+import { store } from '../../_helpers';
 
-const dataTable = [
-    { id: 2, name: "Chi Nhanh 1", address: "abc", phone: "023578951" },
-    { id: 3, name: "Chi Nhanh 1", address: "Quan Phu Nhuan", phone: "023578951" },
-    { id: 1, name: "Effoc 1", address: "676 Le Duan", phone: "098987667" },
-]
 const styles = (Theme) => createStyles({
     root: {
         '& .header-table': {
@@ -78,9 +74,13 @@ const styles = (Theme) => createStyles({
 
 class Stores extends React.Component {
 
+    componentDidMount() {
+        // this.props.getAllByPage(this.state.pageIndex,this.state.pageSize);
+        this.props.getAllByPage();
+    }
     state = {
         searchValue: '', openDeleteDialog: false, deleteUserId: null, openAddDialog: false,
-        pageSize: 10, rowCount: 0, pageIndex: 1, loading: false,
+        pageSize: 10, rowCount: 0, pageIndex: 1,
     };
 
     handleSearchValueChange = (event) => {
@@ -88,33 +88,18 @@ class Stores extends React.Component {
     }
 
     handleSearchSubmit = (e) => { }
-    componentDidMount() {
-        // this.props.getAllByPage(this.state.pageIndex,this.state.pageSize);
-        this.props.getAllByPage(1, 3)
-    }
+    
 
-    componentDidUpdate(prevProps, prevState) {
-        // if (prevState.pageSize !== this.state.pageSize || prevState.pageIndex !== this.state.pageIndex) {
-        //     const { searchValue, pageSize, pageIndex } = this.state;
-        //     const response = this.loadData(searchValue, pageSize, pageIndex);
-        // }
-    }
-
+   
     handleDeleteStore(id) {
-        return (e) => this.props.deleteUser(id);
+        return (e) => this.props.deleteStore(id);
     }
-    // loadData = (search, pageSize, pageIndex) => {
-    //     return {};
-    // }
-
-
 
     renderToolbar = () => {
         return (
             <div className={this.props.classes.toolbar}>
-                <TextField style={{ height: '40px', width: '600px' }} placeholder="search" size='small' variant="outlined" InputProps={{
-                    startAdornment: (<InputAdornment position="end"></InputAdornment>)
-                }} />
+                <TextField style={{ height: '40px', width: '600px' }} placeholder="search" size='small' variant="outlined"
+                 />
                 {/* <SearchOutlinedIcon style={{marginLeft: '-350px', color: '#50A625'}} /> */}
                 <Button style={{marginLeft: '-350px', color: '#009966'}}> <SearchTwoTone fontSize='small' /></Button>
                 <Button variant="outlined" className={this.props.classes.searchButton} component={Link}
@@ -156,12 +141,11 @@ class Stores extends React.Component {
     }
 
     handlePageSizeChange = (params) => {
-        // setPageSize(params.pageSize);
     };
 
 
     render() {
-        const { classes, stores } = this.props;
+        const {stores}  = this.props;
         const columns = [
             { field: 'id', headerName: 'Store ID', width: 200 },
             { field: 'name', headerName: 'Name', width: 300 },
@@ -201,28 +185,23 @@ class Stores extends React.Component {
             }
         ];
 
-        // if (!this.props.stores) {
-        //     return <p>...Loading</p>;
-        // }
-        // var items = JSON.stringify(stores);
-        console.log(stores)
+        if (!this.props.stores.items) {
+            return <p>...Loading</p>;
+        }
+        // var items = JSON.parse(localStorage.getItem("stores"));
+        // console.log(stores.items)
         return (
             <React.Fragment>
                 <Card style={{ padding: '10px', marginBottom: '15px' }}>
                    <div> <h1>Store page</h1> {this.renderToolbar()}</div>
                 </Card>
-                {/* <Card style={{ padding: '10px', marginBottom: '20px' }}> */}
-                    
-                {/* </Card> */}
                 <Paper className={this.props.classes.container}>
 
                    
                     <div style={{ height: 452, width: '100%' }}>
-                        <DataGrid disableColumnFilter rows={dataTable} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
+                        <DataGrid disableColumnFilter rows={stores.items} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
                             paginationMode="server" rowCount={100} />
                     </div>
-                    {/* {this.renderDeleteDialog()}
-                    <AddUser open={this.state.openAddDialog} handleClose={() => { this.setState({ openAddDialog: false }) }} /> */}
                 </Paper>
             </React.Fragment>
 
@@ -230,8 +209,8 @@ class Stores extends React.Component {
     }
 }
 function mapState(state) {
-    // const { stores } = state;
-    return {};
+    const { stores } = state;
+    return {stores};
 }
 
 export default connect(mapState, {

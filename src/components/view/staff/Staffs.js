@@ -1,16 +1,15 @@
 import React from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import { connect } from 'react-redux';
-import { Button, createStyles, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, InputAdornment, TextField, withStyles, Paper, Card } from '@material-ui/core';
+import { Button, createStyles, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, TextField, withStyles, Paper, Card } from '@material-ui/core';
 // import { getUsers, deleteUser } from "../actions";
-import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
+// import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 import AddIcon from '@material-ui/icons/Add';
 import CloseOutlinedIcon from '@material-ui/icons/CloseOutlined';
 import VisibilityOutlined from '@material-ui/icons/VisibilityOutlined';
 import AddUser from '../../dialogs/AddUser';
 import { Link } from 'react-router-dom';
-import { users } from "../../../dataTest/user"
-import { storeActions } from '../../../_actions';
+import { userActions } from '../../../_actions';
 import { Search } from '@material-ui/icons';
 
 const styles = (Theme) => createStyles({
@@ -90,31 +89,17 @@ class Staffs extends React.Component {
     handleSearchSubmit = (e) => { }
     componentDidMount() {
         // this.props.getAllByPage(this.state.pageIndex,this.state.pageSize);
-        this.props.getAllByPage(1, 3)
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        // if (prevState.pageSize !== this.state.pageSize || prevState.pageIndex !== this.state.pageIndex) {
-        //     const { searchValue, pageSize, pageIndex } = this.state;
-        //     const response = this.loadData(searchValue, pageSize, pageIndex);
-        // }
+        this.props.getAll();
     }
 
     handleDeleteStore(id) {
         return (e) => this.props.deleteUser(id);
     }
-    // loadData = (search, pageSize, pageIndex) => {
-    //     return {};
-    // }
-
-
 
     renderToolbar = () => {
         return (
             <div className={this.props.classes.toolbar}>
-                <TextField style={{ height: '40px', width: '600px' }} placeholder="search" size='small' variant="outlined" InputProps={{
-                    startAdornment: (<InputAdornment position="end"></InputAdornment>)
-                }} />
+                <TextField style={{ height: '40px', width: '600px' }} placeholder="search" size='small' variant="outlined"/>
                 {/* <SearchOutlinedIcon style={{marginLeft: '-350px', color: '#50A625'}} /> */}
                 <Button style={{ marginLeft: '-350px', color: '#009966' }}> <Search fontSize='small' /></Button>
 
@@ -163,9 +148,9 @@ class Staffs extends React.Component {
 
 
     render() {
-        const { classes, stores } = this.props;
+        const { classes, users } = this.props;
         const columns = [
-            { field: 'id', headerName: 'Staff ID', width: 150 },
+            { field: 'userName', headerName: 'User Name', width: 150 },
             { field: 'name', headerName: 'Staff Name', width: 250 },
             { field: 'address', headerName: 'Address', width: 200 },
             {
@@ -208,8 +193,7 @@ class Staffs extends React.Component {
         // if (!this.props.stores) {
         //     return <p>...Loading</p>;
         // }
-        // var items = stores.items;
-        console.log(stores)
+        console.log(users.items)
         return (
             <React.Fragment><Card style={{ padding: '10px', marginBottom: '15px' }}>
                 <div> <h1>Staffs page</h1> {this.renderToolbar()}</div>
@@ -229,13 +213,13 @@ class Staffs extends React.Component {
     }
 }
 function mapState(state) {
-    // const { stores } = state;
-    return {};
+    const { users } = state;
+    return {users};
 }
 
 export default connect(mapState, {
-    getAllByPage: storeActions.getAllByPage,
-    deleteStore: storeActions.delete
+    getAll: userActions.getAll,
+    deleteStaff: userActions.delete
 
 })(withStyles(styles, { withTheme: true })(Staffs));
 

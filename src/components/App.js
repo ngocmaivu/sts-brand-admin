@@ -8,7 +8,7 @@ import theme from '../themes/Theme';
 import { ThemeProvider } from '@material-ui/styles';
 import Staffs from './view/staff/Staffs';
 import Stores from './view/Stores';
-import StoreNew from './view/StoreNew';
+import {StoreNew} from './view/StoreNew';
 import { PrivateRoute } from './PrivateRoute';
 import Profile from './ProfilePage/Profile';
 import EditProfile from './ProfilePage/EditProfile';
