@@ -38,9 +38,41 @@ export const getStaffs = (pageIndex, pageSize, searchValue) => async dispatch =>
     }
 }
 
-export const loadStaffNew = (data) => ({ type: staffConstants.STAFF_LOAD, payload: data })
+export const loadStaffNew = () => async dispatch => {
+    const skills = await loadSkills();
+    const stores = await loadStores();
+    const init_data = {};
+    skills.forEach(skill => (
+        init_data[`skill${skill.id}Level`] = 0
+    ));
+    skills.forEach(skill => (
+        init_data[`skill${skill.id}Level`] = 0
+    ));
+    dispatch({ type: staffConstants.STAFF_LOAD, payload: { data: init_data, skills, stores } });
+}
+
 
 export const loadStaff = () => {
 
+
 }
 
+const loadSkills = async () => {
+    try {
+        const response = await sts.get("/brands/skills/all", { headers: authHeader(), });
+        return response.data;
+    } catch (e) {
+        console.log('Load Skill Fail');
+        console.log(e);
+    }
+}
+
+const loadStores = async () => {
+    try {
+        const response = await sts.get("/brands/stores/all", { headers: authHeader(), });
+        return response.data;
+    } catch (e) {
+        console.log('Load Stores Fail');
+        console.log(e);
+    }
+}

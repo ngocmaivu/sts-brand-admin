@@ -148,7 +148,8 @@ class ScheduleMain extends React.Component {
 
                             //this.dataSource = src;
                             // let schObj = document.querySelector('.e-schedule').ej2_instances[0];
-                            this.scheduleObj.eventSettings.dataSource = src;
+                            if (this.scheduleObj)
+                                this.scheduleObj.eventSettings.dataSource = src;
                             //schObj.eventSettings.dataSource = src;
 
                         });
@@ -303,7 +304,6 @@ class ScheduleMain extends React.Component {
         }
     }
     render() {
-
         return (
             <Paper >
 
@@ -324,6 +324,7 @@ class ScheduleMain extends React.Component {
                             subject: { name: "Skill" },
                         }
                     }}
+
                     ref={schedule => this.scheduleObj = schedule}
                     firstDayOfWeek={1}
                     group={{ resources: ['Staff'] }}

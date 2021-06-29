@@ -9,7 +9,10 @@ const INIT = {
     datas: [],
     searchValue: "",
     error: "",
-    data: null
+    data: null,
+    stores: null,
+    skills: null,
+    message: null
 }
 
 export function staffReducer(state = INIT, action) {
@@ -29,10 +32,6 @@ export function staffReducer(state = INIT, action) {
             console.log('DELETE ' + action.payload);
             let datas = _.omit(state.datas, action.payload);
             let arr = Object.values(datas);
-            console.log(1);
-            console.log(state);
-            console.log(arr);
-            console.log(2);
             let datas1 = arr.map(e => {
                 return { ...e, counterStatus: (arr.indexOf(e) + (state.currentPage - 1) * state.pageSize + 1), id: e.username }
             }
@@ -41,7 +40,11 @@ export function staffReducer(state = INIT, action) {
             return { ...state, datas: _.mapKeys(datas1, 'id') };
 
         case staffConstants.STAFF_LOAD:
-            return { ...state, data: action.payload };
+            return { ...state, data: action.payload.data, skills: action.payload.skills, stores: action.payload.stores };
+        case staffConstants.STAFF_CREATE_FAILURE:
+            return { ...state, error: "Fail Create" };
+        case staffConstants.STAFF_CREATE_SUCCESS:
+            return { ...state, message: "SUCCESS" };
         default:
             return state
     }

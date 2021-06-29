@@ -19,7 +19,7 @@ class StaffForm extends React.Component {
     }
 
     renderInput = ({ label, input, type = "text", meta: { touched, invalid, error }, InputProps }) => {
-        
+
         return (
             <div>
                 <FormControl margin="normal" fullWidth>
@@ -44,8 +44,36 @@ class StaffForm extends React.Component {
         return (<Checkbox {...input} />)
     }
     onSubmit = (formValues) => {
-        // console.log(formValues);
-        this.props.onSubmit(formValues);
+
+        const skillData = this.props.skills
+            .filter(skill => formValues[`skill${skill.id}`] == true)
+            .map(skill => {
+                return {
+                    skillId: skill.id,
+                    level: formValues[`skill${skill.id}Level`]
+                }
+            });
+            
+        const dataSubmit = {
+            generalInfo: {
+                username: formValues.username,
+                firstName: formValues.firstName,
+                lastName: formValues.lastName,
+                dob: formValues.dob,
+                gender: formValues.gender,
+                type: formValues.type,
+                email: formValues.email,
+                phone: formValues.phone,
+                address: formValues.address
+            },
+            jobInformation: {
+                storeId: formValues.workAt,
+                isPrimaryStore: true,
+            },
+            staffSkills: skillData
+        }
+        console.log(dataSubmit);
+        this.props.onSubmit(dataSubmit);
     }
 
     renderSkillFields = () => {
@@ -76,22 +104,28 @@ class StaffForm extends React.Component {
         return (
             <CardContent >
                 <form onSubmit={this.props.handleSubmit(this.onSubmit)}>
-                    <Grid container spacing={5} >
+                    <Grid container spacing={3} >
                         <Grid item xs={12}>
                             <CardCustom header='General'>
                                 <Grid container direction="column" spacing={1} >
                                     <Grid container item spacing={3} >
                                         <Grid item xs={6}>
-                                            <Field name="firstname" component={this.renderInput} label="First name" />
+                                            <Field name="firstName" component={this.renderInput} label="First name" />
                                         </Grid>
                                         <Grid item xs={6}>
-                                            <Field name="lastname" component={this.renderInput} label="Last name" />
+                                            <Field name="lastName" component={this.renderInput} label="Last name" />
                                         </Grid>
 
                                     </Grid>
 
-                                    <Grid item xs={12}>
-                                        <Field name="address" component={this.renderInput} label="Address" />
+                                    <Grid container item spacing={2}>
+                                        <Grid item xs={6}>
+                                            <Field name="username" component={this.renderInput} label="Username" />
+                                        </Grid>
+                                        <Grid item xs={12}>
+                                            <Field name="address" component={this.renderInput} label="Address" />
+                                        </Grid>
+
                                     </Grid>
                                     <Grid container item spacing={3} >
                                         <Grid item xs={6}>
@@ -123,8 +157,9 @@ class StaffForm extends React.Component {
                                     <Grid container item spacing={3} >
                                         <Grid item xs={6}>
                                             <Field name="workAt" component={this.renderSelect} label="Wort at">
-                                                <MenuItem value={1}>Store 1</MenuItem>
-                                                <MenuItem value={0}>Store 2</MenuItem>
+                                                {this.props.stores ?
+                                                    this.props.stores.map(store => (<MenuItem key={store.id} value={store.id}>{store.name}</MenuItem>)) :
+                                                    null}
                                             </Field>
                                         </Grid>
                                     </Grid>
@@ -180,14 +215,28 @@ class StaffForm extends React.Component {
 const validate = (formValues) => {
     const error = {};
 
-    if (!formValues.title) {
-        error.title = "You must enter a title";
+    if (!formValues.firstName) {
+        error.firstName = "You must enter a firstName";
     }
-    if (!formValues.description) {
-        error.description = "You must enter a description";
+    if (!formValues.lastName) {
+        error.lastName = "You must enter a description";
     }
+
+    if (!formValues.email) {
+        error.email = "You must enter a email";
+    }
+
+    if (!formValues.username) {
+        error.username = "You must enter a username";
+    }
+    if (!formValues.type) {
+        error.type = "You must enter a type staff";
+    }
+
     return error;
 }
+
+
 
 
 export default reduxForm(
