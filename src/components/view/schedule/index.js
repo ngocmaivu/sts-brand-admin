@@ -2,17 +2,17 @@ import React from 'react';
 import './schedule.css';
 
 import {
-    ScheduleComponent, Inject, Day, Week, WorkWeek, Month, EventSettingsModel,
+    ScheduleComponent, Inject, Day, Week,
     TimelineViews, TimelineMonth, ViewsDirective, ViewDirective, Resize, DragAndDrop, ResourcesDirective, ResourceDirective
 
 } from "@syncfusion/ej2-react-schedule";
 import { extend, isNullOrUndefined, L10n } from '@syncfusion/ej2-base';
-import { DataManager, WebApiAdaptor } from '@syncfusion/ej2-data';
-import { Card, CardHeader, CardContent, Divider, Grid, Select, InputLabel, FormControl, MenuItem, FormLabel, Paper, TextField, Button } from '@material-ui/core';
+
+import { Card, CardHeader, Grid, Paper, Button } from '@material-ui/core';
 import { ShiftEditor } from './ShiftEditor';
 import firebase from "../../../firebase";
 import { getFirstDayOfWeek, isSameDay, convertShift, convertShiftToFireBaseObj } from "../../../ultis/scheduleHandle";
-import { format, add, subMinutes, sub, endOfDay } from 'date-fns';
+
 
 
 L10n.load({
@@ -103,7 +103,8 @@ class ScheduleMain extends React.Component {
         this.getDataSource();
     }
     componentWillUnmount() {
-        this.unSub();
+        if (this.unSub)
+            this.unSub();
     }
 
 
@@ -147,7 +148,8 @@ class ScheduleMain extends React.Component {
 
                             //this.dataSource = src;
                             // let schObj = document.querySelector('.e-schedule').ej2_instances[0];
-                            this.scheduleObj.eventSettings.dataSource = src;
+                            if (this.scheduleObj)
+                                this.scheduleObj.eventSettings.dataSource = src;
                             //schObj.eventSettings.dataSource = src;
 
                         });
@@ -276,30 +278,53 @@ class ScheduleMain extends React.Component {
         console.log(args);
         if (args.requestType == "eventChange") {
             this.refScheduleCurrentCollection.doc(args.changedRecords[0].Id).update(convertShiftToFireBaseObj(args.changedRecords[0]));
-        } else if (args.requestType == "eventCreate") {
-            const newShiftRef = this.refScheduleCurrentCollection.doc();
-            args.data[0].Id = newShiftRef.id;
-            console.log('new shift Id:' + newShiftRef.id);
-            const data = convertShiftToFireBaseObj(args.data[0]);
-            console.log(data);
-            newShiftRef.set(data);
+        } else if (args.requestType === 'eventCreate' && args.data.length > 0) {
+
+            //if a specific time slot already contains an shift, then no more shift can be added to that cell
+            let eventData = args.data[0];
+            let eventField = this.scheduleObj.eventFields;
+            let startDate = eventData[eventField.startTime];
+            let endDate = eventData[eventField.endTime];
+            args.cancel = !this.scheduleObj.isSlotAvailable(startDate, endDate);
+
+            console.log(args.cancel);
+
+            if (!args.cancel) {
+                const newShiftRef = this.refScheduleCurrentCollection.doc();
+                args.data[0].Id = newShiftRef.id;
+                console.log('new shift Id:' + newShiftRef.id);
+                const data = convertShiftToFireBaseObj(args.data[0]);
+                console.log(data);
+                newShiftRef.set(data);
+            }
+
 
         } else if (args.requestType == "eventRemove") {
             this.refScheduleCurrentCollection.doc(args.deletedRecords[0].Id).delete();
         }
     }
     render() {
-
         return (
             <Paper >
-                <Button onClick={this.addEvent}>add Event</Button>
-                <ScheduleComponent currentView="TimelineWeek" selectedDate={this.currentDate}
 
+                <CardHeader title="Schedule" action={
+                    <Grid container justify="flex-end" spacing={1} direction="row">
+                        <Grid item >
+                            <Button variant="contained" color="primary">Compute schedule</Button>
+                        </Grid>
+                        <Grid item>
+                            <Button variant="outlined" color="primary">Pushlish</Button>
+                        </Grid>
+                    </Grid>
+                } />
+
+                <ScheduleComponent currentView="TimelineWeek" selectedDate={this.currentDate}
                     eventSettings={{
                         fields: {
                             subject: { name: "Skill" },
                         }
                     }}
+
                     ref={schedule => this.scheduleObj = schedule}
                     firstDayOfWeek={1}
                     group={{ resources: ['Staff'] }}

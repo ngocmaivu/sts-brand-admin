@@ -30,55 +30,52 @@ class App extends React.Component {
       <div>
         <ThemeProvider theme={theme}>
           <MuiPickersUtilsProvider utils={DatePicker}>
-          <Router history={history} >
+            <Router history={history} >
+              <Switch>
+                <Route path="/login" component={LoginPage} />
+                <Layout>
+                  <PrivateRoute path="/" exact> <Stores /> </PrivateRoute>
+                  <Route path="/stores" exact>
+                    <Stores />
+                  </Route>
+                  <Route path="/profile" exact>
+                    <Profile />
+                  </Route>
+                  <Route path="/editprofile" exact>
+                    <EditProfile />
+                  </Route>
+                  <Route path="/editbrand" exact>
+                    <EditBrand />
+                  </Route>
+                  <Route path="/stores/new" >
+                    <StoreNew />
+                  </Route>
+                  <Route path="/staff" exact>
+                    <Staffs />
+                  </Route>
+                  <Route exact path="/staff/new" component={StaffNew} />
+                  {/* <Route exact path="/staff/:id" component={Staff} /> */}
 
-            <Switch>
-              <Route path="/login" component={LoginPage} />
-              <Layout>
-                <PrivateRoute path="/" exact> <Stores /> </PrivateRoute>
-                <Route path="/stores" exact>
-                  <Stores />
-                </Route>
-                <Route path="/profile" exact>
-                  <Profile />
-                </Route>
-                <Route path="/editprofile" exact>
-                  <EditProfile />
-                </Route>
-                <Route path="/editbrand" exact>
-                  <EditBrand />
-                </Route>
-                <Route path="/stores/new" >
-                  <StoreNew />
-                </Route>
-                <Route path="/staff" exact>
-                  <Staffs />
-                </Route>
-                <Route path="/staff/new" exact>
-                  <StaffNew />
-                </Route>
-                <Route path="/staff/:id" >
-                  <Staff />
-                </Route>
-                <Route path="/notify">
-                  <Notification />
-                </Route>
-                <Route path="/schedule/view">
-                  <ScheduleMain />
-                </Route>
-                <Route path="/schedule/setting">
-                  <SettingSchedule />
-                </Route>
-                <Route path="/brandhome">
-                  <BrandHome />
-                </Route>
-              </Layout>
-              <Redirect from="*" to="/" />
-            </Switch>
-          </Router>
+                  <Route path="/notify">
+                    <Notification />
+                  </Route>
+                  <Route path="/schedule/view">
+                    <ScheduleMain />
+                  </Route>
+                  <Route path="/schedule/setting">
+                    <SettingSchedule />
+                  </Route>
+                  <Route path="/brandhome">
+                    <BrandHome />
+                  </Route>
+                </Layout>
+                <Redirect from="*" to="/" />
+              </Switch>
+            </Router>
+
           </MuiPickersUtilsProvider>
-        </ThemeProvider>
-      </div>
+        </ThemeProvider >
+      </div >
     );
   }
 }

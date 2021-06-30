@@ -116,30 +116,30 @@ class Staffs extends React.Component {
             this.setState({ openDeleteDialog: false });
         }
 
-        return (
-            <Dialog
-                open={this.state.openDeleteDialog}
-                onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogTitle id="alert-dialog-title">{"Delete Dialog?"}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        {`Do you want to delete user: ${this.state.deleteUserId}`}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} color="primary">
-                        Cancel
-                    </Button>
-                    <Button onClick={() => { this.props.deleteUser(this.state.deleteUserId); this.setState({ deleteUserId: null }); handleClose(); }} color="primary" autoFocus>
-                        Confirm
-                    </Button>
+//         return (
+//             <Dialog
+//                 open={this.state.openDeleteDialog}
+//                 onClose={handleClose}
+//                 aria-labelledby="alert-dialog-title"
+//                 aria-describedby="alert-dialog-description"
+//             >
+//                 <DialogTitle id="alert-dialog-title">{"Delete Dialog?"}</DialogTitle>
+//                 <DialogContent>
+//                     <DialogContentText id="alert-dialog-description">
+//                         {`Do you want to delete user: ${this.state.deleteUserId}`}
+//                     </DialogContentText>
+//                 </DialogContent>
+//                 <DialogActions>
+//                     <Button onClick={handleClose} color="primary">
+//                         Cancel
+//                     </Button>
+//                     <Button onClick={() => { this.props.deleteUser(this.state.deleteUserId); this.setState({ deleteUserId: null }); handleClose(); }} color="primary" autoFocus>
+//                         Confirm
+//                     </Button>
 
-                </DialogActions>
-            </Dialog>
-        );
+//                 </DialogActions>
+//             </Dialog>
+//         );
     }
 
     handlePageSizeChange = (params) => {
@@ -148,7 +148,12 @@ class Staffs extends React.Component {
 
 
     render() {
+// <<<<<<< cuong
+//         console.log(localStorage.getItem("jwt_decode"));
+//         const { classes, stores } = this.props;
+// =======
         const { classes, users } = this.props;
+// >>>>>>> main
         const columns = [
             { field: 'userName', headerName: 'User Name', width: 150 },
             { field: 'name', headerName: 'Staff Name', width: 250 },
