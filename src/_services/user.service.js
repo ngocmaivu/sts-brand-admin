@@ -2,6 +2,7 @@
 import { authHeader } from '../_helpers';
 import jwt_decode from "jwt-decode";
 
+const userInfor = JSON.parse(localStorage.getItem("jwt_decode"))
 export const userService = {
     login,
     logout,
@@ -9,6 +10,7 @@ export const userService = {
     getAll,
     getById,
     update,
+    getUserProfile,
     delete: _delete
 };
 
@@ -25,6 +27,22 @@ function login(username, password) {
             // store user details and jwt token in local storage to keep user logged in between page refreshes
             localStorage.setItem('user', JSON.stringify(user));
             localStorage.setItem('jwt_decode', JSON.stringify(jwt_decode(user.token)));
+            return user;
+        });
+}
+
+function getUserProfile() {
+    const requestOptions = {
+        method: 'GET',
+        headers: authHeader(),
+        // body: JSON.stringify({ username})
+    };
+
+    return fetch(`https://sts-project.azurewebsites.net/api/admin/users/${userInfor.nameid}`, requestOptions)
+        .then(handleResponse)
+        .then(user => {
+            // store user details and jwt token in local storage to keep user logged in between page refreshes
+            localStorage.setItem('userInfor', JSON.stringify(user));
             return user;
         });
 }
