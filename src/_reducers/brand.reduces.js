@@ -25,7 +25,7 @@ export function brand(state = {}, action) {
         case brandConstants.BRAND_GETBYID_SUCCESS:
             return {
                 ...state,
-                ..._.mapKeys(action.payload, 'id'),
+                items: action.brand,
             };
         case brandConstants.BRAND_GETBYID_FAILURE:
             return {

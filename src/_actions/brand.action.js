@@ -6,7 +6,7 @@ import { history } from '../_helpers';
 export const brandActions = {
     create,
     getAllByPage,
-    // getById,
+    getById,
     // update,
     delete: _delete
 };
@@ -30,7 +30,7 @@ function create(brand) {
             );
     };
 
-    function request(brand) { return { type: brandConstants.BRAND_CREAT_REQUEST, brand } }
+    function request() { return { type: brandConstants.BRAND_CREAT_REQUEST} }
     function success(brand) { return { type: brandConstants.BRAND_CREAT_SUCCESS, brand } }
     function failure(error) { return { type: brandConstants.BRAND_CREAT_FAILURE, error } }
 }
@@ -48,6 +48,22 @@ function getAllByPage(pageNumber, pageSize) {
 
     function request(brands) { return { type: brandConstants.BRAND_GETALL_REQUEST, brands } }
     function success(brands) { return { type: brandConstants.BRAND_GETALL_SUCCESS, brands } }
+    function failure(error) { return { type: brandConstants.BRAND_GETALL_FAILURE, error } }
+}
+
+function getById() {
+    return dispatch => {
+        dispatch(request());
+
+        brandService.getById()
+            .then(
+                brand => dispatch(success(brand)),
+                error => dispatch(failure(error.toString()))
+            );
+    };
+
+    function request() { return { type: brandConstants.BRAND_GETALL_REQUEST } }
+    function success(brand) { return { type: brandConstants.BRAND_GETALL_SUCCESS, brand } }
     function failure(error) { return { type: brandConstants.BRAND_GETALL_FAILURE, error } }
 }
 

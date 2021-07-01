@@ -1,5 +1,6 @@
 import { authHeader } from '../_helpers';
 
+const userInfor = JSON.parse(localStorage.getItem("jwt_decode"))
 export const brandService = {
     create,
     getAllByPage,
@@ -23,7 +24,13 @@ function getById(id) {
         headers: authHeader(),
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/brands/${id}`, requestOptions).then(handleResponse);
+    return fetch(`https://sts-project.azurewebsites.net/api/brands/${userInfor.brandId}`, requestOptions)
+    .then(handleResponse)
+    .then(brand => {
+        // store user details and jwt token in local storage to keep user logged in between page refreshes
+        localStorage.setItem('brandInfor', JSON.stringify(brand));
+        return brand;
+    });
 }
 
 function create(brand) {

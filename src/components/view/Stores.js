@@ -187,11 +187,6 @@ class Stores extends React.Component {
                     return (<span>
                         <Button color='primary' component={Link} to="/changeStoreManager/"> <Edit fontSize='small' /></Button>
                         <Button onClick={this.handleDeleteStore(params.id)} style={{ color: 'red' }}> <Delete fontSize='small' /></Button>
-                        {/* <Snackbar open={this.open} autoHideDuration={6000} onClose={this.handleClose}>
-                            <Alert onClose={this.handleClose} severity="success">
-                                This is a success message!
-                            </Alert>
-                        </Snackbar> */}
                     </span>);
                 }
             }
