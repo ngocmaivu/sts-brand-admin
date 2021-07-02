@@ -10,16 +10,20 @@ export const createStaff = (data) => async dispatch => {
     } catch (e) {
         console.log(e);
         dispatch({ type: staffConstants.STAFF_CREATE_FAILURE });
+        // TODO excepction
+
     }
 }
+
 export const getStaffs = (pageIndex, pageSize, searchValue) => async dispatch => {
     try {
-        // console.log(JwtToken.get());
+        //TODO Phân quyền brand/store ở đây
 
         if (searchValue === "") {
             searchValue = null;
         }
-        const response = await sts.get("/users", {
+
+        const response = await sts.get("/stores/staff", {
             headers: authHeader(),
             params: {
                 PageNumber: pageIndex,
@@ -54,6 +58,9 @@ export const loadStaffNew = () => async dispatch => {
 
 export const loadStaff = () => {
 
+
+}
+export const deleteStaff = (id) => async dispatch => {
 
 }
 

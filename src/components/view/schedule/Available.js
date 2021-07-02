@@ -5,7 +5,7 @@ class Available extends React.Component{
 
     render(){
         <div>
-
+{/* list nv + dayInWeek */}
         </div>
     }
 }
