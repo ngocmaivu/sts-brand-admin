@@ -1,16 +1,17 @@
 import React from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import { connect } from 'react-redux';
-import { Button, createStyles, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, TextField, withStyles, Paper, Card } from '@material-ui/core';
+import { Button, createStyles, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, TextField, withStyles, Paper, Card, Grid, InputAdornment } from '@material-ui/core';
 // import { getUsers, deleteUser } from "../actions";
-// import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
+import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 import AddIcon from '@material-ui/icons/Add';
 import CloseOutlinedIcon from '@material-ui/icons/CloseOutlined';
 import VisibilityOutlined from '@material-ui/icons/VisibilityOutlined';
 import AddUser from '../../dialogs/AddUser';
 import { Link } from 'react-router-dom';
-import { userActions } from '../../../_actions';
-import { Search } from '@material-ui/icons';
+import { getStaffs, deleteStaff } from '../../../_actions';
+import { ControlCameraOutlined, Search } from '@material-ui/icons';
+import { Skeleton } from '@material-ui/lab';
 
 const styles = (Theme) => createStyles({
     root: {
@@ -69,39 +70,42 @@ const styles = (Theme) => createStyles({
     }
 })
 
-const dataTable = [
-    { id: 2, name: "Chi Nhanh 1", address: "abc", phone: "023578951" },
-    { id: 3, name: "Chi Nhanh 1", address: "Quan Phu Nhuan", phone: "023578951" },
-    { id: 1, name: "Effoc 1", address: "676 Le Duan", phone: "098987667" },
-]
-
 class Staffs extends React.Component {
 
     state = {
-        searchValue: '', openDeleteDialog: false, deleteUserId: null, openAddDialog: false,
-        pageSize: 10, rowCount: 0, pageIndex: 1, loading: false,
+        searchValue: this.props.searchValue, openDeleteDialog: false, deleteUserId: null, openAddDialog: false,
+        pageSize: 10, rowCount: 0, pageIndex: 1, loading: false, datas: this.props.users
     };
 
     handleSearchValueChange = (event) => {
         this.setState({ searchValue: event.target.value });
     }
 
-    handleSearchSubmit = (e) => { }
+
+    handleSearchSubmit = (e) => {
+        if (e.which === 13) {
+            this.props.getStaffs(this.props.pageIndex, this.props.pageSize, this.state.searchValue);
+        }
+    }
+
     componentDidMount() {
-        // this.props.getAllByPage(this.state.pageIndex,this.state.pageSize);
-        this.props.getAll();
+        this.props.getStaffs(this.state.pageIndex, this.state.pageSize, this.state.searchValue);
     }
 
     handleDeleteStore(id) {
-        return (e) => this.props.deleteUser(id);
+        return (e) => this.props.deleteStaff(id);
     }
 
     renderToolbar = () => {
         return (
             <div className={this.props.classes.toolbar}>
-                <TextField style={{ height: '40px', width: '600px' }} placeholder="search" size='small' variant="outlined"/>
-                {/* <SearchOutlinedIcon style={{marginLeft: '-350px', color: '#50A625'}} /> */}
-                <Button style={{ marginLeft: '-350px', color: '#009966' }}> <Search fontSize='small' /></Button>
+                <TextField classes={{ 'root': this.props.classes.searchInput }} size='small' label="search" variant="outlined" InputProps={{
+                    startAdornment: (<InputAdornment position="end">
+                        <SearchOutlinedIcon />
+                    </InputAdornment>)
+                }}
+                    onChange={this.handleSearchValueChange}
+                    onKeyPress={this.handleSearchSubmit} />
 
                 <Button variant="outlined" className={this.props.classes.searchButton} component={Link}
                     to="/staff/new"> <AddIcon />ADD STAFF</Button>
@@ -116,30 +120,30 @@ class Staffs extends React.Component {
             this.setState({ openDeleteDialog: false });
         }
 
-//         return (
-//             <Dialog
-//                 open={this.state.openDeleteDialog}
-//                 onClose={handleClose}
-//                 aria-labelledby="alert-dialog-title"
-//                 aria-describedby="alert-dialog-description"
-//             >
-//                 <DialogTitle id="alert-dialog-title">{"Delete Dialog?"}</DialogTitle>
-//                 <DialogContent>
-//                     <DialogContentText id="alert-dialog-description">
-//                         {`Do you want to delete user: ${this.state.deleteUserId}`}
-//                     </DialogContentText>
-//                 </DialogContent>
-//                 <DialogActions>
-//                     <Button onClick={handleClose} color="primary">
-//                         Cancel
-//                     </Button>
-//                     <Button onClick={() => { this.props.deleteUser(this.state.deleteUserId); this.setState({ deleteUserId: null }); handleClose(); }} color="primary" autoFocus>
-//                         Confirm
-//                     </Button>
+        //         return (
+        //             <Dialog
+        //                 open={this.state.openDeleteDialog}
+        //                 onClose={handleClose}
+        //                 aria-labelledby="alert-dialog-title"
+        //                 aria-describedby="alert-dialog-description"
+        //             >
+        //                 <DialogTitle id="alert-dialog-title">{"Delete Dialog?"}</DialogTitle>
+        //                 <DialogContent>
+        //                     <DialogContentText id="alert-dialog-description">
+        //                         {`Do you want to delete user: ${this.state.deleteUserId}`}
+        //                     </DialogContentText>
+        //                 </DialogContent>
+        //                 <DialogActions>
+        //                     <Button onClick={handleClose} color="primary">
+        //                         Cancel
+        //                     </Button>
+        //                     <Button onClick={() => { this.props.deleteUser(this.state.deleteUserId); this.setState({ deleteUserId: null }); handleClose(); }} color="primary" autoFocus>
+        //                         Confirm
+        //                     </Button>
 
-//                 </DialogActions>
-//             </Dialog>
-//         );
+        //                 </DialogActions>
+        //             </Dialog>
+        //         );
     }
 
     handlePageSizeChange = (params) => {
@@ -148,41 +152,32 @@ class Staffs extends React.Component {
 
 
     render() {
-// <<<<<<< cuong
-//         console.log(localStorage.getItem("jwt_decode"));
-//         const { classes, stores } = this.props;
-// =======
-        const { classes, users } = this.props;
-// >>>>>>> main
+
+        const { classes } = this.props;
+
         const columns = [
-            { field: 'userName', headerName: 'User Name', width: 150 },
-            { field: 'name', headerName: 'Staff Name', width: 250 },
-            { field: 'address', headerName: 'Address', width: 200 },
             {
-                field: 'phone',
-                headerName: 'Phone',
-                // type: 'number',
-                width: 150,
+                field: 'counterStatus', headerName: 'No', width: 77, align: "center", headerAlign: 'center', headerClassName: 'header-table', filterable: false, sortable: false,
             },
-            { field: 'store', headerName: 'Store', width: 150 },
-            // {
-            //     field: 'storeManager',
-            //     headerName: 'Store Manager',
-            //     width: 200,
-            // },
-            // {
-            //     field: 'stt',
-            //     headerName: 'Status',
-            //     width: 150,
-            // },
+            { field: 'username', headerName: 'User Name', flex: 1, align: "center", headerAlign: 'center', },
+            // { field: 'name', headerName: 'Staff Name', width: 250 },
+            {
+                field: 'dateStart', headerName: 'Hire On', flex: 1, align: "center", headerAlign: 'center',
+                valueGetter: (params) => {
+
+                    return (new Date(params.value)).toLocaleDateString('en-GB');
+                }
+            },
+
 
             {
-                field: 'action', headerName: "Actions", flex: 0.3, sortable: false, filterable: false,
-                headerAlign: 'center',
+                field: 'action', headerName: "Actions", flex: 0.5, sortable: false, filterable: false,
+                align: "center", headerAlign: 'center',
 
                 renderCell: (params) => {
                     const onClick = () => {
-                        this.setState({ openDeleteDialog: true, deleteUserId: params.getValue('id') });
+                        console.log(params);
+                        this.setState({ openDeleteDialog: true, deleteUserId: params.id});
                     }
 
                     return (<span>
@@ -195,18 +190,34 @@ class Staffs extends React.Component {
             }
         ];
 
-        // if (!this.props.stores) {
-        //     return <p>...Loading</p>;
-        // }
-        console.log(users.items)
         return (
             <React.Fragment><Card style={{ padding: '10px', marginBottom: '15px' }}>
                 <div> <h1>Staffs page</h1> {this.renderToolbar()}</div>
             </Card>
                 <Paper className={this.props.classes.container}>
                     <div style={{ height: 480, width: '100%' }}>
-                        <DataGrid disableColumnFilter rows={dataTable} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
-                            paginationMode="server" rowCount={100} />
+                        {!this.props.datas ? (
+
+                            <Grid container spacing={2} direction="column" style={{ padding: 20 }}>
+                                <Grid item xs>
+                                    <Skeleton animation="wave" variant="rect" height="175" />
+                                </Grid>
+                                <Grid item xs>
+                                    <Skeleton animation="wave" variant="rect" height="120" />
+                                </Grid>
+                                <Grid item xs>
+                                    <Skeleton animation="wave" variant="rect" height="70px" />
+                                </Grid>
+                                <Grid item xs>
+                                    <Skeleton animation="wave" variant="rect" height="40px" />
+                                </Grid>
+                                <Grid item xs>
+                                    <Skeleton animation="wave" variant="rect" height="20px" />
+                                </Grid>
+                            </Grid>
+                        ) : <DataGrid disableColumnFilter rows={this.props.datas} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
+                            paginationMode="server" rowCount={this.props.rowCount} />}
+
                     </div>
                     {this.renderDeleteDialog()}
                     <AddUser open={this.state.openAddDialog} handleClose={() => { this.setState({ openAddDialog: false }) }} />
@@ -219,12 +230,12 @@ class Staffs extends React.Component {
 }
 function mapState(state) {
     const { users } = state;
-    return {users};
+    return { datas: Object.values(state.staffs.datas), rowCount: state.users.totalCount };
 }
 
 export default connect(mapState, {
-    getAll: userActions.getAll,
-    deleteStaff: userActions.delete
+    getStaffs: getStaffs,
+    deleteStaff: deleteStaff
 
 })(withStyles(styles, { withTheme: true })(Staffs));
 
