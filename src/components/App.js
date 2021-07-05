@@ -8,7 +8,7 @@ import theme from '../themes/Theme';
 import { ThemeProvider } from '@material-ui/styles';
 import Staffs from './view/staff/Staffs';
 import Stores from './view/Stores';
-import {StoreNew} from './view/StoreNew';
+import { StoreNew } from './view/StoreNew';
 import { PrivateRoute } from './PrivateRoute';
 import Profile from './ProfilePage/Profile';
 import EditProfile from './ProfilePage/EditProfile';
@@ -22,18 +22,48 @@ import SettingSchedule from './view/schedule/SettingSchedule';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import { DatePicker } from '@syncfusion/ej2-react-calendars';
 import EditBrand from './ProfilePage/EditBrand';
+import { alertActions } from '../_actions';
+import MuiAlert from '@material-ui/lab/Alert';
+import Snackbar from '@material-ui/core/Snackbar';
 
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 class App extends React.Component {
 
+  constructor(props) {
+    super(props);
+    history.listen((location, action) => {
+      // clear alert on location change
+      this.props.clearAlerts();
+    });
+  }
+  state = { open: false }
   render() {
+    const { alert } = this.props;
+
+    if (alert.message === "" || !alert.message) {
+      this.state.open = false
+    }
+    else this.state.open = true
     return (
       <div>
         <ThemeProvider theme={theme}>
+          <Snackbar open={this.state.open} autoHideDuration={3000} onClose={() => this.state.open = false} >
+            <Alert severity="success">
+              {alert.message &&
+                <div className={`alert ${alert.type}`}>{alert.message}</div>
+              }
+            </Alert>
+          </Snackbar>
           <MuiPickersUtilsProvider utils={DatePicker}>
+
             <Router history={history} >
               <Switch>
+
                 <Route path="/login" component={LoginPage} />
                 <Layout>
+
                   <PrivateRoute path="/" exact> <Stores /> </PrivateRoute>
                   <Route path="/stores" exact>
                     <Stores />
@@ -79,5 +109,12 @@ class App extends React.Component {
     );
   }
 }
+function mapState(state) {
+  const { alert } = state;
+  return { alert };
+}
 
-export default connect()(App);
+const actionCreators = {
+  clearAlerts: alertActions.clear
+};
+export default connect(mapState, actionCreators)(App);
