@@ -41,7 +41,10 @@ function getAllByPage() {
 
         storeService.getAllByPage()
             .then(
-                stores => {dispatch(success(stores)), dispatch(alertActions.success('Get Store successful'))},
+                stores => {
+                    dispatch(success(stores));
+                    dispatch(alertActions.success('Get Store successful'));
+                },
                 error => dispatch(failure(error.toString()))
             );
     };
