@@ -16,7 +16,9 @@ const INIT = {
 }
 
 export function staffReducer(state = INIT, action) {
+    console.log(action.type);
     switch (action.type) {
+
         case staffConstants.STAFF_GETALL_SUCCESS:
             const { currentPage, pageSize } = action.payload;
             action.payload.datas = action.payload.datas.map(e => {
@@ -24,6 +26,7 @@ export function staffReducer(state = INIT, action) {
             }
             );
             action.payload.datas = _.mapKeys(action.payload.datas, 'id');
+            console.log("datas" + action.payload.datas)
             return { ...state, ...action.payload };
 
         case staffConstants.STAFF_GETALL_FAILURE:
