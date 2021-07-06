@@ -49,59 +49,74 @@ class LoginPage extends React.Component {
 				justify="center"
 				style={{ minHeight: '40vw' }}
 			>
+				<br />
+				<Typography variant="h1" style={{ textAlign: 'center' }} color='primary'>Log in</Typography>
+				<br />
+				<Divider></Divider>
+				<br />
+				{/* <form name="form" onSubmit={this.handleSubmit}>
+					<div className="input-group form-group">
+						<Person />
+						<input style={{ height: '40px', width: '380px' }} type="text" className="form-control" name="username" placeholder="username" value={username} onChange={this.handleChange} />
+					</div>
+					{submitted && !username &&
+						<div style={{ color: 'red', }} className="help-block">Username is required</div>
+					}
+					<br />
+					<div className="input-group form-group">
+						<Lock />
+						<input style={{ height: '40px', width: '380px' }} type="password" className="form-control" name="password" placeholder="password" value={password} onChange={this.handleChange} />
+					</div>
+					{submitted && !password &&
+						<div style={{ color: 'red', }} className="help-block">Password is required</div>
+					}
+					<br />
+					<div style={{ height: '40px', width: '380px' }} className="form-group">
+						<button style={{ height: '30px', width: '80px', backgroundColor: 'burlywood', }} className="login_btn">Login</button>
+						{loggingIn}
+					</div>
+				</form> */}
+				<form name="form" >
+					<div className="input-group form-group">
+						<Person color="primary" />
+						<TextField style={{ height: '40px', width: '380px' }} type="text" className="form-control" name="username" placeholder="username" value={username} onChange={this.handleChange} />
+					</div>
+					{submitted && !username &&
+						<div style={{ color: 'red', }} className="help-block">Username is required</div>
+					}
+					<br />
+					<div className="input-group form-group">
+						<Lock color="primary" />
+						<TextField style={{ height: '40px', width: '380px' }} type="password" className="form-control" name="password" placeholder="password" value={password} onChange={this.handleChange} />
+					</div>
+					{submitted && !password &&
+						<div style={{ color: 'red', }} className="help-block">Password is required</div>
+					}
+					<br />
+					{/* <div style={{ height: '40px', width: '380px', marginLeft: '230px'	 }} className="form-group"> */}
 
-				<Grid item xs={3}>
-					<Card style={{
-						// display: '-ms-flexbox',
-						width: '35vw',
-						transitionDuration: '0.3s',
-						height: '25vw'
-					}}><br />
-						<Grid item xs={12}>
-							<Grid item xs={12} container alignItems="center">
-								{/* <Box mb={2}> */}
-								<Typography style={{ marginLeft: '230px' }} variant="h2">Login</Typography>
-								{/* </Box> */}
-							</Grid>
-						</Grid>
-						<br />
-						<Divider></Divider>
-						<br />
-						<form name="form" onSubmit={this.handleSubmit}>
-							<div style={{ marginLeft: '50px' }} className="input-group form-group">
-								<Person />
-								<input style={{ height: '40px', width: '380px' }} type="text" className="form-control" name="username" placeholder="username" value={username} onChange={this.handleChange} />
-							</div>
-							{submitted && !username &&
-								<div style={{ color: 'red', }} className="help-block">Username is required</div>
-							}
-							<br />
-							<div style={{ marginLeft: '50px' }} className="input-group form-group">
-								<Lock />
-								<input style={{ height: '40px', width: '380px' }} type="password" className="form-control" name="password" placeholder="password" value={password} onChange={this.handleChange} />
-							</div>
-							{submitted && !password &&
-								<div style={{ color: 'red', }} className="help-block">Password is required</div>
-							}
-							<br />
-							<div style={{ height: '40px', width: '380px' }} className="form-group">
-								<button style={{ height: '30px', width: '80px', backgroundColor: 'burlywood', marginLeft: '230px' }} className="login_btn">Login</button>
-								{loggingIn}
-							</div>
-						</form>
-						<Divider></Divider>
-						<br /><br />
-						<div style={{ marginLeft: '50px', }} className="card-footer">
-							<div className="d-flex justify-content-center links">
-								Don't have an account?<a href="/register">Sign Up</a>
-							</div>
-							<div className="d-flex justify-content-center">
-								<a href="#">Forgot your password?</a>
-							</div>
-						</div>
-						<br />
-					</Card>
-				</Grid>
+
+					{/* </div> */}
+				</form>
+				<div>
+					{loggingIn &&
+						<img src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+					}
+					<Button style={{ height: '40px', width: '160px', marginLeft: '30px' }} color="primary" variant="contained" onClick={this.handleSubmit}>Login</Button>
+				</div>
+				<Divider></Divider>
+				<br /><br />
+				<div className="card-footer">
+					<div className="d-flex justify-content-center links">
+						Don't have an account?<a href="/register"> Sign Up</a>
+					</div>
+					<div className="d-flex justify-content-center">
+						<a href="#">Forgot your password?</a>
+					</div>
+				</div>
+				<br />
+
+
 			</Grid>
 		);
 	}

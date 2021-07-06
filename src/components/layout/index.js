@@ -205,7 +205,7 @@ if (user === null) {
       url: "/profile",
       icon: <ProfileIcon />
     })
-  else INIT_DATA.items.push(
+  else if(user.role === "store manager") INIT_DATA.items.push(
     {
       id: 'home',
       title: 'Home',
@@ -273,7 +273,7 @@ if (user === null) {
       url: "/profile",
       icon: <ProfileIcon />
     }
-  )
+  ) 
 }
 
 export default function MainLayout(props) {
