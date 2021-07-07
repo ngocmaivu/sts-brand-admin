@@ -4,6 +4,7 @@ export const storeService = {
     create,
     getAllByPage,
     getById,
+    createStoreManager,
     update,
     delete: _delete
 };
@@ -41,6 +42,16 @@ function create(store) {
     };
 
     return fetch(`https://sts-project.azurewebsites.net/api/stores`, requestOptions).then(handleResponse);
+}
+
+function createStoreManager(assign) {
+    const requestOptions = {
+        method: 'POST',
+        headers: { ...authHeader(), 'Content-Type': 'application/json' },
+        body: JSON.stringify(assign)
+    };
+
+    return fetch(`https://sts-project.azurewebsites.net/api/manager/assign/store-manager`, requestOptions).then(handleResponse);
 }
 
 function update(store) {

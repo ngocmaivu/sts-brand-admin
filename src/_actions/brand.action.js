@@ -57,14 +57,17 @@ function getById() {
 
         brandService.getById()
             .then(
-                brand => dispatch(success(brand)),
+                brand => {
+                    dispatch(success(brand));
+                    console.log(brand);
+                },
                 error => dispatch(failure(error.toString()))
             );
     };
 
-    function request() { return { type: brandConstants.BRAND_GETALL_REQUEST } }
-    function success(brand) { return { type: brandConstants.BRAND_GETALL_SUCCESS, brand } }
-    function failure(error) { return { type: brandConstants.BRAND_GETALL_FAILURE, error } }
+    function request() { return { type: brandConstants.BRAND_GETBYID_REQUEST } }
+    function success(brand) { return { type: brandConstants.BRAND_GETBYID_SUCCESS, brand } }
+    function failure(error) { return { type: brandConstants.BRAND_GETBYID_FAILURE, error } }
 }
 
 // prefixed function name with underscore because delete is a reserved word in javascript

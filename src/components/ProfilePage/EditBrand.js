@@ -1,4 +1,4 @@
-import { Box, Button, Container, FormControl, FormLabel, Grid, makeStyles, Paper, Tab, Tabs, TextField, Typography } from "@material-ui/core"
+import { Box, Button, Container, FormControl, FormLabel, makeStyles, Grid, Paper, Tab, Tabs, TextField, Typography } from "@material-ui/core"
 import { Delete, Edit, PostAdd } from "@material-ui/icons";
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -55,8 +55,8 @@ TabPanel.propTypes = {
 };
 
 const dataTable = [
-    {id: "1", name: "", description:""},
-    {id: "2", name: "", description:""},
+    { id: "1", name: "", description: "" },
+    { id: "2", name: "", description: "" },
 ]
 const EditBrand = () => {
 
@@ -83,6 +83,7 @@ const EditBrand = () => {
             }
         }
     ];
+   
     return (
         <Paper className={classes.container} elevation={0}>
             <Tabs
@@ -152,14 +153,15 @@ const EditBrand = () => {
                             </Grid>
                         </Grid>
                         <Grid item xs={2}>
-                                <FormControl margin="normal">
-                                    <Button style={{ backgroundColor: '#66CCFF'}} variant="contained" >Add</Button>
-                                </FormControl>
+                            <FormControl margin="normal">
+                                <Button style={{ backgroundColor: '#66CCFF' }} variant="contained" >Add</Button>
+                            </FormControl>
 
-                            </Grid>
-                            <div style={{ height: 452, width: '100%' }}>
-                        <DataGrid disableColumnFilter rows={dataTable} columns={columns} rowsPerPageOptions={[10, 20, 50]} rowCount={100} />
-                    </div>
+                        </Grid>
+                        <div style={{ height: 452, width: '100%' }}>
+                            <DataGrid disableColumnFilter rows={dataTable} columns={columns} rowsPerPageOptions={[10, 20, 50]} rowCount={100} />
+                            
+                        </div>
                     </Grid>
 
                 </form>

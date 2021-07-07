@@ -8,7 +8,7 @@ export function users(state = {}, action) {
       };
     case userConstants.GETALL_SUCCESS:
       return {
-        items: action.users
+        items: action.user
       };
     case userConstants.GETALL_FAILURE:
       return {
@@ -22,8 +22,9 @@ export function users(state = {}, action) {
     case userConstants.GET_USER_SUCCESS:
       return {
         ...state,
-        items: action.users
+        items: action.userInfor
       };
+     
     case userConstants.GET_USER_FAILURE:
       return {
         error: action.error

@@ -7,8 +7,6 @@ import EditSharpIcon from '@material-ui/icons/EditSharp';
 import AccountCircleRoundedIcon from '@material-ui/icons/AccountCircleRounded';
 import { brandActions, userActions } from '../../_actions';
 
-const userInfor = JSON.parse(localStorage.getItem("userInfor"))
-const brandInfor = JSON.parse(localStorage.getItem("brandInfor"))
 const styles = (Theme) => createStyles({
     root: {
         '& .header-table': {
@@ -68,12 +66,16 @@ const styles = (Theme) => createStyles({
 
 class Profile extends React.Component {
     componentDidMount() {
+
         this.props.getByUserName();
         this.props.getBrandByID();
     }
     render() {
         const { classes, users, brand } = this.props;
         console.log(brand)
+        if (!this.props.users.items) {
+            return <p>...Loading</p>;
+        }
         return (
             <React.Fragment>
                 <Card style={{ padding: '10px', marginBottom: '20px' }}>
@@ -86,13 +88,13 @@ class Profile extends React.Component {
                             <Card style={{ padding: '10px', backgroundColor: '' }}>
 
                                 <br /><br />
-                                <Typography variant="h4"> <AccountCircleRoundedIcon style={{ color: '#006241', marginBottom: '-3px' }} /> Brand Manager: {userInfor.lastName} {userInfor.firstName}</Typography>
+                                <Typography variant="h4"> <AccountCircleRoundedIcon style={{ color: '#006241', marginBottom: '-3px' }} /> Brand Manager: {users.items.lastName} {users.items.firstName}</Typography>
                                 <br />
-                                <Typography variant="h4"> <LocationOn style={{ color: 'red', marginBottom: '-3px' }} /> Address: {userInfor.address}</Typography>
+                                <Typography variant="h4"> <LocationOn style={{ color: 'red', marginBottom: '-3px' }} /> Address: {users.items.address}</Typography>
                                 <br />
-                                <Typography variant="h4"> <Phone style={{ color: '#006241', marginBottom: '-3px' }} /> Number phone: {userInfor.phone}</Typography>
+                                <Typography variant="h4"> <Phone style={{ color: '#006241', marginBottom: '-3px' }} /> Number phone: {users.items.phone}</Typography>
                                 <br />
-                                <Typography variant="h4"> <MailOutline style={{ color: '#006241', marginBottom: '-3px' }} /> Mail: {userInfor.email}</Typography>
+                                <Typography variant="h4"> <MailOutline style={{ color: '#006241', marginBottom: '-3px' }} /> Mail: {users.items.email}</Typography>
                                 <br />
                                 <ListItem
                                     className={classes.listItem}
@@ -114,13 +116,13 @@ class Profile extends React.Component {
                             <Typography style={{ marginLeft: '60px', }} variant="h3"> <AccountCircleRoundedIcon style={{ color: 'red', marginBottom: '-3px' }} /> Brand Profile</Typography>
                             <Card style={{ padding: '10px' }}>
                                 <br /><br />
-                                <Typography variant="h4"> <AccountCircleRoundedIcon style={{ color: '#006241', marginBottom: '-3px' }} /> Brand Name: {brandInfor.name}</Typography>
+                                <Typography variant="h4"> <AccountCircleRoundedIcon style={{ color: '#006241', marginBottom: '-3px' }} /> Brand Name: {brand.items.name}</Typography>
                                 <br />
-                                <Typography variant="h4"> <LocationOn style={{ color: 'red', marginBottom: '-3px' }} /> Address: {brandInfor.address}</Typography>
+                                <Typography variant="h4"> <LocationOn style={{ color: 'red', marginBottom: '-3px' }} /> Address: {brand.items.address}</Typography>
                                 <br />
-                                <Typography variant="h4"> <Phone style={{ color: '#006241', marginBottom: '-3px' }} /> Number phone: {brandInfor.hotline}</Typography>
+                                <Typography variant="h4"> <Phone style={{ color: '#006241', marginBottom: '-3px' }} /> Number phone: {brand.items.hotline}</Typography>
                                 <br />
-                                <Typography variant="h4"> <MailOutline style={{ color: '#006241', marginBottom: '-3px' }} /> Mail: {userInfor.email}</Typography>
+                                <Typography variant="h4"> <MailOutline style={{ color: '#006241', marginBottom: '-3px' }} /> Mail: {users.items.email}</Typography>
                                 <br />
                                 <ListItem
                                     className={classes.listItem}
@@ -143,8 +145,8 @@ class Profile extends React.Component {
     }
 }
 const mapStateToProps = (state) => {
-    const {users, brand} = state
-    return {users, brand};
+    const { users, brand } = state
+    return { users, brand };
 }
 
 export default connect(mapStateToProps, {

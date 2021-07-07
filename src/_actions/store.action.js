@@ -8,11 +8,35 @@ export const storeActions = {
     getAllByPage,
     // getById,
     // update,
+    createStoreManager,
     delete: _delete
 };
 
 
 function create(store) {
+    return dispatch => {
+        dispatch(request(store));
+
+        storeService.create(store)
+            .then(
+                store => { 
+                    dispatch(success());
+                    history.push('/stores');
+                    dispatch(alertActions.success('Create Store successful'));
+                },
+                error => {
+                    dispatch(failure(error.toString()));
+                    dispatch(alertActions.error(error.toString()));
+                }
+            );
+    };
+
+    function request(store) { return { type: storeConstants.STORE_CREAT_REQUEST, store } }
+    function success(store) { return { type: storeConstants.STORE_CREAT_SUCCESS, store } }
+    function failure(error) { return { type: storeConstants.STORE_CREAT_FAILURE, error } }
+}
+
+function createStoreManager(store) {
     return dispatch => {
         dispatch(request(store));
 

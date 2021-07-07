@@ -40,17 +40,18 @@ function getUserProfile() {
 
     return fetch(`https://sts-project.azurewebsites.net/api/users/profile`, requestOptions)
         .then(handleResponse)
-        .then(user => {
-            // store user details and jwt token in local storage to keep user logged in between page refreshes
-            localStorage.setItem('userInfor', JSON.stringify(user));
-            return user;
-        });
+        // .then(user => {
+        //     // store user details and jwt token in local storage to keep user logged in between page refreshes
+        //     localStorage.setItem('userInfor', JSON.stringify(user));
+        //     return user;
+        // });
 }
 
 function logout() {
     // remove user from local storage to log user out
     localStorage.removeItem('user');
     localStorage.removeItem('jwt_decode');
+    localStorage.removeItem('userInfor');
 }
 
 function getAll() {

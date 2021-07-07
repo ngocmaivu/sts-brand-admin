@@ -150,7 +150,7 @@ const ProfileSection = () => {
                     <Fade {...TransitionProps}>
                         <Paper className={classes.paper} elevation={0}>
                             <ClickAwayListener onClickAway={handleClose}>
-                                <Card >
+                                 <Card >
                                     <CardContent className={classes.cardContent}>
                                         <List component="nav" className={classes.navContainer}>
                                             <ListItem

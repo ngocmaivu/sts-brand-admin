@@ -18,9 +18,15 @@ function login(username, password) {
 
         userService.login(username, password)
             .then(
-                user => { 
-                    dispatch(success(user));
-                    history.push({ pathname: '/stores' });
+                user => {
+                    if (user.role === "staff") {
+                        dispatch(failure("Invalid user name or password"));
+                        dispatch(alertActions.error("Invalid user name or password"));
+                    } else {
+                        dispatch(success(user));
+                        // if(user.role === "brand manager")
+                        history.push({ pathname: '/stores' });
+                    }
                 },
                 error => {
                     dispatch(failure(error.toString()));
@@ -45,7 +51,7 @@ function register(user) {
 
         userService.register(user)
             .then(
-                user => { 
+                user => {
                     dispatch(success());
                     history.push('/login');
                     dispatch(alertActions.success('Registration successful'));
@@ -84,13 +90,16 @@ function getByUserName() {
 
         userService.getUserProfile()
             .then(
-                user => dispatch(success(user)),
+                userInfor => {
+                    dispatch(success(userInfor));
+                },
                 error => dispatch(failure(error.toString()))
             );
+
     };
 
     function request() { return { type: userConstants.GET_USER_REQUEST } }
-    function success(user) { return { type: userConstants.GET_USER_SUCCESS, user} }
+    function success(userInfor) { return { type: userConstants.GET_USER_SUCCESS, userInfor} }
     function failure(error) { return { type: userConstants.GET_USER_FAILURE, error } }
 }
 

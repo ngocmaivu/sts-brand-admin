@@ -10,7 +10,7 @@ export function brand(state = {}, action) {
         case brandConstants.BRAND_GETALL_SUCCESS:
             return {
                 ...state,
-                ..._.mapKeys(action.payload, 'id'),
+                items: action.brands,
             };
         case brandConstants.BRAND_GETBYID_FAILURE:
             return {
@@ -68,7 +68,7 @@ export function brand(state = {}, action) {
                 ...state,
                 items: state.items.map(brand =>
                     brand.id === action.id
-                        ? { ...user, deleting: true }
+                        ? { ...brand, deleting: true }
                         : brand
                 )
             };
