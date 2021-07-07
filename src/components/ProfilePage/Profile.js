@@ -73,7 +73,7 @@ class Profile extends React.Component {
     render() {
         const { classes, users, brand } = this.props;
         console.log(brand)
-        if (!this.props.users.items) {
+        if (!this.props.users.items || !this.props.brand.items) {
             return <p>...Loading</p>;
         }
         return (
