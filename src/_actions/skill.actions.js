@@ -19,7 +19,7 @@ function create(skill) {
             .then(
                 skill => { 
                     dispatch(success());
-                    history.push('/editbrand');
+                    history.push('/settingSkill');
                     dispatch(alertActions.success('Create skill successful'));
                 },
                 error => {

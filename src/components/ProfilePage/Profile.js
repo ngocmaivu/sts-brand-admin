@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { createStyles, withStyles, Card, Grid, Typography, Button, ListItem, ListItemText, ListItemIcon } from '@material-ui/core';
-import { AccountTreeTwoTone, LocalCafeSharp, LocationOffOutlined, LocationOn, Mail, MailOutline, Phone, Store, WatchLaterRounded } from '@material-ui/icons';
+import { AccountTreeTwoTone, LocalCafeSharp, LocationOffOutlined, LocationOn, Mail, MailOutline, Phone, Settings, Store, WatchLaterRounded } from '@material-ui/icons';
 import EditSharpIcon from '@material-ui/icons/EditSharp';
 import AccountCircleRoundedIcon from '@material-ui/icons/AccountCircleRounded';
 import { brandActions, userActions } from '../../_actions';
@@ -79,7 +79,8 @@ class Profile extends React.Component {
         return (
             <React.Fragment>
                 <Card style={{ padding: '10px', marginBottom: '20px' }}>
-                    <h1>Profile page</h1>
+                    <h1>Profile page</h1> 
+                    <Button variant="outlined" component={Link} to="/settingSkill"> <Settings />Setting Brand Skill</Button>
                 </Card>
                 <Grid container direction="row" spacing={2} style={{ flexWrap: 'nowrap' }}>
                     <Grid xs={12} sm={6} md={6}>
@@ -133,9 +134,9 @@ class Profile extends React.Component {
                                         <EditSharpIcon stroke={1.5} size="1.3rem" />
                                     </ListItemIcon>
                                     {/* <Button component={Link} to="/login">Logout </Button> */}
-                                    <ListItemText primary={<Typography variant="body2">Edit Brand Profile and Setting Brand</Typography>} />
+                                    <ListItemText primary={<Typography variant="body2">Edit Brand Profile</Typography>} />
                                 </ListItem>
-
+                                
                             </Card>
                         </Card>
                     </Grid>

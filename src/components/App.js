@@ -25,6 +25,8 @@ import EditBrand from './ProfilePage/EditBrand';
 import { alertActions } from '../_actions';
 import MuiAlert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
+import { RegisterPage } from './RegisterPage';
+import SettingBrandSkill from './ProfilePage/SettingBrandSkill';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -56,14 +58,17 @@ class App extends React.Component {
               }
             </Alert>
           </Snackbar>
+
           <MuiPickersUtilsProvider utils={DatePicker}>
 
             <Router history={history} >
               <Switch>
 
                 <Route path="/login" component={LoginPage} />
+                {/* <Route path="/register" exact>
+                  <RegisterPage />
+                </Route> */}
                 <Layout>
-
                   <PrivateRoute path="/" exact> <Stores /> </PrivateRoute>
                   <Route path="/stores" exact>
                     <Stores />
@@ -83,9 +88,11 @@ class App extends React.Component {
                   <Route path="/staff" exact>
                     <Staffs />
                   </Route>
+                  <Route path="/settingSkill" exact>
+                    <SettingBrandSkill />
+                  </Route>
                   <Route exact path="/staff/new" component={StaffNew} />
                   {/* <Route exact path="/staff/:id" component={Staff} /> */}
-
                   <Route path="/notify">
                     <Notification />
                   </Route>
