@@ -4,6 +4,7 @@ import { registration } from './registration.reducer';
 import { users } from './users.reducer';
 import { brand } from './brand.reduces';
 import {stores} from './store.reduces';
+import {skill} from './skill.reducers';
 import { alert } from './alert.reducer';
 import { staffReducer as staffs } from "./staff.reducers";
 import { reducer as reducerForm } from 'redux-form';
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   alert,
   staffs,
   brand,
+  skill,
   form: reducerForm,
   stores,
 });
