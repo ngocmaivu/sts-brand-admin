@@ -61,7 +61,7 @@ function update(store) {
         body: JSON.stringify(store)
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/stores/${store.id}`, requestOptions).then(handleResponse);;
+    return fetch(`https://sts-project.azurewebsites.net/api/manager/stores/${store.id}`, requestOptions).then(handleResponse);;
 }
 
 function _delete(id) {

@@ -26,7 +26,7 @@ export function stores(state = {}, action) {
         case storeConstants.STORE_GETBYID_SUCCESS:
             return {
                 ...state,
-                items: action.stores,
+                items: action.store,
             };
         case storeConstants.STORE_GETBYID_FAILURE:
             return {

@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import { DataGrid } from "@material-ui/data-grid";
 import { Link } from 'react-router-dom';
 import { connect } from "react-redux";
-import { brandActions, skillActions } from "../../_actions";
+import { storesActions, skillActions, storeActions } from "../../_actions";
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -30,16 +30,16 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-class EditBrand extends React.Component {
+class EditStore extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            brand: {
-                name: props.brand.items.name,
-                // address: '',
-                hotline: props.brand.items.hotline,
-                logoImg: '',
+            store: {
+                name: props.stores.items.name,
+                address: props.stores.items.address,
+                phone: props.stores.items.phone,
+                id: props.match.params.id
             },
             submitted: false,
             value: 1,
@@ -51,75 +51,72 @@ class EditBrand extends React.Component {
     };
     handleChange(event) {
         const { name, value } = event.target;
-        const { brand } = this.state;
+        const { store } = this.state;
         this.setState({
-            brand: {
-                ...brand,
+            store: {
+                ...store,
                 [name]: value
             }
         });
+        console.log("change: " + store)
     }
 
     handleSubmit(event) {
         event.preventDefault();
 
         this.setState({ submitted: true });
-        const { brand } = this.state;
-        // if (brand.name) {
-        //     this.props.updateBrand(brand);
-        // }
+        const { stores } = this.state;
+
     }
     handleClick(event) {
         // event.preventDefault();
 
         this.setState({ submitted: true });
-        const { brand } = this.state;
-        this.props.updateBrand(brand);
-        console.log('this is:', brand);
+        const { store } = this.state;
+        this.props.updateStore(store);
     }
     componentDidMount() {
-        this.props.getByID();
+        this.props.getByID(this.props.match.params.id);
     }
 
 
     render() {
-        const { brand, type } = this.props;
-        console.log(brand)
-        if (!this.props.brand.items) {
+        const { stores, type } = this.props;
+        console.log(stores.items)
+        if (!this.props.stores.items) {
             return <p>...Loading</p>;
         }
         return (
-
             <React.Fragment>
                 <Card style={{ padding: '10px', marginBottom: '20px' }}>
-                    <h1>Edit Brand</h1>
+                    <h1>Edit Store</h1>
                 </Card>
                 <Paper style={{ padding: '20px' }} className={this.props.classes.container} elevation={0}>
                     <form>
                         <Grid container direction="column" spacing={1}>
                             <Grid container item spacing={3} >
                                 <Grid item xs={6}>
-                                    <FormControl margin="normal" className={this.props.classes.input} fullWidth>
-                                        <FormLabel >Brand name</FormLabel>
-                                        <TextField name="name" size="small" variant="outlined" defaultValue={brand.items.name} onChange={this.handleChange} />
+                                    <FormControl margin="normal" fullWidth>
+                                        <FormLabel >Store name</FormLabel>
+                                        <TextField name="name" size="small" variant="outlined" defaultValue={stores.items.name} onChange={this.handleChange} />
                                     </FormControl>
                                 </Grid>
                             </Grid>
-                            {/* <Grid item xs={12}>
+                            <Grid item xs={12}>
                                 <FormControl margin="normal" fullWidth>
-                                    <FormLabel >Brand's Address</FormLabel>
-                                    <TextField name="address" size="small" variant="outlined" defaultValue={brand.items.address} onChange={this.handleChange}/>
+                                    <FormLabel >Store's Address</FormLabel>
+                                    <TextField name="address" size="small" variant="outlined" defaultValue={stores.items.address} onChange={this.handleChange} />
                                 </FormControl>
-                            </Grid> */}
+                            </Grid>
                             <Grid item xs={12} >
                                 <FormControl margin="normal" fullWidth>
-                                    <FormLabel >Hotline</FormLabel>
-                                    <TextField name="hotline" size="small" variant="outlined" defaultValue={brand.items.hotline} onChange={this.handleChange} />
+                                    <FormLabel >Phone Number</FormLabel>
+                                    <TextField name="phone" size="small" variant="outlined" defaultValue={stores.items.hotline} onChange={this.handleChange} />
                                 </FormControl>
                             </Grid>
                             <Grid item xs={12}>
                                 <Button variant="contained" color="primary" onClick={() => this.handleClick()}>Save change</Button>
-                                <Button variant="outlined" color="primary" component={Link} to="/profile">Cancel </Button>
+                                <Button variant="outlined" color="primary" component={Link} to="/stores">Cancel </Button>
                             </Grid>
                         </Grid>
 
@@ -132,11 +129,11 @@ class EditBrand extends React.Component {
 }
 
 function mapState(state) {
-    const { brand, deleting } = state;
-    return { brand, deleting };
+    const { stores, deleting } = state;
+    return { stores, deleting };
 }
 
 export default connect(mapState, {
-    updateBrand: brandActions.updateBrand,
-    getByID: brandActions.getById
-})(withStyles({ withTheme: true })(EditBrand));
+    updateStore: storeActions.update,
+    getByID: storeActions.getById
+})(withStyles({ withTheme: true })(EditStore));

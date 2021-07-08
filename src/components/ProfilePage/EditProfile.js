@@ -135,7 +135,7 @@ class EditProfile extends React.Component {
                             </Grid>
                             <Grid item xs={12}>
                                 <Button variant="contained" color="primary" onClick={() => this.handleClick()}>Save change</Button>
-                                <Button variant="outlined" color="primary">Cancel </Button>
+                                <Button variant="outlined" color="primary" component={Link} to="/profile">Cancel </Button>
                             </Grid>
                         </Grid>
                     </form>

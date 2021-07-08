@@ -185,7 +185,7 @@ class Stores extends React.Component {
                 renderCell: (params) => {
 
                     return (<span>
-                        <Button color='primary' component={Link} to="/changeStoreManager/"> <Edit fontSize='small' /></Button>
+                        <Button color='primary' component={Link} to={"/editStore/"+`${params.id}`}> <Edit fontSize='small' /></Button>
                         <Button onClick={this.handleDeleteStore(params.id)} style={{ color: 'red' }}> <Delete fontSize='small' /></Button>
                     </span>);
                 }

@@ -27,6 +27,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
 import { RegisterPage } from './RegisterPage';
 import SettingBrandSkill from './ProfilePage/SettingBrandSkill';
+import EditStore from './EditStore/EditStore';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -76,6 +77,9 @@ class App extends React.Component {
                   <Route path="/editbrand" exact>
                     <EditBrand />
                   </Route>
+                  <Route path="/editStore/:id" render={(props) => <EditStore {...props} />}exact />
+                    {/* <EditStore />
+                  </Route> */}
                   <Route path="/stores/new" >
                     <StoreNew />
                   </Route>
