@@ -1,7 +1,11 @@
-import { Box, Button, Container, FormControl, FormLabel, Grid, makeStyles, Paper, Tab, Tabs, TextField, Typography } from "@material-ui/core"
-import { PostAdd } from "@material-ui/icons";
+import { Card, Button, Container, FormControl, FormLabel, makeStyles, Grid, Paper, Tab, Tabs, TextField, Typography, withStyles } from "@material-ui/core"
+import { Delete, Edit, PostAdd } from "@material-ui/icons";
 import React from 'react';
 import PropTypes from 'prop-types';
+import { DataGrid } from "@material-ui/data-grid";
+import { Link } from 'react-router-dom';
+import { connect } from "react-redux";
+import { skillActions, userActions } from "../../_actions";
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -25,130 +29,130 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function TabPanel(props) {
-    const { children, value, index, ...other } = props;
-    const classes = useStyles();
-    return (
-        <div
-            role="tabpanel" className={classes.card}
-            hidden={value !== index}
-            id={`simple-tabpanel-${index}`}
-            aria-labelledby={`simple-tab-${index}`}
-            {...other}
-            style={{ width: '100%' }}
-        >
-            {value === index && (
-                <Box p={3}>
-                    {children}
-                </Box>
-            )}
-        </div>
-    );
-}
 
-TabPanel.propTypes = {
-    children: PropTypes.node,
-    index: PropTypes.any.isRequired,
-    value: PropTypes.any.isRequired,
-};
+class EditProfile extends React.Component {
+    constructor(props) {
+        super(props);
 
-const EditProfile = () => {
+        this.state = {
+            user: {
+                firstName: props.users.items.firstName,
+                lastName: props.users.items.lastName,
+                address: props.users.items.address,
+                email: props.users.items.email,
+                phone: props.users.items.phone,
+                gender: props.users.items.gender,
+            },
+            submitted: false,
+            value: 1,
+        };
 
-    const classes = useStyles();
-    const [value, setValue] = React.useState(0);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
 
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
     };
-    return (
-        <Paper className={classes.container} elevation={0}>
-            <Tabs
-                orientation="vertical"
-                variant="scrollable"
-                value={value}
-                onChange={handleChange}
-                aria-label="Vertical tabs example"
-                className={classes.tabs}
-            >
-                <Tab label="Edit Profile" />
-                <Tab label="Change Password" />
-            </Tabs>
-            <TabPanel value={value} index={0}>
-                <h2>Edit Profile</h2>
-                <form>
-                    <Grid container direction="column" spacing={1}>
-                        <Grid container item spacing={3} >
-                            <Grid item xs={6}>
-                                <FormControl margin="normal" className={classes.input} fullWidth>
-                                    <FormLabel >First name</FormLabel>
-                                    <TextField size="small" variant="outlined" defaultValue="Ngọc Mai" />
-                                </FormControl>
+    handleChange(event) {
+        const { name, value } = event.target;
+        const { user } = this.state;
+        this.setState({
+            user: {
+                ...user,
+                [name]: value
+            }
+        });
+    }
+
+    handleSubmit(event) {
+        event.preventDefault();
+
+        this.setState({ submitted: true });
+        const { users } = this.state;
+        // if (users.name) {
+        //     this.props.updateusers(users);
+        // }
+    }
+    handleClick(event) {
+        // event.preventDefault();
+
+        this.setState({ submitted: true });
+        const { user } = this.state;
+        this.props.updateUser(user);
+    }
+    componentDidMount() {
+        this.props.getByUserName();
+    }
+
+
+    render() {
+        const { users, type } = this.props;
+        console.log(users)
+        if (!this.props.users.items) {
+            return <p>...Loading</p>;
+        }
+        return (
+
+            <React.Fragment>
+                <Card style={{ padding: '10px', marginBottom: '20px' }}>
+                    <h1>Edit Profile</h1>
+                </Card>
+                <Paper style={{ padding: '20px' }} elevation={0}>
+                    <form>
+                        <Grid container direction="column" spacing={1}>
+                            <Grid container item spacing={3} >
+                                <Grid item xs={6}>
+                                    <FormControl margin="normal" fullWidth>
+                                        <FormLabel >First name</FormLabel>
+                                        <TextField name="firstName" size="small" variant="outlined" defaultValue={users.items.firstName} onChange={this.handleChange} />
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <FormControl margin="normal" fullWidth>
+                                        <FormLabel >Last name</FormLabel>
+                                        <TextField name="lastName" size="small" variant="outlined" defaultValue={users.items.lastName} onChange={this.handleChange} />
+                                    </FormControl>
+                                </Grid>
                             </Grid>
-                            <Grid item xs={6}>
+                            <Grid container item spacing={3} >
+                                <Grid item xs={6}>
+                                    <FormControl margin="normal" fullWidth>
+                                        <FormLabel >Your Address</FormLabel>
+                                        <TextField name="address" size="small" variant="outlined" defaultValue={users.items.address} onChange={this.handleChange} />
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <FormControl margin="normal" fullWidth>
+                                        <FormLabel >Number Phone</FormLabel>
+                                        <TextField name="phone" size="small" variant="outlined" defaultValue={users.items.phone} onChange={this.handleChange} />
+                                    </FormControl>
+                                </Grid>
+                            </Grid>
+
+                            <Grid item xs={12} >
                                 <FormControl margin="normal" fullWidth>
-                                    <FormLabel >Last name</FormLabel>
-                                    <TextField size="small" variant="outlined" defaultValue="Vũ Thị" />
+                                    <FormLabel >Email Address</FormLabel>
+                                    <TextField name="email" size="small" variant="outlined" defaultValue={users.items.email} onChange={this.handleChange} />
                                 </FormControl>
                             </Grid>
-
+                            <Grid item xs={12}>
+                                <Button variant="contained" color="primary" onClick={() => this.handleClick()}>Save change</Button>
+                                <Button variant="outlined" color="primary">Cancel </Button>
+                            </Grid>
                         </Grid>
+                    </form>
 
-                        <Grid item xs={12}>
-                            <FormControl margin="normal" fullWidth>
-                                <FormLabel >Your Address</FormLabel>
-                                <TextField size="small" variant="outlined" defaultValue="Xuân Lộc - Đồng Nai - Việt Nam" />
-                            </FormControl>
-                        </Grid>
-
-                        <Grid item xs={12} >
-                            <FormControl margin="normal" fullWidth>
-                                <FormLabel >Email Address</FormLabel>
-                                <TextField size="small" variant="outlined" defaultValue="maivu629@gmail.com" />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Button variant="contained" color="primary">Save change</Button>
-                            <Button variant="outlined" color="primary">Cancel </Button>
-                        </Grid>
-                    </Grid>
-
-                </form>
-            </TabPanel>
-            <TabPanel value={value} index={1}>
-                <h2>Change Password</h2>
-                <form>
-
-                    <Grid container direction="column" spacing={1}>
-                        <Grid item xs={12}>
-                            <FormControl margin="normal" fullWidth>
-                                <FormLabel >Current Password</FormLabel>
-                                <TextField size="small" variant="outlined" type='password' />
-                            </FormControl>
-                        </Grid>
-
-                        <Grid item xs={12} >
-                            <FormControl margin="normal" fullWidth>
-                                <FormLabel >New Password</FormLabel>
-                                <TextField size="small" variant="outlined" type='password' />
-                            </FormControl>
-                        </Grid>
-
-                        <Grid item xs={12} >
-                            <FormControl margin="normal" fullWidth>
-                                <FormLabel >Confirm</FormLabel>
-                                <TextField size="small" variant="outlined" type='password' />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Button variant="contained" color="primary">Save change</Button>
-                            <Button variant="outlined" color="primary" type="submit">Cancel</Button>
-                        </Grid>
-                    </Grid>
-
-                </form>
-            </TabPanel>
-        </Paper>
-    );
+                </Paper>
+            </React.Fragment>
+        );
+    }
 }
 
-export default EditProfile;
+function mapState(state) {
+    const { users, deleting } = state;
+    return { users, deleting };
+}
+
+export default connect(mapState, {
+    getByUserName: userActions.getByUserName,
+    updateUser: userActions.updateUser,
+    // getByID: usersActions.getById
+})(withStyles({ withTheme: true })(EditProfile));
