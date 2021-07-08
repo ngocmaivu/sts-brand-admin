@@ -9,6 +9,7 @@ export const userActions = {
     register,
     getAll,
     getByUserName,
+    updateUser,
     delete: _delete
 };
 
@@ -24,7 +25,6 @@ function login(username, password) {
                         dispatch(alertActions.error("Invalid user name or password"));
                     } else {
                         dispatch(success(user));
-                        // if(user.role === "brand manager")
                         history.push({ pathname: '/stores' });
                     }
                 },
@@ -101,6 +101,27 @@ function getByUserName() {
     function request() { return { type: userConstants.GET_USER_REQUEST } }
     function success(userInfor) { return { type: userConstants.GET_USER_SUCCESS, userInfor} }
     function failure(error) { return { type: userConstants.GET_USER_FAILURE, error } }
+}
+
+function updateUser(user) {
+    return dispatch => {
+        dispatch(request());
+
+        userService.update(user)
+            .then(
+                user => {
+                    dispatch(success(user));
+                    history.push('/profile');
+                    dispatch(alertActions.success('Update user successful'));
+                    console.log("Update user " + user);
+                },
+                error => dispatch(failure(error.toString()))
+            );
+    };
+
+    function request() { return { type: userConstants.UPDATE_USER_REQUEST } }
+    function success(user) { return { type: userConstants.UPDATE_USER_SUCCESS, user } }
+    function failure(error) { return { type: userConstants.UPDATE_USER_FAILURE, error } }
 }
 
 // prefixed function name with underscore because delete is a reserved word in javascript

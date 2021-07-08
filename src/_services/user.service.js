@@ -84,7 +84,7 @@ function update(user) {
         body: JSON.stringify(user)
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/users/${user.id}`, requestOptions).then(handleResponse);;
+    return fetch(`https://sts-project.azurewebsites.net/api/users`, requestOptions).then(handleResponse);;
 }
 
 // prefixed function name with underscore because delete is a reserved word in javascript
