@@ -7,7 +7,7 @@ export const brandActions = {
     create,
     getAllByPage,
     getById,
-    // update,
+    updateBrand,
     delete: _delete
 };
 
@@ -18,7 +18,7 @@ function create(brand) {
 
         brandService.create(brand)
             .then(
-                brand => { 
+                brand => {
                     dispatch(success());
                     history.push('/stores');
                     dispatch(alertActions.success('Create Store successful'));
@@ -30,9 +30,31 @@ function create(brand) {
             );
     };
 
-    function request() { return { type: brandConstants.BRAND_CREAT_REQUEST} }
+    function request() { return { type: brandConstants.BRAND_CREAT_REQUEST } }
     function success(brand) { return { type: brandConstants.BRAND_CREAT_SUCCESS, brand } }
     function failure(error) { return { type: brandConstants.BRAND_CREAT_FAILURE, error } }
+}
+
+function updateBrand(brand) {
+    return dispatch => {
+        dispatch(request());
+
+        brandService.update(brand)
+            .then(
+                brand => {
+                    dispatch(success(brand));
+                    history.push('/profile');
+                    dispatch(alertActions.success('Update brand successful'));
+
+                    console.log("Update brand " + brand);
+                },
+                error => dispatch(failure(error.toString()))
+            );
+    };
+
+    function request() { return { type: brandConstants.BRAND_UPDATE_REQUEST } }
+    function success(brand) { return { type: brandConstants.BRAND_UPDATE_SUCCESS, brand } }
+    function failure(error) { return { type: brandConstants.BRAND_UPDATE_FAILURE, error } }
 }
 
 function getAllByPage(pageNumber, pageSize) {

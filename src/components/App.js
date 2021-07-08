@@ -58,16 +58,10 @@ class App extends React.Component {
               }
             </Alert>
           </Snackbar>
-
           <MuiPickersUtilsProvider utils={DatePicker}>
-
             <Router history={history} >
               <Switch>
-
-                <Route path="/login" component={LoginPage} />
-                {/* <Route path="/register" exact>
-                  <RegisterPage />
-                </Route> */}
+              <Route path="/login" component={LoginPage} />
                 <Layout>
                   <PrivateRoute path="/" exact> <Stores /> </PrivateRoute>
                   <Route path="/stores" exact>

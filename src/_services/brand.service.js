@@ -50,7 +50,10 @@ function update(brand) {
         body: JSON.stringify(brand)
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/brands/${brand.id}`, requestOptions).then(handleResponse);;
+    return fetch(`https://sts-project.azurewebsites.net/api/brands/${userInfor.brandId}`, requestOptions).then(handleResponse)
+    .then(brand => {
+        return brand;
+    });;
 }
 
 function _delete(id) {

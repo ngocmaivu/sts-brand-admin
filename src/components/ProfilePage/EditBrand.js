@@ -1,9 +1,11 @@
-import { Box, Button, Container, FormControl, FormLabel, makeStyles, Grid, Paper, Tab, Tabs, TextField, Typography } from "@material-ui/core"
+import { Card, Button, Container, FormControl, FormLabel, makeStyles, Grid, Paper, Tab, Tabs, TextField, Typography, withStyles } from "@material-ui/core"
 import { Delete, Edit, PostAdd } from "@material-ui/icons";
 import React from 'react';
 import PropTypes from 'prop-types';
 import { DataGrid } from "@material-ui/data-grid";
 import { Link } from 'react-router-dom';
+import { connect } from "react-redux";
+import { brandActions, skillActions } from "../../_actions";
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -27,147 +29,114 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-function TabPanel(props) {
-    const { children, value, index, ...other } = props;
-    const classes = useStyles();
-    return (
-        <div
-            role="tabpanel" className={classes.card}
-            hidden={value !== index}
-            id={`simple-tabpanel-${index}`}
-            aria-labelledby={`simple-tab-${index}`}
-            {...other}
-            style={{ width: '100%' }}
-        >
-            {value === index && (
-                <Box p={3}>
-                    {children}
-                </Box>
-            )}
-        </div>
-    );
-}
 
-TabPanel.propTypes = {
-    children: PropTypes.node,
-    index: PropTypes.any.isRequired,
-    value: PropTypes.any.isRequired,
-};
+class EditBrand extends React.Component {
+    constructor(props) {
+        super(props);
 
-const dataTable = [
-    { id: "1", name: "", description: "" },
-    { id: "2", name: "", description: "" },
-]
-const EditBrand = () => {
+        this.state = {
+            brand: {
+                name: props.brand.items.name,
+                // address: '',
+                hotline: props.brand.items.hotline,
+                logoImg: '',
+            },
+            submitted: false,
+            value: 1,
+        };
 
-    const classes = useStyles();
-    const [value, setValue] = React.useState(0);
+        this.handleChange = this.handleChange.bind(this);
+        this.handleSubmit = this.handleSubmit.bind(this);
 
-    const handleChange = (event, newValue) => {
-        setValue(newValue);
     };
-    const columns = [
-        { field: 'id', headerName: 'Store ID', width: 200 },
-        { field: 'name', headerName: 'Name', width: 300 },
-        { field: 'description', headerName: 'Description', width: 300 },
-        {
-            field: 'action', headerName: "Actions", flex: 0.3, sortable: false, filterable: false,
-            headerAlign: 'center',
-            width: 50,
-            renderCell: (params) => {
-
-                return (<span>
-                    <Button color='primary' > Edit</Button>
-                    <Button style={{ color: 'red' }}>Delete</Button>
-                </span>);
+    handleChange(event) {
+        const { name, value } = event.target;
+        const { brand } = this.state;
+        this.setState({
+            brand: {
+                ...brand,
+                [name]: value
             }
+        });
+    }
+
+    handleSubmit(event) {
+        event.preventDefault();
+
+        this.setState({ submitted: true });
+        const { brand } = this.state;
+        // if (brand.name) {
+        //     this.props.updateBrand(brand);
+        // }
+    }
+    handleClick(event) {
+        // event.preventDefault();
+
+        this.setState({ submitted: true });
+        const { brand } = this.state;
+        this.props.updateBrand(brand);
+        console.log('this is:', brand);
+    }
+    componentDidMount() {
+        this.props.getByID();
+    }
+
+
+    render() {
+        const { brand, type } = this.props;
+        console.log(brand)
+        if (!this.props.brand.items) {
+            return <p>...Loading</p>;
         }
-    ];
-   
-    return (
-        <Paper className={classes.container} elevation={0}>
-            <Tabs
-                orientation="vertical"
-                variant="scrollable"
-                value={value}
-                onChange={handleChange}
-                aria-label="Vertical tabs example"
-                className={classes.tabs}
-            >
-                <Tab label="Edit Brand" />
-                <Tab label="Setting Brand Skill" />
-            </Tabs>
-            <TabPanel value={value} index={0}>
-                <h2>Edit Brand</h2>
-                <form>
-                    <Grid container direction="column" spacing={1}>
-                        <Grid container item spacing={3} >
-                            <Grid item xs={6}>
-                                <FormControl margin="normal" className={classes.input} fullWidth>
-                                    <FormLabel >Brand name</FormLabel>
-                                    <TextField size="small" variant="outlined" defaultValue="Passio" />
+        return (
+
+            <React.Fragment>
+                <Card style={{ padding: '10px', marginBottom: '20px' }}>
+                    <h1>Edit Brand</h1>
+                </Card>
+                <Paper style={{ padding: '20px' }} className={this.props.classes.container} elevation={0}>
+                    <form>
+                        <Grid container direction="column" spacing={1}>
+                            <Grid container item spacing={3} >
+                                <Grid item xs={6}>
+                                    <FormControl margin="normal" className={this.props.classes.input} fullWidth>
+                                        <FormLabel >Brand name</FormLabel>
+                                        <TextField name="name" size="small" variant="outlined" defaultValue={brand.items.name} onChange={this.handleChange} />
+                                    </FormControl>
+                                </Grid>
+                            </Grid>
+                            {/* <Grid item xs={12}>
+                                <FormControl margin="normal" fullWidth>
+                                    <FormLabel >Brand's Address</FormLabel>
+                                    <TextField name="address" size="small" variant="outlined" defaultValue={brand.items.address} onChange={this.handleChange}/>
+                                </FormControl>
+                            </Grid> */}
+                            <Grid item xs={12} >
+                                <FormControl margin="normal" fullWidth>
+                                    <FormLabel >Hotline</FormLabel>
+                                    <TextField name="hotline" size="small" variant="outlined" defaultValue={brand.items.hotline} onChange={this.handleChange} />
                                 </FormControl>
                             </Grid>
-
-
-                        </Grid>
-
-                        <Grid item xs={12}>
-                            <FormControl margin="normal" fullWidth>
-                                <FormLabel >Brand's Address</FormLabel>
-                                <TextField size="small" variant="outlined" defaultValue="Quan 1 - TP HCM" />
-                            </FormControl>
-                        </Grid>
-
-                        <Grid item xs={12} >
-                            <FormControl margin="normal" fullWidth>
-                                <FormLabel >Email Address</FormLabel>
-                                <TextField size="small" variant="outlined" defaultValue="passio@gmail.com" />
-                            </FormControl>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Button variant="contained" color="primary">Save change</Button>
-                            <Button variant="outlined" color="primary">Cancel </Button>
-                        </Grid>
-                    </Grid>
-
-                </form>
-            </TabPanel>
-            <TabPanel value={value} index={1}>
-                <h2>Setting Brand Skill</h2>
-                <form>
-
-                    <Grid container direction="column" spacing={1}>
-                        <Grid container item spacing={3} >
-                            <Grid item xs={6}>
-                                <FormControl margin="normal" className={classes.input} fullWidth>
-                                    <FormLabel >Skill:</FormLabel>
-                                    <TextField size="small" variant="outlined" />
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <FormControl margin="normal" className={classes.input} fullWidth>
-                                    <FormLabel >Description:</FormLabel>
-                                    <TextField size="small" variant="outlined" />
-                                </FormControl>
+                            <Grid item xs={12}>
+                                <Button variant="contained" color="primary" onClick={() => this.handleClick()}>Save change</Button>
+                                <Button variant="outlined" color="primary">Cancel </Button>
                             </Grid>
                         </Grid>
-                        <Grid item xs={2}>
-                            <FormControl margin="normal">
-                                <Button style={{ backgroundColor: '#66CCFF' }} variant="contained" >Add</Button>
-                            </FormControl>
 
-                        </Grid>
-                        <div style={{ height: 452, width: '100%' }}>
-                            <DataGrid disableColumnFilter rows={dataTable} columns={columns} rowsPerPageOptions={[10, 20, 50]} rowCount={100} />
-                            
-                        </div>
-                    </Grid>
+                    </form>
 
-                </form>
-            </TabPanel>
-        </Paper>
-    );
+                </Paper>
+            </React.Fragment>
+        );
+    }
 }
 
-export default EditBrand;
+function mapState(state) {
+    const { brand, deleting } = state;
+    return { brand, deleting };
+}
+
+export default connect(mapState, {
+    updateBrand: brandActions.updateBrand,
+    getByID: brandActions.getById
+})(withStyles({ withTheme: true })(EditBrand));

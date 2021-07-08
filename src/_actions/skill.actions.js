@@ -59,17 +59,17 @@ function updateSkill() {
 
         skillService.updateSkill()
             .then(
-                skills => {
-                    dispatch(success(skills));
-                    dispatch(alertActions.success('Get skill successful'));
+                skill => {
+                    dispatch(success(skill));
+                    dispatch(alertActions.success('Update skill successful'));
                 },
                 error => dispatch(failure(error.toString()))
             );
     };
 
-    function request() { return { type: skillConstants.SKILL_GETALL_REQUEST } }
-    function success(skills) { return { type: skillConstants.SKILL_GETALL_SUCCESS, skills } }
-    function failure(error) { return { type: skillConstants.SKILL_GETALL_FAILURE, error } }
+    function request() { return { type: skillConstants.SKILL_UPDATE_REQUEST } }
+    function success(skills) { return { type: skillConstants.SKILL_UPDATE_SUCCESS, skills } }
+    function failure(error) { return { type: skillConstants.SKILL_UPDATE_FAILURE, error } }
 }
 
 // prefixed function name with underscore because delete is a reserved word in javascript
