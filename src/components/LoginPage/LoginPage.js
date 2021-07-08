@@ -57,7 +57,7 @@ class LoginPage extends React.Component {
 						<form name="form" >
 							<div className="input-group form-group">
 								<Person color="primary" />
-								<TextField style={{ height: '40px', width: '380px' }} type="text" className="form-control" name="username" placeholder="username" value={username} onChange={this.handleChange} />
+								<TextField style={{ height: '10px', width: '380px' }} type="text" name="username" placeholder="username" value={username} onChange={this.handleChange} />
 							</div>
 							{submitted && !username &&
 								<div style={{ color: 'red', }} className="help-block">Username is required</div>
@@ -65,7 +65,7 @@ class LoginPage extends React.Component {
 							<br />
 							<div className="input-group form-group">
 								<Lock color="primary" />
-								<TextField style={{ height: '40px', width: '380px' }} type="password" className="form-control" name="password" placeholder="password" value={password} onChange={this.handleChange} />
+								<TextField style={{ height: '40px', width: '380px' }} type="password"  name="password" placeholder="password" value={password} onChange={this.handleChange} />
 							</div>
 							{submitted && !password &&
 								<div style={{ color: 'red', }} className="help-block">Password is required</div>
@@ -85,7 +85,7 @@ class LoginPage extends React.Component {
 						<Divider></Divider>
 						<br /><br />
 						<div className="card-footer">
-							<div className="d-flex justify-content-center links">
+							<div >
 								Don't have an account?<a href="/register"> Sign Up</a>
 							</div>
 							<div className="d-flex justify-content-center">
