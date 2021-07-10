@@ -12,44 +12,14 @@ import { Tab } from '@material-ui/core';
 import { Field, reduxForm, formValueSelector } from 'redux-form';
 import PropTypes from 'prop-types';
 import Demand from './Demand';
+import SettingConstraintsForm from './SettingConstraintsForm';
 const styles = (Theme) => createStyles({
-    inputAutoComplete: {
-        "& .MuiInputBase-root": {
-            padding: "0 0 0 10px"
-        }
-
-    },
     container: {
         padding: 10,
         height: "100%"
     }
 })
 
-const timeSlots = Array.from(new Array(24 * 2)).map(
-    (_, index) => ({
-        title: `${index < 20 ? '0' : ''}${Math.floor(index / 2)}:${index % 2 === 0 ? '00' : '30'}`,
-        value: index
-    })
-);
-
-
-
-const timeSlotss = [
-    { title: '0:00', value: 0 }
-]
-
-const SectionSetting = ({ label, children, }) => {
-    return (
-        <Grid style={{ borderBottom: "1px solid #dfe2e6", paddingBlock: 15 }} container item alignItems="center" >
-            <Grid item style={{ maxWidth: 600, flexGrow: 1, fontWeight: 500 }}>{label}</Grid >
-            {/* <Grid item style={{ flexGrow: 1 }}></Grid > */}
-            <Grid item xs={6} >
-                {children}
-            </Grid>
-
-        </Grid>
-    );
-}
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -84,102 +54,60 @@ class SettingSchedule extends React.Component {
         this.state = {
             tabIndex: 1
         }
-
-        this.constraintSpecific = [
-            { name: "a", title: "Min Day Off", unit: "day", min: 0, max: 7 },
-            { name: "b", title: "Max Day Off", unit: "day", min: 0, max: 7 },
-
-            { name: "c", title: "Min Working Time of the week", unit: "hour", min: 0, max: 150 },
-            { name: "d", title: "Max Working Time of the week", unit: "hour", min: 0, max: 150 },
-
-            { name: "e", title: "Min Working Time of the day", unit: "hour", min: 0, max: 48 },
-            { name: "f", title: "Max Working Time of the day", unit: "hour", min: 0, max: 48 },
-
-            { name: "aa", title: "Min shift duration (30 minutes)", unit: "hour", min: 0, max: 48 },
-            { name: "sa", title: "Max shift duration (30 minutes)", unit: "hour", min: 0, max: 48 },
-
-            { name: "va", title: "Max number of shift of the day", unit: "number", min: 0, max: 5 }
-        ];
-
-        this.constraintGeneral = [
-            { name: "as", title: "Min distance between 2 shifts", unit: "hour", min: 0, max: 7 },
-        ]
-    }
-
-    getTimeSlots = (max) => Array.from(new Array(max)).map(
-        (_, index) => ({
-            title: `${index < 20 ? '0' : ''}${Math.floor(index / 2)}h${index % 2 === 0 ? '00' : '30'}`,
-            value: index
-        })
-    )
-
-    renderInputNumber = ({ label, key, input, type = "number", meta: { touched, invalid, error }, InputProps, min, max }) => {
-        return (
-            <SectionSetting label={label} key={key} >
-                <TextField classes={{
-                    "root": this.props.classes.inputAutoComplete
-                }} size="small" type="number" variant="outlined" min={min} max={max} />
-            </SectionSetting>
-        );
-    }
-
-
-    renderInputHour = ({ label, input, key, type = "number", meta: { touched, invalid, error }, InputProps, min, max }) => {
-        const timeSlotsCustom = this.getTimeSlots(max);
-
-        const { onChange, ...rest } = input;
-        const getSelectedOption = () => {
-            return timeSlotsCustom.find(o => o.value === input.value);
-        };
-        return (
-            <SectionSetting label={label} key={key}>
-                <Autocomplete
-                    autoSelect
-                    options={timeSlotsCustom}
-                    value={getSelectedOption()}
-                    onChange={(e, newValue) => {
-                        onChange(newValue);
-                    }}
-                    getOptionLabel={(option) => option.title}
-                    getOptionSelected={(option, value) => {
-                        return option.title === value.title || option.title === input.value;
-                    }}
-
-                    renderInput={(params) => (
-                        <TextField
-                            classes={{
-                                "root": this.props.classes.inputAutoComplete
-                            }}
-                            value={input.value}
-                            {...rest}
-                            {...params} variant="outlined" />
-                    )}
-                />
-            </SectionSetting>
-        );
-    }
-
-
-    renderConstraintFields = (constraints, prefix) => {
-
-        return constraints.map(constraint => {
-            switch (constraint.unit) {
-                case "day":
-                case "number":
-                    return (<Field key={constraints.name} name={`${prefix}${constraint.name}`} label={constraint.title} component={this.renderInputNumber}
-                        min={constraint.min} max={constraint.max} />);
-                case "hour":
-                    return (<Field key={constraints.name} name={`${prefix}${constraint.name}`} label={constraint.title} component={this.renderInputHour}
-                        min={constraint.min} max={constraint.max} />);
+        this.storeScheduleDetails = [
+            {
+                weekScheduleId: 0,
+                staffType: 0,
+                minDayOff: 0,
+                maxDayOff: 0,
+                minHoursPerWeek: 0,
+                maxHoursPerWeek: 0,
+                minHoursPerDay: 0,
+                maxHoursPerDay: 0,
+                minShiftDuration: 0,
+                maxShiftDuration: 0,
+                maxShiftPerDay: 0
+            },
+            {
+                weekScheduleId: 0,
+                staffType: 1,
+                minDayOff: 0,
+                maxDayOff: 0,
+                minHoursPerWeek: 0,
+                maxHoursPerWeek: 0,
+                minHoursPerDay: 0,
+                maxHoursPerDay: 0,
+                minShiftDuration: 0,
+                maxShiftDuration: 0,
+                maxShiftPerDay: 0
             }
+        ];
+        this.constraintData = {};
+        this.storeScheduleDetails.forEach(constraint => {
+            var prefix = constraint.staffType == 0 ? "ft" : "pt"
 
-        });
+            Object.keys(constraint).forEach(key => {
+                this.constraintData = {
+                    ...this.constraintData, [`${prefix}${key}`]: constraint[key]
+                }
+            })
+
+        })
     }
+    state = {
 
+    }
 
     handleChange = (event, newValue) => {
         console.log(event);
         this.setState({ tabIndex: newValue });
+    }
+
+    onSubmitConstraints = (constraintValues) => {
+        console.log(constraintValues);
+    }
+    componentDidMount = () => {
+        //get Form
     }
 
     render() {
@@ -203,82 +131,7 @@ class SettingSchedule extends React.Component {
                     <Tab label="Demands" value={1} />
                 </Tabs>
                 <TabPanel value={this.state.tabIndex} index={0}>
-                    <CardContent>
-                        <form>
-                            <Grid container spacing={5} >
-                                <Grid item xs={12}>
-                                    <CardCustom header='General'>
-                                        <Grid container direction="column" spacing={1} style={{ paddingLeft: 20 }} >
-                                            <SectionSetting label="Operating Hour" >
-                                                <Grid container spacing={2} alignItems="center">
-                                                    <Grid item style={{ width: 180 }}>
-                                                        <Autocomplete
-                                                            options={timeSlots}
-                                                            getOptionLabel={(option) => option.title}
-                                                            getOptionSelected={(option, value) => option.title === value.title}
-                                                            renderInput={(params) => (
-                                                                <TextField
-                                                                    classes={{
-                                                                        "root": classes.inputAutoComplete
-                                                                    }}
-
-                                                                    {...params} variant="outlined" />
-                                                            )}
-                                                        />
-                                                    </Grid>
-                                                    <Grid item>To</Grid>
-                                                    <Grid item style={{ width: 180 }}>
-                                                        <Autocomplete
-                                                            style={{ padding: 0 }}
-                                                            options={timeSlots}
-                                                            getOptionLabel={(option) => option.title}
-                                                            renderInput={(params) => (
-                                                                <TextField
-                                                                    classes={{
-                                                                        "root": classes.inputAutoComplete
-                                                                    }}
-                                                                    {...params} variant="outlined" />
-                                                            )}
-                                                        />
-                                                    </Grid>
-                                                </Grid>
-                                            </SectionSetting>
-                                            <SectionSetting label="Min distance between 2 shifts " >
-                                                <TextField classes={{
-                                                    "root": classes.inputAutoComplete
-                                                }} size="small" type="number" variant="outlined" />
-                                            </SectionSetting>
-                                        </Grid>
-                                    </CardCustom>
-                                </Grid>
-                                <Grid item container direction="row" spacing={5}>
-                                    <Grid item xs={6}>
-                                        <CardCustom header='For fulltime'>
-                                            <Grid container direction="column" spacing={1} style={{ paddingLeft: 20 }} >
-                                                {this.renderConstraintFields(this.constraintSpecific, "ft")}
-                                            </Grid>
-                                        </CardCustom>
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <CardCustom header='For parttime'>
-                                            <Grid container direction="column" spacing={1} style={{ paddingLeft: 20 }} >
-                                                {this.renderConstraintFields(this.constraintSpecific, "pt")}
-                                            </Grid>
-                                        </CardCustom>
-                                    </Grid>
-                                </Grid>
-
-                                <Grid item container xs={12} justify="flex-end" spacing={1} direction="row">
-                                    <Grid item >
-                                        <Button variant="contained" color="primary">Save change</Button>
-                                    </Grid>
-                                    <Grid item>
-                                        <Button variant="outlined" color="primary">Cancel </Button>
-                                    </Grid>
-                                </Grid>
-                            </Grid>
-                        </form>
-                    </CardContent>
+                    <SettingConstraintsForm initialValues={this.constraintData} onSubmit={this.onSubmitConstraints}/>
                 </TabPanel>
 
                 <TabPanel value={this.state.tabIndex} index={1}>

@@ -50,15 +50,7 @@ export function ShiftEditor({ parentProps, setStartTime, setEndTime, setStaffId,
         // setSkill(parentProps.SkillId);
     }, []);
 
-    const employeeData = [
-        { Name: 'Alice', Id: 1, GroupId: 1, Color: '#bbdc00', Designation: 'Content writer' },
-        { Name: 'Nancy', Id: 2, GroupId: 2, Color: '#9e5fff', Designation: 'Designer' },
-        { Name: 'Robert', Id: 3, GroupId: 1, Color: '#bb0c00', Designation: 'Software Engineer' },
-        { Name: 'Robson', Id: 4, GroupId: 2, Color: '#9e5fff', Designation: 'Support Engineer' },
-        { Name: 'Laura', Id: 5, GroupId: 1, Color: '#bbdc00', Designation: 'Human Resource' },
-        { Name: 'Margaret', Id: 6, GroupId: 2, Color: '#9e5fff', Designation: 'Content Analyst' }
-    ];
-    const fields = { text: 'Name', value: 'Id' };
+
     return (
         <div>
             <Divider />

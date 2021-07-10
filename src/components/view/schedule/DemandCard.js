@@ -36,7 +36,7 @@ const levelToString = (level) => {
         case 2: return "Experience";
     }
 };
-function DemandCard({ start, end, quantity, level, onDelete, onEdit }) {
+function DemandCard({ start, end, quantity, level, onDelete, onEdit, demandIndex, skillId }) {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -47,7 +47,7 @@ function DemandCard({ start, end, quantity, level, onDelete, onEdit }) {
     const handleClose = () => {
         setAnchorEl(null);
     };
-
+    console.log(skillId);
     return (<Card className={classes.cardSkillDemand} elevation={0} >
         <CardHeader disableTypography={false}
             title={<Typography variant="h5" style={{ color: "#2196F3" }}>{`${timeToString(start)} - ${timeToString(end)}`}</Typography>}
@@ -70,10 +70,10 @@ function DemandCard({ start, end, quantity, level, onDelete, onEdit }) {
             }}
         >
             <List>
-                <ListItem button onClick={onEdit}>
+                <ListItem button onClick={() => { console.log(skillId); onEdit( demandIndex, skillId); }}>
                     <ListItemText primary="Edit" />
                 </ListItem>
-                <ListItem button onClick={onDelete}>
+                <ListItem button onClick={() => { console.log(skillId); onDelete( demandIndex, skillId); }}>
                     <ListItemText primary="Delete" />
                 </ListItem>
             </List>

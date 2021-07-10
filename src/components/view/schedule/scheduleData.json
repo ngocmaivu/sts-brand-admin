@@ -1,0 +1,491 @@
+{
+    "status": 4,
+    "conflicts": 128,
+    "breffstaff2ches": 18827,
+    "wallTime": 8.840222739,
+    "shiftAssignments": [
+        {
+            "username": "effstaff1",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-05T15:00:00",
+            "timeEnd": "2021-07-05T23:00:00"
+        },
+        {
+            "username": "Binh",
+            "skillId": 1,
+            "skillName": "waiter",
+            "timeStart": "2021-07-05T15:00:00",
+            "timeEnd": "2021-07-05T23:00:00"
+        },
+        {
+            "username": "effstaff3",
+            "skillId": 1,
+            "skillName": "waiter",
+            "timeStart": "2021-07-05T07:00:00",
+            "timeEnd": "2021-07-05T15:00:00"
+        },
+        {
+            "username": "effstaff2",
+            "skillId": 6,
+            "skillName": "cashier",
+            "timeStart": "2021-07-05T07:00:00",
+            "timeEnd": "2021-07-05T18:00:00"
+        },
+        {
+            "username": "Mai",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-06T15:00:00",
+            "timeEnd": "2021-07-06T23:00:00"
+        },
+        {
+            "username": "effstaff3",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-06T07:00:00",
+            "timeEnd": "2021-07-06T18:00:00"
+        },
+        {
+            "username": "effstaff2",
+            "skillId": 6,
+            "skillName": "cashier",
+            "timeStart": "2021-07-06T15:00:00",
+            "timeEnd": "2021-07-06T23:00:00"
+        },
+        {
+            "username": "effstaff1",
+            "skillId": 6,
+            "skillName": "cashier",
+            "timeStart": "2021-07-06T07:00:00",
+            "timeEnd": "2021-07-06T15:00:00"
+        },
+        {
+            "username": "Binh",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-07T15:00:00",
+            "timeEnd": "2021-07-07T23:00:00"
+        },
+        {
+            "username": "Mai",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-07T15:00:00",
+            "timeEnd": "2021-07-07T23:00:00"
+        },
+        {
+            "username": "effstaff2",
+            "skillId": 1,
+            "skillName": "waiter",
+            "timeStart": "2021-07-07T12:00:00",
+            "timeEnd": "2021-07-07T23:00:00"
+        },
+        {
+            "username": "effstaff3",
+            "skillId": 6,
+            "skillName": "cashier",
+            "timeStart": "2021-07-07T07:00:00",
+            "timeEnd": "2021-07-07T18:00:00"
+        },
+        {
+            "username": "Binh",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-08T07:00:00",
+            "timeEnd": "2021-07-08T17:00:00"
+        },
+        {
+            "username": "effstaff3",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-08T15:00:00",
+            "timeEnd": "2021-07-08T23:00:00"
+        },
+        {
+            "username": "Binh",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-09T15:00:00",
+            "timeEnd": "2021-07-09T23:00:00"
+        },
+        {
+            "username": "Mai",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-09T07:00:00",
+            "timeEnd": "2021-07-09T17:30:00"
+        },
+        {
+            "username": "effstaff1",
+            "skillId": 1,
+            "skillName": "waiter",
+            "timeStart": "2021-07-09T12:00:00",
+            "timeEnd": "2021-07-09T23:00:00"
+        },
+        {
+            "username": "effstaff2",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-10T07:00:00",
+            "timeEnd": "2021-07-10T15:00:00"
+        },
+        {
+            "username": "Binh",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-10T15:00:00",
+            "timeEnd": "2021-07-10T23:00:00"
+        },
+        {
+            "username": "effstaff1",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-10T07:00:00",
+            "timeEnd": "2021-07-10T15:00:00"
+        },
+        {
+            "username": "Mai",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-10T15:00:00",
+            "timeEnd": "2021-07-10T23:00:00"
+        },
+        {
+            "username": "effstaff3",
+            "skillId": 1,
+            "skillName": "waiter",
+            "timeStart": "2021-07-10T13:30:00",
+            "timeEnd": "2021-07-10T23:00:00"
+        },
+        {
+            "username": "effstaff2",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-11T15:00:00",
+            "timeEnd": "2021-07-11T23:00:00"
+        },
+        {
+            "username": "effstaff1",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-11T07:00:00",
+            "timeEnd": "2021-07-11T17:30:00"
+        },
+        {
+            "username": "Mai",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-11T15:00:00",
+            "timeEnd": "2021-07-11T23:00:00"
+        },
+        {
+            "username": "effstaff3",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-11T07:00:00",
+            "timeEnd": "2021-07-11T15:00:00"
+        },
+        {
+            "username": "Binh",
+            "skillId": 1,
+            "skillName": "waiter",
+            "timeStart": "2021-07-11T15:00:00",
+            "timeEnd": "2021-07-11T23:00:00"
+        },
+        {
+            "username": "Tuyen",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-05T18:00:00",
+            "timeEnd": "2021-07-05T23:00:00"
+        },
+        {
+            "username": "Veffstaff2",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-05T07:00:00",
+            "timeEnd": "2021-07-05T12:30:00"
+        },
+        {
+            "username": "Hung",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-05T07:00:00",
+            "timeEnd": "2021-07-05T12:00:00"
+        },
+        {
+            "username": "Hung",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-05T12:30:00",
+            "timeEnd": "2021-07-05T18:00:00"
+        },
+        {
+            "username": "Tien",
+            "skillId": 6,
+            "skillName": "cashier",
+            "timeStart": "2021-07-05T18:00:00",
+            "timeEnd": "2021-07-05T23:00:00"
+        },
+        {
+            "username": "Hung",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-06T18:00:00",
+            "timeEnd": "2021-07-06T23:00:00"
+        },
+        {
+            "username": "Kha",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-06T07:00:00",
+            "timeEnd": "2021-07-06T12:00:00"
+        },
+        {
+            "username": "Linh",
+            "skillId": 1,
+            "skillName": "waiter",
+            "timeStart": "2021-07-06T07:00:00",
+            "timeEnd": "2021-07-06T12:00:00"
+        },
+        {
+            "username": "Thuy",
+            "skillId": 1,
+            "skillName": "waiter",
+            "timeStart": "2021-07-06T17:00:00",
+            "timeEnd": "2021-07-06T23:00:00"
+        },
+        {
+            "username": "Tong",
+            "skillId": 1,
+            "skillName": "waiter",
+            "timeStart": "2021-07-06T12:00:00",
+            "timeEnd": "2021-07-06T17:00:00"
+        },
+        {
+            "username": "Hung",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-07T07:00:00",
+            "timeEnd": "2021-07-07T12:00:00"
+        },
+        {
+            "username": "Kha",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-07T07:00:00",
+            "timeEnd": "2021-07-07T15:00:00"
+        },
+        {
+            "username": "Tien",
+            "skillId": 1,
+            "skillName": "waiter",
+            "timeStart": "2021-07-07T07:00:00",
+            "timeEnd": "2021-07-07T12:00:00"
+        },
+        {
+            "username": "Veffstaff2",
+            "skillId": 6,
+            "skillName": "cashier",
+            "timeStart": "2021-07-07T18:00:00",
+            "timeEnd": "2021-07-07T23:00:00"
+        },
+        {
+            "username": "Linh",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-08T07:00:00",
+            "timeEnd": "2021-07-08T12:00:00"
+        },
+        {
+            "username": "Thuy",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-08T17:00:00",
+            "timeEnd": "2021-07-08T23:00:00"
+        },
+        {
+            "username": "Linh",
+            "skillId": 1,
+            "skillName": "waiter",
+            "timeStart": "2021-07-08T18:00:00",
+            "timeEnd": "2021-07-08T23:00:00"
+        },
+        {
+            "username": "Tien",
+            "skillId": 1,
+            "skillName": "waiter",
+            "timeStart": "2021-07-08T07:00:00",
+            "timeEnd": "2021-07-08T12:00:00"
+        },
+        {
+            "username": "Veffstaff2",
+            "skillId": 1,
+            "skillName": "waiter",
+            "timeStart": "2021-07-08T12:00:00",
+            "timeEnd": "2021-07-08T18:00:00"
+        },
+        {
+            "username": "Tien",
+            "skillId": 6,
+            "skillName": "cashier",
+            "timeStart": "2021-07-08T12:00:00",
+            "timeEnd": "2021-07-08T18:00:00"
+        },
+        {
+            "username": "Veffstaff2",
+            "skillId": 6,
+            "skillName": "cashier",
+            "timeStart": "2021-07-08T18:00:00",
+            "timeEnd": "2021-07-08T23:00:00"
+        },
+        {
+            "username": "Kha",
+            "skillId": 6,
+            "skillName": "cashier",
+            "timeStart": "2021-07-08T07:00:00",
+            "timeEnd": "2021-07-08T12:00:00"
+        },
+        {
+            "username": "Linh",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-09T07:00:00",
+            "timeEnd": "2021-07-09T12:00:00"
+        },
+        {
+            "username": "Tong",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-09T17:30:00",
+            "timeEnd": "2021-07-09T23:00:00"
+        },
+        {
+            "username": "Thuy",
+            "skillId": 1,
+            "skillName": "waiter",
+            "timeStart": "2021-07-09T07:00:00",
+            "timeEnd": "2021-07-09T12:00:00"
+        },
+        {
+            "username": "Linh",
+            "skillId": 6,
+            "skillName": "cashier",
+            "timeStart": "2021-07-09T12:00:00",
+            "timeEnd": "2021-07-09T17:30:00"
+        },
+        {
+            "username": "Tuyen",
+            "skillId": 6,
+            "skillName": "cashier",
+            "timeStart": "2021-07-09T17:30:00",
+            "timeEnd": "2021-07-09T23:00:00"
+        },
+        {
+            "username": "Hung",
+            "skillId": 6,
+            "skillName": "cashier",
+            "timeStart": "2021-07-09T07:00:00",
+            "timeEnd": "2021-07-09T12:00:00"
+        },
+        {
+            "username": "Tuyen",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-10T15:00:00",
+            "timeEnd": "2021-07-10T23:00:00"
+        },
+        {
+            "username": "Tong",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-10T18:00:00",
+            "timeEnd": "2021-07-10T23:00:00"
+        },
+        {
+            "username": "Linh",
+            "skillId": 1,
+            "skillName": "waiter",
+            "timeStart": "2021-07-10T07:00:00",
+            "timeEnd": "2021-07-10T13:30:00"
+        },
+        {
+            "username": "Tien",
+            "skillId": 1,
+            "skillName": "waiter",
+            "timeStart": "2021-07-10T18:00:00",
+            "timeEnd": "2021-07-10T23:00:00"
+        },
+        {
+            "username": "Linh",
+            "skillId": 6,
+            "skillName": "cashier",
+            "timeStart": "2021-07-10T18:00:00",
+            "timeEnd": "2021-07-10T23:00:00"
+        },
+        {
+            "username": "Thuy",
+            "skillId": 6,
+            "skillName": "cashier",
+            "timeStart": "2021-07-10T13:00:00",
+            "timeEnd": "2021-07-10T18:00:00"
+        },
+        {
+            "username": "Veffstaff2",
+            "skillId": 6,
+            "skillName": "cashier",
+            "timeStart": "2021-07-10T07:00:00",
+            "timeEnd": "2021-07-10T13:00:00"
+        },
+        {
+            "username": "Thuy",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-11T17:30:00",
+            "timeEnd": "2021-07-11T23:00:00"
+        },
+        {
+            "username": "Tuyen",
+            "skillId": 7,
+            "skillName": "Bartender",
+            "timeStart": "2021-07-11T18:00:00",
+            "timeEnd": "2021-07-11T23:00:00"
+        },
+        {
+            "username": "Linh",
+            "skillId": 1,
+            "skillName": "waiter",
+            "timeStart": "2021-07-11T18:00:00",
+            "timeEnd": "2021-07-11T23:00:00"
+        },
+        {
+            "username": "Kha",
+            "skillId": 1,
+            "skillName": "waiter",
+            "timeStart": "2021-07-11T07:00:00",
+            "timeEnd": "2021-07-11T15:00:00"
+        },
+        {
+            "username": "Linh",
+            "skillId": 6,
+            "skillName": "cashier",
+            "timeStart": "2021-07-11T07:00:00",
+            "timeEnd": "2021-07-11T12:00:00"
+        },
+        {
+            "username": "Thuy",
+            "skillId": 6,
+            "skillName": "cashier",
+            "timeStart": "2021-07-11T12:00:00",
+            "timeEnd": "2021-07-11T17:00:00"
+        },
+        {
+            "username": "Tong",
+            "skillId": 6,
+            "skillName": "cashier",
+            "timeStart": "2021-07-11T17:00:00",
+            "timeEnd": "2021-07-11T23:00:00"
+        }
+    ]
+}
