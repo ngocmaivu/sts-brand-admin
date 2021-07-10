@@ -1,23 +1,72 @@
 import {
     CardHeader, Paper, Divider, Typography,
-    createStyles, withStyles, CardContent, Grid,
-    FormControl, MenuItem, FormLabel, Select, TextField, Button, Tabs, Box, Table, TableRow, TableHead, TableCell, TableBody, AccordionDetails, AccordionSummary, Accordion
+    createStyles, withStyles, CardContent, Grid, IconButton,
+    FormControl, MenuItem, FormLabel, Select, TextField, Button, Tabs,
 } from '@material-ui/core';
-import { TimePickerComponent } from '@syncfusion/ej2-react-calendars';
+import clsx from "clsx";
+import format from "date-fns/format";
+import isValid from "date-fns/isValid";
+import isSameDay from "date-fns/isSameDay";
+import endOfWeek from "date-fns/endOfWeek";
+
+import startOfWeek from "date-fns/startOfWeek";
+import isWithinInterval from "date-fns/isWithinInterval";
 import React from 'react';
 import { CardCustom } from '../../CardCustom';
 import './schedule.css';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+
 import { Tab } from '@material-ui/core';
 import { Field, reduxForm, formValueSelector } from 'redux-form';
 import PropTypes from 'prop-types';
 import Demand from './Demand';
 import SettingConstraintsForm from './SettingConstraintsForm';
-const styles = (Theme) => createStyles({
+import { getWeekScheduleConstraint, getWeekSchedule } from "../../../_services";
+import { DatePicker } from '@material-ui/pickers';
+import { getFirstDayOfWeek } from "../../../ultis/scheduleHandle";
+const styles = (theme) => createStyles({
     container: {
         padding: 10,
         height: "100%"
-    }
+    },
+    dayWrapper: {
+        position: "relative",
+    },
+    day: {
+        width: 36,
+        height: 36,
+        fontSize: theme.typography.caption.fontSize,
+        margin: "0 2px",
+        color: "inherit",
+    },
+    customDayHighlight: {
+        position: "absolute",
+        top: 0,
+        bottom: 0,
+        left: "2px",
+        right: "2px",
+        border: `1px solid ${theme.palette.secondary.main}`,
+        borderRadius: "50%",
+    },
+    nonCurrentMonthDay: {
+        color: theme.palette.text.disabled,
+    },
+    highlightNonCurrentMonthDay: {
+        color: "#676767",
+    },
+    highlight: {
+        background: theme.palette.primary.main,
+        color: theme.palette.common.white,
+    },
+    firstHighlight: {
+        extend: "highlight",
+        borderTopLeftRadius: "50%",
+        borderBottomLeftRadius: "50%",
+    },
+    endHighlight: {
+        extend: "highlight",
+        borderTopRightRadius: "50%",
+        borderBottomRightRadius: "50%",
+    },
 })
 
 
@@ -52,8 +101,13 @@ class SettingSchedule extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            tabIndex: 1
-        }
+            dateStart: startOfWeek(new Date(), {
+                weekStartsOn: 1
+            }),
+            weekScheduleId: null,
+            constraintData: null,
+            tabIndex: 0
+        };
         this.storeScheduleDetails = [
             {
                 weekScheduleId: 0,
@@ -82,20 +136,30 @@ class SettingSchedule extends React.Component {
                 maxShiftPerDay: 0
             }
         ];
-        this.constraintData = {};
-        this.storeScheduleDetails.forEach(constraint => {
-            var prefix = constraint.staffType == 0 ? "ft" : "pt"
 
-            Object.keys(constraint).forEach(key => {
-                this.constraintData = {
-                    ...this.constraintData, [`${prefix}${key}`]: constraint[key]
-                }
-            })
 
-        })
     }
-    state = {
 
+
+    handleWeekChange = async (date) => {
+        if (isSameDay(startOfWeek(date, {
+            weekStartsOn: 1
+        }), this.state.dateStart)) return;
+
+        this.setState({
+            dateStart: startOfWeek(date, {
+                weekStartsOn: 1
+            })
+        });
+
+    }
+
+    componentDidUpdate = (prevProps, prevState, snapshot) => {
+        if (!isSameDay(prevState.dateStart, this.state.dateStart)) {
+            this.setState({ constraintData: null });
+            this.updateConstraintData();
+            // console.log(prevState.dateStart, this.state.dateStart);
+        }
     }
 
     handleChange = (event, newValue) => {
@@ -105,10 +169,92 @@ class SettingSchedule extends React.Component {
 
     onSubmitConstraints = (constraintValues) => {
         console.log(constraintValues);
+        console.log(this.state.constraintData);
+        // constraintData
+        // constraintValues.forEach(constraint => {
+        //     constraint.id = this.state.constraintData.find(constraintState => constraintState.staffType == constraint.staffType).id;
+        // });
+        console.log(constraintValues);
     }
-    componentDidMount = () => {
-        //get Form
+
+    updateWeekScheuleId = async () => {
+        const WeekSchedule = await getWeekSchedule(getFirstDayOfWeek(new Date(this.state.dateStart)));
+
+        if (!WeekSchedule) {
+            console.log("GET WeekSchedule ERROR");
+            return;
+        }
+        console.log(WeekSchedule.id);
+        this.setState({ weekScheduleId: WeekSchedule.id });
     }
+
+    updateConstraintData = async () => {
+        await this.updateWeekScheuleId();
+        const storeScheduleDetails = await getWeekScheduleConstraint(this.state.weekScheduleId);
+
+        this.renderConstraintData(storeScheduleDetails);
+    }
+    componentDidMount = async () => {
+        await this.updateConstraintData();
+
+    }
+
+
+    renderConstraintData = (storeScheduleDetails) => {
+        if (storeScheduleDetails) {
+            var constraintData = {};
+            storeScheduleDetails.forEach(constraint => {
+                var prefix = constraint.staffType == 0 ? "ft" : "pt"
+
+                Object.keys(constraint).forEach(key => {
+                    constraintData = {
+                        ...constraintData, [`${prefix}${key}`]: constraint[key] ? constraint[key] : 0
+                    }
+                })
+
+            });
+            console.log(constraintData);
+            this.setState({ constraintData: constraintData });
+
+        }
+
+    }
+
+    renderWrappedWeekDay = (date, selectedDate, dayInCurrentMonth) => {
+        const { classes } = this.props;
+        let dateClone = new Date(date);
+        let selectedDateClone = new Date(selectedDate);
+
+        const start = startOfWeek(selectedDateClone, {
+            weekStartsOn: 1
+        });
+        const end = endOfWeek(selectedDateClone, {
+            weekStartsOn: 1
+        });
+
+        const dayIsBetween = isWithinInterval(dateClone, { start, end });
+        const isFirstDay = isSameDay(dateClone, start);
+        const isLastDay = isSameDay(dateClone, end);
+
+        const wrapperClassName = clsx({
+            [classes.highlight]: dayIsBetween,
+            [classes.firstHighlight]: isFirstDay,
+            [classes.endHighlight]: isLastDay,
+        });
+
+        const dayClassName = clsx(classes.day, {
+            [classes.nonCurrentMonthDay]: !dayInCurrentMonth,
+            [classes.highlightNonCurrentMonthDay]: !dayInCurrentMonth && dayIsBetween,
+        });
+
+        return (
+            <div className={wrapperClassName}>
+                <IconButton className={dayClassName}>
+                    <span> {format(dateClone, "d")} </span>
+                </IconButton>
+            </div>
+        );
+    };
 
     render() {
         const classes = this.props.classes;
@@ -119,6 +265,16 @@ class SettingSchedule extends React.Component {
                         <Button variant="contained" color="primary">Add Personal Custom Setting</Button>
                     }
                 />
+
+                <FormControl margin="normal" >
+                    <FormLabel >Select Week</FormLabel>
+                    <DatePicker
+                        value={this.state.dateStart}
+                        onChange={this.handleWeekChange}
+                        renderDay={this.renderWrappedWeekDay}
+                        inputVariant="outlined"
+                    />
+                </FormControl>
                 <Tabs
                     value={this.state.tabIndex}
                     indicatorColor="primary"
@@ -131,7 +287,11 @@ class SettingSchedule extends React.Component {
                     <Tab label="Demands" value={1} />
                 </Tabs>
                 <TabPanel value={this.state.tabIndex} index={0}>
-                    <SettingConstraintsForm initialValues={this.constraintData} onSubmit={this.onSubmitConstraints}/>
+                    {
+                        this.state.constraintData ? (
+                            <SettingConstraintsForm initialValues={this.state.constraintData} onSubmit={this.onSubmitConstraints} />
+                        ) : "...Loading"
+                    }
                 </TabPanel>
 
                 <TabPanel value={this.state.tabIndex} index={1}>
@@ -146,8 +306,4 @@ class SettingSchedule extends React.Component {
 
 
 
-export default reduxForm(
-    {
-        form: "settingForm",
-    }
-)(withStyles(styles, { withTheme: true })(SettingSchedule));
+export default withStyles(styles, { withTheme: true })(SettingSchedule);

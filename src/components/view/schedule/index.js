@@ -1,6 +1,6 @@
 import React from 'react';
 import './schedule.css';
-import { loadSkills, getStaffs, getWeekScheduleId, computeSchedule } from "../../../_services";
+import { loadSkills, getStaffs, getWeekSchedule, computeSchedule } from "../../../_services";
 import {
     ScheduleComponent, Inject, Day, Week,
     TimelineViews, TimelineMonth, ViewsDirective, ViewDirective, Resize, DragAndDrop, ResourcesDirective, ResourceDirective
@@ -174,7 +174,7 @@ class ScheduleMain extends React.Component {
                             let src = querySnapshot.docs.map(shift => {
 
                                 let obj = convertShift(shift);
-                                console.log(shift);
+                                // console.log(shift);
                                 return obj;
                             });
 
@@ -278,13 +278,16 @@ class ScheduleMain extends React.Component {
     }
     addEvent = async () => {
 
-        const wId = await getWeekScheduleId(getFirstDayOfWeek(this.currentDate));
-        //const datas = await computeSchedule(wId);
-        const datas = scheduleData;
-        if (datas.shiftAssignments && datas.shiftAssignments.length != 0)
+        const WeekSchedule = await getWeekSchedule(getFirstDayOfWeek(this.currentDate));
+        let wId = WeekSchedule.id;
+        console.log("ID:" + wId)
+        const datas = await computeSchedule(wId);
+        console.log(datas);
+        //const datas = scheduleData;
+        if (datas && datas.shiftAssignments && datas.shiftAssignments.length != 0)
             datas.shiftAssignments.forEach(e => {
                 let Data = {
-                    Skill: e.skillName,
+                    Skill: this.state.skillDataSrc.find(skill => skill.id = e.skillId).name,
                     SkillId: e.skillId,
                     EndTime: new Date(e.timeEnd),
                     StartTime: new Date(e.timeStart),

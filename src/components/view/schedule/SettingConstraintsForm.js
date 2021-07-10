@@ -175,7 +175,7 @@ class SettingConstraintsForm extends React.Component {
         Object.keys(formValues).forEach(field => {
 
         });
-
+        
 
         var ftconstraints = { staffType: 0 };
         var ptconstraints = { staffType: 1 };
@@ -191,6 +191,9 @@ class SettingConstraintsForm extends React.Component {
                 [field.name]: formValues[`${prefixPT}${field.name}`]
             }
         });
+        ftconstraints.id = this.props.initialValues.ftid;
+        ptconstraints.id = this.props.initialValues.ptid;
+       
         var listConstraitns = [ftconstraints, ptconstraints];
 
         this.props.onSubmit(listConstraitns);

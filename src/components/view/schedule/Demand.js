@@ -352,6 +352,7 @@ class DemandPage extends React.Component {
     initData = async () => {
         var skills = await loadSkills();
 
+        //TODO load demand
         var days = [0, 1, 2, 3, 4, 5, 6];
         this.setState({
             skillSrc: skills,
@@ -594,6 +595,11 @@ class DemandPage extends React.Component {
             </Dialog>
         );
     }
+    handleSubmitDemand = () => {
+        // get dataSrc
+        //convert to array
+        //call api
+    }
 
     render() {
         const classes = this.props.classes;
@@ -683,7 +689,7 @@ class DemandPage extends React.Component {
 
                 <Grid item container xs={12} justify="flex-end" spacing={1} direction="row">
                     <Grid item >
-                        <Button variant="contained" color="primary">Save change</Button>
+                        <Button variant="contained" color="primary" onClick={this.handleSubmitDemand}>Save change</Button>
                     </Grid>
                     <Grid item>
                         <Button variant="outlined" color="primary">Cancel </Button>
