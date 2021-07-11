@@ -3,7 +3,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import DemandSkill from './DemandSkill';
 import { Autocomplete } from '@material-ui/lab';
-import { loadSkills } from "../../../_services";
+import { loadSkills, getWeekScheduleDemand, updateDemand, deleteDemand, createDemand } from "../../../_services";
+import { addDays, differenceInDays } from 'date-fns';
+import { levelInit, levels } from "../../../_constants/levelData";
+import { convertDemandDataToDemandPresent, convertDemandPresentToDemandData, } from "../../../ultis/scheduleHandle";
 const styles = (theme) => createStyles({
 
     root: {
@@ -327,14 +330,13 @@ class DemandPage extends React.Component {
             startTime: null,
             endTime: null,
             quantity: 1,
-            level: 1,
-            demandIndex: null
-
+            level: levelInit.value,
+            demandId: null
         }
         this.timeSlots = Array.from(new Array(24 * 2)).map(
             (_, index) => ({
                 title: `${index < 20 ? '0' : ''}${Math.floor(index / 2)}:${index % 2 === 0 ? '00' : '30'}`,
-                value: index
+                value: index / 2
             })
         );
 
@@ -352,23 +354,43 @@ class DemandPage extends React.Component {
     initData = async () => {
         var skills = await loadSkills();
 
-        //TODO load demand
-        var days = [0, 1, 2, 3, 4, 5, 6];
         this.setState({
             skillSrc: skills,
             skillIdSelect: skills[0].id,
             startTime: this.timeSlots[0],
             endTime: this.timeSlots[0],
-            dataSrc: days.map(
+        });
+    }
+
+    loadDemandDatas = async () => {
+        var demandDatas = await getWeekScheduleDemand(this.props.weekScheduleId);
+
+        var demandList = demandDatas.map(demand => {
+            return convertDemandDataToDemandPresent(demand, this.props.dateStart);
+        });
+        console.log(demandList);
+
+        this.setState({
+            dataSrc: this.days.map(
                 day => {
+                    let demandByDays = demandList.filter(demand => demand.day == day.value);
                     return {
-                        day: day,
-                        demands: skills.map(skill => {
+                        day: day.value,
+                        demands: this.state.skillSrc.map(skill => {
+                            let demandBySkills = demandByDays.filter(demand => demand.skillId == skill.id);
 
                             return {
                                 skillId: skill.id,
                                 skillName: skill.name,
-                                demandDatas: []
+                                demandDatas: demandBySkills.map(demandContent => (
+                                    {
+                                        id: demandContent.id,
+                                        start: demandContent.start,
+                                        end: demandContent.end,
+                                        quantity: demandContent.quantity,
+                                        level: demandContent.level
+                                    }
+                                ))
                             };
                         })
                     };
@@ -380,33 +402,61 @@ class DemandPage extends React.Component {
 
     componentDidMount = async () => {
         await this.initData();
+        if (this.state.skillSrc != null && this.props.weekScheduleId && this.props.dateStart) {
+            await this.loadDemandDatas();
+        }
     }
-    handleChange = (event, newValue) => {
-        console.log(event);
-        this.setState({ dayIndex: newValue });
-    }
-    onDelete = (demandIndex, skillId) => {
-        this.setState({ openDeleteDialog: true, currentAction: DELETE, demandIndex: demandIndex, skillIdSelect: skillId });
+    componentDidUpdate = async (prevProps, prevState, snapshot) => {
+        if (prevProps.weekScheduleId != this.props.weekScheduleId && this.state.skillSrc) {
+            await this.loadDemandDatas();
+        }
     }
 
-    onEdit = (demandIndex, skillId) => {
-        this.setState({ openEditDialog: true, currentAction: UPDATE, demandIndex: demandIndex, skillIdSelect: skillId });
+    handleChange = (event, newValue) => {
+        this.setState({ dayIndex: newValue });
+    }
+
+    onDelete = (demandId, skillId) => {
+        this.setState({ openDeleteDialog: true, currentAction: DELETE, demandId: demandId, skillIdSelect: skillId });
+    }
+
+    onEdit = ({ start, end, quantity, level, demandId, skillId }) => {
+        console.log({ start, end, quantity, level, demandId, skillId });
+        this.setState({
+            openEditDialog: true, currentAction: UPDATE,
+            demandId: demandId, skillIdSelect: skillId, startTime: this.timeSlots.find(time => time.value == start),
+            endTime: this.timeSlots.find(time => time.value == end), quantity, level
+        });
     }
 
     onStartAdd = () => {
         this.setState({ openEditDialog: true, currentAction: CREATE, });
     }
 
-    onSave = () => {
+    resetEditor = () => {
+        this.setState({
+            skillIdSelect: this.state.skillSrc[0].id,
+            startTime: this.timeSlots[0],
+            endTime: this.timeSlots[0],
+            level: levelInit.value,
+            quantity: 1,
+        });
+    }
 
-        var demand = {
+    onSaveEditor = async () => {
+
+        var demandNew = {
+            id: this.state.demandId,
             start: this.state.startTime.value,
             end: this.state.endTime.value,
-            level: this.state.level, quantity: this.state.quantity
+            level: this.state.level, quantity: this.state.quantity,
+            day: this.state.dayIndex,
+            skillId: this.state.skillIdSelect
         };
-
+        let response = null;
         switch (this.state.currentAction) {
             case CREATE:
+                response = await createDemand(convertDemandPresentToDemandData(demandNew, this.props.dateStart), this.props.weekScheduleId);
                 this.setState(
                     prevState => {
                         var dataSrcTmp = prevState.dataSrc;
@@ -415,12 +465,18 @@ class DemandPage extends React.Component {
                         var skillIndex = dataSrcTmp[demandDayIndex].demands.findIndex(
                             demandSkill => demandSkill.skillId == this.state.skillIdSelect
                         );
-                        dataSrcTmp[demandDayIndex].demands[skillIndex].demandDatas.push(demand);
+                        dataSrcTmp[demandDayIndex].demands[skillIndex].demandDatas.push(demandNew);
                         return dataSrcTmp;
                     }
                 );
+                this.resetEditor();
                 return;
+                
             case UPDATE:
+                var tmp = convertDemandPresentToDemandData(demandNew, this.props.dateStart)
+                console.log(tmp);
+                response = await updateDemand(convertDemandPresentToDemandData(demandNew, this.props.dateStart));
+                // if (response) {
                 this.setState(
                     prevState => {
                         var dataSrcTmp = prevState.dataSrc;
@@ -429,12 +485,18 @@ class DemandPage extends React.Component {
                         var skillIndex = dataSrcTmp[demandDayIndex].demands.findIndex(
                             demandSkill => demandSkill.skillId == this.state.skillIdSelect
                         );
-                        dataSrcTmp[demandDayIndex].demands[skillIndex].demandDatas[this.state.demandIndex] = demand;
+                        var tmp = dataSrcTmp[demandDayIndex].demands[skillIndex].demandDatas;
+                        dataSrcTmp[demandDayIndex].demands[skillIndex].demandDatas = tmp.map(demandData =>
+                            demandData.id == demandNew.id ? { ...demandNew } : demandData);
                         return dataSrcTmp;
                     }
                 );
+                this.resetEditor();
+                // }
+
                 return;
             case DELETE:
+                await deleteDemand(this.state.demandId);
                 this.setState(
                     prevState => {
                         var dataSrcTmp = prevState.dataSrc;
@@ -443,7 +505,8 @@ class DemandPage extends React.Component {
                         var skillIndex = dataSrcTmp[demandDayIndex].demands.findIndex(
                             demandSkill => demandSkill.skillId == this.state.skillIdSelect
                         );
-                        dataSrcTmp[demandDayIndex].demands[skillIndex].demandDatas.splice(this.state.demandIndex, 1);
+                        dataSrcTmp[demandDayIndex].demands[skillIndex].demandDatas
+                            = dataSrcTmp[demandDayIndex].demands[skillIndex].demandDatas.filter(demandData => demandData.id != this.state.demandId);
                         return dataSrcTmp;
                     }
                 );
@@ -495,9 +558,11 @@ class DemandPage extends React.Component {
                                         value={this.state.level}
                                         onChange={(e) => { this.setState({ level: e.target.value }) }}
                                     >
-                                        <MenuItem value={0} selected>Beginner</MenuItem>
-                                        <MenuItem value={1}>Immegiate</MenuItem>
-                                        <MenuItem value={2}>Experience</MenuItem>
+                                        {
+                                            levels.map(level => (
+                                                <MenuItem key={level.value} value={level.value} selected>{level.label}</MenuItem>
+                                            ))
+                                        }
                                     </Select>
                                 </FormControl>
                             </Grid>
@@ -555,7 +620,7 @@ class DemandPage extends React.Component {
                     <Button onClick={() => { handleClose(); this.setState({ currentAction: NONE }) }} color="primary">
                         Cancel
                     </Button>
-                    <Button onClick={() => { handleClose(); this.onSave(); }} color="primary" autoFocus>
+                    <Button onClick={() => { handleClose(); this.onSaveEditor(); }} color="primary" autoFocus>
                         Confirm
                     </Button>
 
@@ -587,7 +652,7 @@ class DemandPage extends React.Component {
                     <Button onClick={handleClose} color="primary">
                         Cancel
                     </Button>
-                    <Button onClick={() => { handleClose(); this.onSave(); }} color="primary" autoFocus>
+                    <Button onClick={() => { handleClose(); this.onSaveEditor(); }} color="primary" autoFocus>
                         Confirm
                     </Button>
 
@@ -595,8 +660,40 @@ class DemandPage extends React.Component {
             </Dialog>
         );
     }
+
     handleSubmitDemand = () => {
+        // const temp = {
+        //     "weekScheduleId": 0,
+        //     "skillId": 0,
+        //     "level": 0,
+        //     "quantity": 0,
+        //     "workStart": "2021-07-11T01:32:13.580Z",
+        //     "workEnd": "2021-07-11T01:32:13.580Z"
+        // }
+        // // { start: 14, end: 46, level: 1, quantity: 2 },
         // get dataSrc
+        const submitDatas = [];
+        this.state.dataSrc.forEach(demandDay => {
+            demandDay.demands.forEach(demandSkill => {
+                demandSkill.demandDatas.forEach(demand => {
+                    let workStart = addDays(this.props.dateStart, demandDay.day);
+                    workStart.setHours(demand.start / 2);
+                    let workEnd = addDays(this.props.dateStart, demandDay.day);
+                    workStart.setHours(demand.end / 2);
+
+                    let tmp = {
+                        weekScheduleId: this.props.weekScheduleId,
+                        skillId: demandSkill.skillId,
+                        level: demand.level,
+                        quantity: demand.quantity,
+                        workStart: workStart,
+                        workEnd: workEnd
+                    }
+                    submitDatas.push(tmp);
+                })
+            })
+        });
+        console.log(submitDatas);
         //convert to array
         //call api
     }
@@ -687,14 +784,6 @@ class DemandPage extends React.Component {
                     </TabPanel>
                 </Grid>
 
-                <Grid item container xs={12} justify="flex-end" spacing={1} direction="row">
-                    <Grid item >
-                        <Button variant="contained" color="primary" onClick={this.handleSubmitDemand}>Save change</Button>
-                    </Grid>
-                    <Grid item>
-                        <Button variant="outlined" color="primary">Cancel </Button>
-                    </Grid>
-                </Grid>
                 {this.renderDeleteDialog()}
                 {this.renderEditDialog()}
             </Grid >

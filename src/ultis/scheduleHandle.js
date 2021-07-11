@@ -1,3 +1,7 @@
+import { getDay, addDays } from 'date-fns';
+
+const MONDAY = 1;
+
 export function getFirstDayOfWeek(d) {
     d = new Date(d);
     var day = d.getDay(),
@@ -19,9 +23,10 @@ export function convertShift(obj) {
         SkillId: obj.data().SkillId,
         Skill: obj.data().SkillName,
         Id: obj.id,
-        Description: obj.data().Description ? obj.data().Description: ""
+        Description: obj.data().Description ? obj.data().Description : ""
     }
 }
+
 export function convertShiftToFireBaseObj(obj) {
     return {
         StaffId: obj.StaffId,
@@ -33,3 +38,67 @@ export function convertShiftToFireBaseObj(obj) {
         Description: obj.Description
     }
 }
+
+//  17h05 -> 17:30 -> 17.5, > 17:31 -> 18
+export function getHoursInRoundDoubleFormat(date) {
+    date = new Date(date);
+    let minuteToHourIndex = 0;
+    let minutes = date.getMinutes();
+    if (minutes > 5) {
+        minuteToHourIndex = minutes <= 30 ? 0.5 : 1;
+    }
+    return date.getHours() + minuteToHourIndex;
+}
+
+export function getDateJSONFrom(dateStart, day, hoursIndouble) {
+    var date = new Date(dateStart);
+    date.setUTCDate(dateStart.getDate());
+    date = addDays(date, day);
+    let hours = Math.floor(hoursIndouble);
+
+    let minutes = hoursIndouble - Math.floor(hoursIndouble);
+    minutes = minutes * 60;
+    
+    date.setUTCHours(hours, minutes);
+    console.log(date.toJSON());
+    console.log(date);
+    return date;
+}
+
+// {
+//     "id": 34,
+//     "weekScheduleId": 2,            
+//     "skillId": 21,
+//     "level": 1,
+//     "quantity": 2,
+//     "workStart": "2021-07-12T07:00:31.091",
+//     "workEnd": "2021-07-12T12:00:31.091",       
+// }
+
+export function convertDemandDataToDemandPresent(demandData, dateStart) {
+    console.log(demandData);
+
+    var day = getDay(new Date(demandData.workStart)) == 0 ? 6 : getDay(new Date(demandData.workStart)) - MONDAY;
+    return {
+        id: demandData.id,
+        skillId: demandData.skillId,
+        level: demandData.skillId,
+        quantity: demandData.quantity,
+        day: day,
+        start: getHoursInRoundDoubleFormat(demandData.workStart),
+        end: getHoursInRoundDoubleFormat(demandData.workEnd),
+    }
+}
+
+export function convertDemandPresentToDemandData(demandData, dateStart) {
+
+    return {
+        id: demandData.id,
+        skillId: demandData.skillId,
+        level: demandData.level,
+        quantity: demandData.quantity,
+        workStart: getDateJSONFrom(dateStart, demandData.day, demandData.start),
+        workEnd: getDateJSONFrom(dateStart, demandData.day, demandData.end),
+    }
+}
+

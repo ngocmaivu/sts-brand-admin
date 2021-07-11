@@ -2,7 +2,7 @@ import { ListItem, ListItemText, List, makeStyles, Popover, CardHeader, CardCont
 
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import React from 'react';
-
+import { levels, getLevelLable } from "../../../_constants/levelData";
 
 const useStyles = makeStyles((theme) => ({
     tabs: {
@@ -28,15 +28,9 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const timeToString = (index) => `${index < 20 ? '0' : ''}${Math.floor(index / 2)}:${index % 2 === 0 ? '00' : '30'}`;
-const levelToString = (level) => {
-    switch (level) {
-        case 0: return "Beginer";
-        case 1: return "Intermediate";
-        case 2: return "Experience";
-    }
-};
-function DemandCard({ start, end, quantity, level, onDelete, onEdit, demandIndex, skillId }) {
+const timeToString = (index) => `${index < 10 ? '0' : ''}${Math.floor(index)}:${(index * 2) % 2 === 0 ? '00' : '30'}`;
+
+function DemandCard({ start, end, quantity, level, onDelete, onEdit, demandId, skillId }) {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
     const open = Boolean(anchorEl);
@@ -53,7 +47,7 @@ function DemandCard({ start, end, quantity, level, onDelete, onEdit, demandIndex
             title={<Typography variant="h5" style={{ color: "#2196F3" }}>{`${timeToString(start)} - ${timeToString(end)}`}</Typography>}
             action={<IconButton onClick={handleClick}><MoreVertIcon fontSize="small" /></IconButton>} />
         <CardContent style={{ padding: 10 }}>
-            <Typography variant="h6" style={{ color: "#2196F3" }}>{`${quantity} ${levelToString(level)} or Higher`}</Typography>
+            <Typography variant="h6" style={{ color: "#2196F3" }}>{`${quantity} ${getLevelLable(level)} or Higher`}</Typography>
         </CardContent>
 
         <Popover
@@ -70,10 +64,10 @@ function DemandCard({ start, end, quantity, level, onDelete, onEdit, demandIndex
             }}
         >
             <List>
-                <ListItem button onClick={() => { console.log(skillId); onEdit( demandIndex, skillId); }}>
+                <ListItem button onClick={() => { console.log(skillId); onEdit({ start, end, quantity, level, demandId, skillId }); }}>
                     <ListItemText primary="Edit" />
                 </ListItem>
-                <ListItem button onClick={() => { console.log(skillId); onDelete( demandIndex, skillId); }}>
+                <ListItem button onClick={() => { console.log(skillId); onDelete(demandId, skillId); }}>
                     <ListItemText primary="Delete" />
                 </ListItem>
             </List>

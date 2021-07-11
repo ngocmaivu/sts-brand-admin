@@ -68,6 +68,19 @@ export const getWeekScheduleConstraint = async (weekId) => {
         console.log(error);
         return null;
     }
+};
+
+export const getWeekScheduleDemand = async (weekId) => {
+    try {
+        const response = await sts.get(`/week-schedules/${weekId}/week-schedule-details`, {
+            headers: authHeader(),
+        });
+        return response.data;
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
 }
 
 export const computeSchedule = async (weekScheduleId) => {
@@ -83,3 +96,50 @@ export const computeSchedule = async (weekScheduleId) => {
         return null;
     }
 };
+
+export const commitConstraint = async (constraint) => {
+    try {
+
+        const response = await sts.put(`/store-schedule-details/${constraint.id}`, { ...constraint }, { headers: authHeader() });
+
+        return response.data;
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+};
+
+export const createDemand = async (demand, weekScheduleId) => {
+    try {
+        const response = await sts.post("/week-schedule-details", [{ ...demand, weekScheduleId }], { headers: authHeader() });
+
+        return response.data;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+export const updateDemand = async (demand) => {
+    try {
+        const response = await sts.put(`/week-schedule-details/${demand.id}`, { ...demand }, { headers: authHeader() });
+
+        return response.data;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+export const deleteDemand = async (id) => {
+    try {
+        const response = await sts.delete(`/week-schedule-details/${id}`, { headers: authHeader() });
+
+        return response.data;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+

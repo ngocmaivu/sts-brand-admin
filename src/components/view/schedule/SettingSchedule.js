@@ -20,7 +20,7 @@ import { Field, reduxForm, formValueSelector } from 'redux-form';
 import PropTypes from 'prop-types';
 import Demand from './Demand';
 import SettingConstraintsForm from './SettingConstraintsForm';
-import { getWeekScheduleConstraint, getWeekSchedule } from "../../../_services";
+import { getWeekScheduleConstraint, getWeekSchedule, commitConstraint } from "../../../_services";
 import { DatePicker } from '@material-ui/pickers';
 import { getFirstDayOfWeek } from "../../../ultis/scheduleHandle";
 const styles = (theme) => createStyles({
@@ -175,6 +175,9 @@ class SettingSchedule extends React.Component {
         //     constraint.id = this.state.constraintData.find(constraintState => constraintState.staffType == constraint.staffType).id;
         // });
         console.log(constraintValues);
+        commitConstraint(constraintValues[0]);
+        commitConstraint(constraintValues[1]);
+
     }
 
     updateWeekScheuleId = async () => {
@@ -295,7 +298,7 @@ class SettingSchedule extends React.Component {
                 </TabPanel>
 
                 <TabPanel value={this.state.tabIndex} index={1}>
-                    <Demand />
+                    <Demand dateStart={this.state.dateStart} weekScheduleId={this.state.weekScheduleId} />
                 </TabPanel>
 
                 <Divider />

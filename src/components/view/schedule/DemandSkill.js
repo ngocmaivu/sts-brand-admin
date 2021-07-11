@@ -7,17 +7,17 @@ function DemandSkill({ skillDemand, onDelete, onEdit }) {
         <Typography align="center" variant="h3">{skillDemand.skillName}</Typography>
         <Grid container spacing={2} style={{ padding: 20 }} direction="column" spacing={1}>
             {skillDemand.demandDatas.map((demand, index) => {
-              
+
                 return (
                     <Grid key={index} item style={{ backgroundColor: "#f3f5f6", height: "100%" }}>
-                        <DemandCard start={demand.start} 
-                                end={demand.end} 
-                                demandIndex={index} 
-                                skillId={skillDemand.skillId}
-                                quantity={demand.quantity} 
-                                level={demand.level} 
-                                onDelete={onDelete} 
-                                onEdit={onEdit} />
+                        <DemandCard start={demand.start}
+                            end={demand.end}
+                            demandId={demand.id}
+                            skillId={skillDemand.skillId}
+                            quantity={demand.quantity}
+                            level={demand.level}
+                            onDelete={onDelete}
+                            onEdit={onEdit} />
                     </Grid>);
             })}
         </Grid>
