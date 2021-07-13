@@ -4,3 +4,4 @@ export * from './store.constants';
 export * from './brand.constant';
 export * from './staff.constants';
 export * from './skill.constants';
+export * from './schedule';

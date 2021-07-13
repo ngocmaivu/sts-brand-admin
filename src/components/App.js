@@ -20,7 +20,7 @@ import Notification from './view/notification';
 import BrandHome from './BrandHome/BrandHome';
 import SettingSchedule from './view/schedule/SettingSchedule';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
-import { DatePicker } from '@syncfusion/ej2-react-calendars';
+import DateFnsUtils from '@date-io/date-fns';
 import EditBrand from './ProfilePage/EditBrand';
 import { alertActions } from '../_actions';
 import MuiAlert from '@material-ui/lab/Alert';
@@ -60,7 +60,8 @@ class App extends React.Component {
               }
             </Alert>
           </Snackbar>
-          <MuiPickersUtilsProvider utils={DatePicker}>
+          {/* <MuiPickersUtilsProvider utils={DatePicker}> */}
+          <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Router history={history} >
               <Switch>
               <Route path="/login" component={LoginPage} />

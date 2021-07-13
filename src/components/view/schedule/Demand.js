@@ -1,24 +1,36 @@
 import { createStyles, Tab, Tabs, withStyles, makeStyles, Grid, CardHeader, CardContent, Card, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Select, MenuItem, FormControl, FormLabel, TextField } from '@material-ui/core';
 import React from 'react';
 import PropTypes from 'prop-types';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import DemandSkill from './DemandSkill';
-import { TextFields } from '@material-ui/icons';
 import { Autocomplete } from '@material-ui/lab';
-
+import { loadSkills, getWeekScheduleDemand, updateDemand, deleteDemand, createDemand } from "../../../_services";
+import { addDays, differenceInDays } from 'date-fns';
+import { levelInit, levels } from "../../../_constants/levelData";
+import { convertDemandDataToDemandPresent, convertDemandPresentToDemandData, } from "../../../ultis/scheduleHandle";
 const styles = (theme) => createStyles({
-    tabs: {
-        borderRight: `1px solid ${theme.palette.divider}`,
-        height: "100%",
-        marginRight: 10
-    },
+
     root: {
         //  flexGrow: 1,
         //  backgroundColor: theme.palette.background.div,
         // display: 'flex',
-        height: "100%",
+        minHeight: "75vh",
         padding: 10
         //  border: "none"
+    },
+    dayTabsWrapper: {
+        minHeight: "70vh",
+    },
+    dayTabs: {
+        borderRight: `1px solid ${theme.palette.divider}`,
+        height: "70vh",
+        marginRight: 10
+    },
+    demandPanelWrapper: {
+        minHeight: "70vh",
+    },
+    demandPanel: {
+
+        height: "100%",
     },
     cardSkillDemand: {
         border: "1px solid #E3F2FD",
@@ -281,7 +293,7 @@ function TabPanel(props) {
             id={`simple-tabpanel-${index}`}
             aria-labelledby={`simple-tab-${index}`}
             {...other}
-            style={{ height: '100%' }}
+            style={{ minHeight: '100%' }}
         >
             {value === index && (
                 <React.Fragment>
@@ -298,19 +310,33 @@ TabPanel.propTypes = {
     value: PropTypes.any.isRequired,
 };
 
+const CREATE = "CREATE";
+const UPDATE = "UPDATE";
+const DELETE = "DELETE";
+const NONE = "NONE";
 class DemandPage extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
-            tabIndex: 0,
             openDeleteDialog: false,
-            openEditDialog: false
+            openEditDialog: false,
+            EditorIndex: -1,
+            dataSrc: [],
+            skillSrc: [],
+            currentAction: NONE,
+            dayIndex: 0,
+            skillIdSelect: null,
+            startTime: null,
+            endTime: null,
+            quantity: 1,
+            level: levelInit.value,
+            demandId: null
         }
         this.timeSlots = Array.from(new Array(24 * 2)).map(
             (_, index) => ({
                 title: `${index < 20 ? '0' : ''}${Math.floor(index / 2)}:${index % 2 === 0 ? '00' : '30'}`,
-                value: index
+                value: index / 2
             })
         );
 
@@ -325,17 +351,168 @@ class DemandPage extends React.Component {
         ]
     }
 
+    initData = async () => {
+        var skills = await loadSkills();
+
+        this.setState({
+            skillSrc: skills,
+            skillIdSelect: skills[0].id,
+            startTime: this.timeSlots[0],
+            endTime: this.timeSlots[0],
+        });
+    }
+
+    loadDemandDatas = async () => {
+        var demandDatas = await getWeekScheduleDemand(this.props.weekScheduleId);
+
+        var demandList = demandDatas.map(demand => {
+            return convertDemandDataToDemandPresent(demand, this.props.dateStart);
+        });
+        console.log(demandList);
+
+        this.setState({
+            dataSrc: this.days.map(
+                day => {
+                    let demandByDays = demandList.filter(demand => demand.day == day.value);
+                    return {
+                        day: day.value,
+                        demands: this.state.skillSrc.map(skill => {
+                            let demandBySkills = demandByDays.filter(demand => demand.skillId == skill.id);
+
+                            return {
+                                skillId: skill.id,
+                                skillName: skill.name,
+                                demandDatas: demandBySkills.map(demandContent => (
+                                    {
+                                        id: demandContent.id,
+                                        start: demandContent.start,
+                                        end: demandContent.end,
+                                        quantity: demandContent.quantity,
+                                        level: demandContent.level
+                                    }
+                                ))
+                            };
+                        })
+                    };
+
+                }
+            )
+        });
+    }
+
+    componentDidMount = async () => {
+        await this.initData();
+        if (this.state.skillSrc != null && this.props.weekScheduleId && this.props.dateStart) {
+            await this.loadDemandDatas();
+        }
+    }
+    componentDidUpdate = async (prevProps, prevState, snapshot) => {
+        if (prevProps.weekScheduleId != this.props.weekScheduleId && this.state.skillSrc) {
+            await this.loadDemandDatas();
+        }
+    }
 
     handleChange = (event, newValue) => {
-        console.log(event);
-        this.setState({ tabIndex: newValue });
-    }
-    onDelete = () => {
-        this.setState({ openDeleteDialog: true });
+        this.setState({ dayIndex: newValue });
     }
 
-    onEdit = () => {
-        this.setState({ openEditDialog: true });
+    onDelete = (demandId, skillId) => {
+        this.setState({ openDeleteDialog: true, currentAction: DELETE, demandId: demandId, skillIdSelect: skillId });
+    }
+
+    onEdit = ({ start, end, quantity, level, demandId, skillId }) => {
+        console.log({ start, end, quantity, level, demandId, skillId });
+        this.setState({
+            openEditDialog: true, currentAction: UPDATE,
+            demandId: demandId, skillIdSelect: skillId, startTime: this.timeSlots.find(time => time.value == start),
+            endTime: this.timeSlots.find(time => time.value == end), quantity, level
+        });
+    }
+
+    onStartAdd = () => {
+        this.setState({ openEditDialog: true, currentAction: CREATE, });
+    }
+
+    resetEditor = () => {
+        this.setState({
+            skillIdSelect: this.state.skillSrc[0].id,
+            startTime: this.timeSlots[0],
+            endTime: this.timeSlots[0],
+            level: levelInit.value,
+            quantity: 1,
+        });
+    }
+
+    onSaveEditor = async () => {
+
+        var demandNew = {
+            id: this.state.demandId,
+            start: this.state.startTime.value,
+            end: this.state.endTime.value,
+            level: this.state.level, quantity: this.state.quantity,
+            day: this.state.dayIndex,
+            skillId: this.state.skillIdSelect
+        };
+        let response = null;
+        switch (this.state.currentAction) {
+            case CREATE:
+                response = await createDemand(convertDemandPresentToDemandData(demandNew, this.props.dateStart), this.props.weekScheduleId);
+                this.setState(
+                    prevState => {
+                        var dataSrcTmp = prevState.dataSrc;
+
+                        var demandDayIndex = dataSrcTmp.findIndex(demandDay => demandDay.day == this.state.dayIndex);
+                        var skillIndex = dataSrcTmp[demandDayIndex].demands.findIndex(
+                            demandSkill => demandSkill.skillId == this.state.skillIdSelect
+                        );
+                        dataSrcTmp[demandDayIndex].demands[skillIndex].demandDatas.push(demandNew);
+                        return dataSrcTmp;
+                    }
+                );
+                this.resetEditor();
+                return;
+                
+            case UPDATE:
+                var tmp = convertDemandPresentToDemandData(demandNew, this.props.dateStart)
+                console.log(tmp);
+                response = await updateDemand(convertDemandPresentToDemandData(demandNew, this.props.dateStart));
+                // if (response) {
+                this.setState(
+                    prevState => {
+                        var dataSrcTmp = prevState.dataSrc;
+
+                        var demandDayIndex = dataSrcTmp.findIndex(demandDay => demandDay.day == this.state.dayIndex);
+                        var skillIndex = dataSrcTmp[demandDayIndex].demands.findIndex(
+                            demandSkill => demandSkill.skillId == this.state.skillIdSelect
+                        );
+                        var tmp = dataSrcTmp[demandDayIndex].demands[skillIndex].demandDatas;
+                        dataSrcTmp[demandDayIndex].demands[skillIndex].demandDatas = tmp.map(demandData =>
+                            demandData.id == demandNew.id ? { ...demandNew } : demandData);
+                        return dataSrcTmp;
+                    }
+                );
+                this.resetEditor();
+                // }
+
+                return;
+            case DELETE:
+                await deleteDemand(this.state.demandId);
+                this.setState(
+                    prevState => {
+                        var dataSrcTmp = prevState.dataSrc;
+
+                        var demandDayIndex = dataSrcTmp.findIndex(demandDay => demandDay.day == this.state.dayIndex);
+                        var skillIndex = dataSrcTmp[demandDayIndex].demands.findIndex(
+                            demandSkill => demandSkill.skillId == this.state.skillIdSelect
+                        );
+                        dataSrcTmp[demandDayIndex].demands[skillIndex].demandDatas
+                            = dataSrcTmp[demandDayIndex].demands[skillIndex].demandDatas.filter(demandData => demandData.id != this.state.demandId);
+                        return dataSrcTmp;
+                    }
+                );
+                return;
+
+        }
     }
 
     renderEditDialog = () => {
@@ -350,19 +527,18 @@ class DemandPage extends React.Component {
                 onClose={handleClose}
                 maxWidth="sm"
                 fullWidth={false}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
             >
-                <DialogTitle id="alert-dialog-title"><Typography variant="h4">Edit</Typography></DialogTitle>
+                <DialogTitle id="alert-dialog-title">Edit</DialogTitle>
                 <DialogContent>
-                    <Grid contrainer>
+                    <Grid container>
                         <Grid item xs={12}>
                             <FormControl margin="normal" fullWidth>
                                 <FormLabel >Select skill</FormLabel>
-                                <Select variant="outlined">
-                                    <MenuItem value={0}>Skill 1</MenuItem>
-                                    <MenuItem value={1}>Skill 2</MenuItem>
-                                    <MenuItem value={2}>Skill 3</MenuItem>
+                                <Select variant="outlined"
+                                    value={this.state.skillIdSelect ? this.state.skillIdSelect : ""}
+                                    onChange={(e) => { this.setState({ skillIdSelect: e.target.value }) }}>
+                                    {this.state.skillSrc.map(skill => (
+                                        <MenuItem key={skill.id} value={skill.id}>{skill.name}</MenuItem>))}
                                 </Select>
                             </FormControl>
                         </Grid>
@@ -370,30 +546,41 @@ class DemandPage extends React.Component {
                             <Grid item xs={6}>
                                 <FormControl margin="normal" fullWidth>
                                     <FormLabel >Quantity</FormLabel>
-                                    <TextField variant="outlined" size="small" />
+                                    <TextField variant="outlined" size="small"
+                                        value={this.state.quantity}
+                                        onChange={(e) => { this.setState({ quantity: e.target.value }) }} />
                                 </FormControl>
                             </Grid>
                             <Grid item xs={6}>
                                 <FormControl margin="normal" fullWidth>
                                     <FormLabel >Select level</FormLabel>
-                                    <Select variant="outlined">
-                                        <MenuItem value={0} selected>Beginner</MenuItem>
-                                        <MenuItem value={1}>Immegiate</MenuItem>
-                                        <MenuItem value={2}>Experience</MenuItem>
+                                    <Select variant="outlined"
+                                        value={this.state.level}
+                                        onChange={(e) => { this.setState({ level: e.target.value }) }}
+                                    >
+                                        {
+                                            levels.map(level => (
+                                                <MenuItem key={level.value} value={level.value} selected>{level.label}</MenuItem>
+                                            ))
+                                        }
                                     </Select>
                                 </FormControl>
                             </Grid>
                         </Grid>
-                        <Grid item alignItems="center" xs={12}>
+                        <Grid item xs={12}>
                             <FormControl margin="normal" fullWidth>
                                 <FormLabel >Select time range</FormLabel>
 
-                                <Grid container spacing={2}>
+                                <Grid container alignItems="center" spacing={2}>
                                     <Grid item style={{ width: 180 }} >
                                         <Autocomplete
                                             options={this.timeSlots}
+                                            value={this.state.startTime}
+                                            onChange={(e, newValue) => {
+                                                this.setState({ startTime: newValue })
+                                            }}
                                             getOptionLabel={(option) => option.title}
-                                            getOptionSelected={(option, value) => option.title === value.title}
+
                                             renderInput={(params) => (
                                                 <TextField
                                                     classes={{
@@ -409,6 +596,10 @@ class DemandPage extends React.Component {
                                         <Autocomplete
                                             style={{ padding: 0 }}
                                             options={this.timeSlots}
+                                            value={this.state.endTime}
+                                            onChange={(e, newValue) => {
+                                                this.setState({ endTime: newValue })
+                                            }}
                                             getOptionLabel={(option) => option.title}
                                             renderInput={(params) => (
                                                 <TextField
@@ -426,10 +617,10 @@ class DemandPage extends React.Component {
                     </Grid>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} color="primary">
+                    <Button onClick={() => { handleClose(); this.setState({ currentAction: NONE }) }} color="primary">
                         Cancel
                     </Button>
-                    <Button onClick={() => { handleClose(); }} color="primary" autoFocus>
+                    <Button onClick={() => { handleClose(); this.onSaveEditor(); }} color="primary" autoFocus>
                         Confirm
                     </Button>
 
@@ -437,6 +628,7 @@ class DemandPage extends React.Component {
             </Dialog>
         );
     }
+
     renderDeleteDialog = () => {
 
         const handleClose = () => {
@@ -460,7 +652,7 @@ class DemandPage extends React.Component {
                     <Button onClick={handleClose} color="primary">
                         Cancel
                     </Button>
-                    <Button onClick={() => { handleClose(); }} color="primary" autoFocus>
+                    <Button onClick={() => { handleClose(); this.onSaveEditor(); }} color="primary" autoFocus>
                         Confirm
                     </Button>
 
@@ -469,90 +661,136 @@ class DemandPage extends React.Component {
         );
     }
 
+    handleSubmitDemand = () => {
+        // const temp = {
+        //     "weekScheduleId": 0,
+        //     "skillId": 0,
+        //     "level": 0,
+        //     "quantity": 0,
+        //     "workStart": "2021-07-11T01:32:13.580Z",
+        //     "workEnd": "2021-07-11T01:32:13.580Z"
+        // }
+        // // { start: 14, end: 46, level: 1, quantity: 2 },
+        // get dataSrc
+        const submitDatas = [];
+        this.state.dataSrc.forEach(demandDay => {
+            demandDay.demands.forEach(demandSkill => {
+                demandSkill.demandDatas.forEach(demand => {
+                    let workStart = addDays(this.props.dateStart, demandDay.day);
+                    workStart.setHours(demand.start / 2);
+                    let workEnd = addDays(this.props.dateStart, demandDay.day);
+                    workStart.setHours(demand.end / 2);
+
+                    let tmp = {
+                        weekScheduleId: this.props.weekScheduleId,
+                        skillId: demandSkill.skillId,
+                        level: demand.level,
+                        quantity: demand.quantity,
+                        workStart: workStart,
+                        workEnd: workEnd
+                    }
+                    submitDatas.push(tmp);
+                })
+            })
+        });
+        console.log(submitDatas);
+        //convert to array
+        //call api
+    }
+
     render() {
         const classes = this.props.classes;
         return (
-            <Grid container className={classes.root}>
-                <Grid item xs={2}>
+            <Grid container className={classes.root} justify="space-between">
+                <Grid item xs={2} className={classes.dayTabsWrapper}>
                     <Tabs
-                        value={this.state.tabIndex}
+                        value={this.state.dayIndex}
                         orientation="vertical"
                         onChange={this.handleChange}
-                        className={classes.tabs}
+                        className={classes.dayTabs}
                         indicatorColor="primary"
                         textColor="primary"
                     >
                         {this.days.map(day => (<Tab classes={{ root: classes.tabs_root }} disableRipple label={day.title} key={day.title} value={day.value} />))}
                     </Tabs>
                 </Grid>
-                <Grid item xs={10}>
-                    <TabPanel value={0} index={0}>
+                <Grid item xs={10} className={classes.demandPanelWrapper}>
+                    <TabPanel value={0} index={0} >
 
-                        <div>
-                            <Grid spacing={2} style={{ borderBottom: "1px solid #dfe2e6", paddingLeft: 20, paddingBottom: 8 }} container alignItems="center" >
-                                <Grid item style={{ maxWidth: 600, flexGrow: 1, fontWeight: 500 }}> <Typography variant="h4">Operating Hour</Typography></Grid >
+                        <div >
+                            <Grid container direction="row" justify="space-between" alignItems="center"
+                                style={{
+                                    borderBottom: "1px solid #dfe2e6", paddingBottom: 8
+                                }}>
+                                <Grid item spacing={2} xs={8}
+                                    style={{ paddingLeft: 20, }} container alignItems="center" >
+                                    <Grid item style={{ maxWidth: 600, flexGrow: 1, fontWeight: 500 }}> <Typography variant="h4">Operating Hour</Typography></Grid >
 
-                                <Grid container spacing={2} alignItems="center">
-                                    <Grid item style={{ width: 180 }}>
-                                        <Autocomplete
-                                            options={this.timeSlots}
-                                            getOptionLabel={(option) => option.title}
-                                            getOptionSelected={(option, value) => option.title === value.title}
-                                            renderInput={(params) => (
-                                                <TextField
-                                                    classes={{
-                                                        "root": classes.inputAutoComplete
-                                                    }}
-
-                                                    {...params} variant="outlined" />
-                                            )}
-                                        />
+                                    <Grid container spacing={2} alignItems="center">
+                                        <Grid item style={{ width: 180 }}>
+                                            <Autocomplete
+                                                options={this.timeSlots}
+                                                getOptionLabel={(option) => option.title}
+                                                getOptionSelected={(option, value) => option.title === value.title}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        classes={{
+                                                            "root": classes.inputAutoComplete
+                                                        }}
+                                                        {...params} variant="outlined" />
+                                                )}
+                                            />
+                                        </Grid>
+                                        <Grid item>To</Grid>
+                                        <Grid item style={{ width: 180 }}>
+                                            <Autocomplete
+                                                style={{ padding: 0 }}
+                                                options={this.timeSlots}
+                                                getOptionLabel={(option) => option.title}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        classes={{
+                                                            "root": classes.inputAutoComplete
+                                                        }}
+                                                        {...params} variant="outlined" />
+                                                )}
+                                            />
+                                        </Grid>
                                     </Grid>
-                                    <Grid item>To</Grid>
-                                    <Grid item style={{ width: 180 }}>
-                                        <Autocomplete
-                                            style={{ padding: 0 }}
-                                            options={this.timeSlots}
-                                            getOptionLabel={(option) => option.title}
-                                            renderInput={(params) => (
-                                                <TextField
-                                                    classes={{
-                                                        "root": classes.inputAutoComplete
-                                                    }}
-                                                    {...params} variant="outlined" />
-                                            )}
-                                        />
-                                    </Grid>
+                                </Grid>
+                                <Grid item >
+                                    <Button variant="contained" color="primary" onClick={this.onStartAdd}>Add</Button>
                                 </Grid>
                             </Grid>
                         </div>
 
-                        <Grid container style={{ padding: 20, height: "100%" }} spacing={2}>
+                        <Grid container className={classes.demandPanel} style={{
+                            padding: 8, height: "100%", flexWrap: "nowrap",
+                            overflowX: "scroll"
+                        }} spacing={2} >
                             {
-                                data.find(e => e.day == this.state.tabIndex).demands.map(demand => {
+                                this.state.dataSrc && this.state.dataSrc.length != 0 ? (this.state.dataSrc.find(e => e.day == this.state.dayIndex).demands.map(demand => {
                                     return (
-                                        <Grid key={demand.skillId} item  >
+                                        <Grid key={demand.skillId} item style={{
+                                            height: 600
+                                        }} >
                                             <DemandSkill skillDemand={demand} onDelete={this.onDelete} onEdit={this.onEdit} />
                                         </Grid>);
-                                })
+                                })) : "Loadding"
                             }
                         </Grid>
 
-                        <Grid container xs={12} justify="flex-end" spacing={1} direction="row">
-                            <Grid item >
-                                <Button variant="contained" color="primary">Save change</Button>
-                            </Grid>
-                            <Grid item>
-                                <Button variant="outlined" color="primary">Cancel </Button>
-                            </Grid>
-                        </Grid>
+
                     </TabPanel>
                 </Grid>
+
                 {this.renderDeleteDialog()}
                 {this.renderEditDialog()}
             </Grid >
         );
     }
+
+
 }
 
 export default withStyles(styles, { withTheme: true })(DemandPage);

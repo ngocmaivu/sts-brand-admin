@@ -1,6 +1,6 @@
 import React from 'react';
 import './schedule.css';
-
+import { loadSkills, getStaffs, getWeekSchedule, computeSchedule } from "../../../_services";
 import {
     ScheduleComponent, Inject, Day, Week,
     TimelineViews, TimelineMonth, ViewsDirective, ViewDirective, Resize, DragAndDrop, ResourcesDirective, ResourceDirective
@@ -12,7 +12,7 @@ import { Card, CardHeader, Grid, Paper, Button } from '@material-ui/core';
 import { ShiftEditor } from './ShiftEditor';
 import firebase from "../../../firebase";
 import { getFirstDayOfWeek, isSameDay, convertShift, convertShiftToFireBaseObj } from "../../../ultis/scheduleHandle";
-
+import scheduleData from './scheduleData.json';
 
 
 L10n.load({
@@ -31,14 +31,16 @@ class ScheduleMain extends React.Component {
     constructor() {
         super(...arguments);
 
-        this.employeeData = [
-            { Name: 'Alice', Id: 1, GroupId: 1, Color: '#bbdc00', Designation: 'Content writer' },
-            { Name: 'Nancy', Id: 2, GroupId: 2, Color: '#9e5fff', Designation: 'Designer' },
-            { Name: 'Robert', Id: 3, GroupId: 1, Color: '#bb0c00', Designation: 'Software Engineer' },
-            { Name: 'Robson', Id: 4, GroupId: 2, Color: '#9e5fff', Designation: 'Support Engineer' },
-            { Name: 'Laura', Id: 5, GroupId: 1, Color: '#bbdc00', Designation: 'Human Resource' },
-            { Name: 'Margaret', Id: 6, GroupId: 2, Color: '#9e5fff', Designation: 'Content Analyst' }
-        ];
+        // this.employeeData = [
+        //     { Name: 'Alice', Id: 1, GroupId: 1, Color: '#bbdc00',},
+        //     { Name: 'Nancy', Id: 2, GroupId: 2, Color: '#9e5fff', },
+        //     { Name: 'Robert', Id: 3, GroupId: 1, Color: '#bb0c00',  },
+        //     { Name: 'Robson', Id: 4, GroupId: 2, Color: '#9e5fff',  },
+        //     { Name: 'Laura', Id: 5, GroupId: 1, Color: '#bbdc00', },
+        //     { Name: 'Margaret', Id: 6, GroupId: 2, Color: '#9e5fff', }
+        // ];
+
+
 
         this.PreInsertObj = {
             StartTime: null,
@@ -49,15 +51,10 @@ class ScheduleMain extends React.Component {
             Description: null
         };
 
-        this.skillDataSrc = [
-            { id: 0, name: "Bartender" },
-            { id: 1, name: "Waiter" },
-            { id: 2, name: "Cashier" },
-            { id: 3, name: "Security" }
-        ];
+        const user = JSON.parse(localStorage.getItem("jwt_decode"));
+        this.BrandId = user.brandId;
+        this.StoreId = user.storeId;
 
-        this.BrandId = "br1";
-        this.StoreId = "st3";
         this.currentDate = new Date();
         const ref = firebase.firestore().collection("brands");
 
@@ -77,14 +74,20 @@ class ScheduleMain extends React.Component {
                     .catch((error) => {
                         console.error("Error writing document: ", error);
                     });
+
                 //set sub collection
+                var startDate = getFirstDayOfWeek(this.currentDate);
+                startDate.setHours(0, 0, 0);
+                console.log("NEW SCHEDULE");
                 ref.doc(`${this.BrandId}-${this.StoreId}`).collection("schedules").add({
-                    StartDate: getFirstDayOfWeek(this.currentDate).setHours(0, 0, 0)
-                }).then(() => {
+                    StartDate: startDate
+                }).then((docRef) => {
                     console.log("Document successfully written!");
+                    this.refScheduleCurrentCollection = docRef.collection("shifts");
                 }).catch((error) => {
                     console.error("Error writing document: ", error);
                 });
+
             }
 
             //Check Week Schedule
@@ -98,13 +101,43 @@ class ScheduleMain extends React.Component {
 
     }
 
-
-    componentDidMount = () => {
-        this.getDataSource();
+    state = {
+        skillDataSrc: null,
+        employeeData: null
     }
-    componentWillUnmount() {
+    loadData = async () => {
+
+        var skills = await loadSkills();
+        if (skills != null) {
+            this.setState({
+                skillDataSrc: skills
+            })
+            console.log(skills);
+        }
+        var staffs = await getStaffs();
+        staffs = staffs.map(staff => ({ Name: `${staff.firstName} ${staff.lastName}`, Id: staff.username, }))
+
+        this.setState({
+            employeeData: staffs
+        })
+
+    }
+
+
+    componentDidMount = async () => {
+
+        await this.loadData();
+        if (this.state.skillDataSrc && this.state.employeeData) {
+            this.getDataSource();
+        }
+
+
+    }
+
+    componentWillUnmount = () => {
         if (this.unSub)
             this.unSub();
+
     }
 
 
@@ -141,7 +174,7 @@ class ScheduleMain extends React.Component {
                             let src = querySnapshot.docs.map(shift => {
 
                                 let obj = convertShift(shift);
-                                console.log(shift);
+                                // console.log(shift);
                                 return obj;
                             });
 
@@ -216,7 +249,7 @@ class ScheduleMain extends React.Component {
                 setEndTime={this.setEndTime}
                 setStaffId={this.setStaffId}
                 setDescription={this.setDescription}
-                skillDataSrc={this.skillDataSrc}
+                skillDataSrc={this.state.skillDataSrc}
             /> : <div></div>);
     }
 
@@ -236,27 +269,45 @@ class ScheduleMain extends React.Component {
             let skillElement = args.element.querySelector('#Skill');
             if (skillElement) {
                 (args.data).SkillId = skillElement.value;
-                (args.data).Skill = this.skillDataSrc.find(e => e.id == skillElement.value).name;
+                (args.data).Skill = this.state.skillDataSrc.find(e => e.id == skillElement.value).name;
 
             }
             console.log(this.scheduleObj.eventSettings.dataSource);
 
         }
     }
-    addEvent = () => {
+    addEvent = async () => {
 
-        const Data = [{
-            Id: 12,
-            Skill: 'Cashier',
-            SkillId: 1,
-            EndTime: new Date(2021, 5, 20, 9, 0),
-            StartTime: new Date(2021, 5, 20, 7, 0),
-            StaffId: 6
-        }];
-        this.scheduleObj.addEvent(Data);
-        console.log(this.scheduleObj);
+        const WeekSchedule = await getWeekSchedule(getFirstDayOfWeek(this.currentDate));
+        let wId = WeekSchedule.id;
+        console.log("ID:" + wId)
+        const datas = await computeSchedule(wId);
+        console.log(datas);
+        //const datas = scheduleData;
+        if (datas && datas.shiftAssignments && datas.shiftAssignments.length != 0)
+            datas.shiftAssignments.forEach(e => {
+                let Data = {
+                    Skill: this.state.skillDataSrc.find(skill => skill.id = e.skillId).name,
+                    SkillId: e.skillId,
+                    EndTime: new Date(e.timeEnd),
+                    StartTime: new Date(e.timeStart),
+                    StaffId: e.username,
+                    Description: ""
+                };
+
+                const newShiftRef = this.refScheduleCurrentCollection.doc();
+                Data.Id = newShiftRef.id;
+                console.log('new shift Id:' + newShiftRef.id);
+                const data = convertShiftToFireBaseObj(Data);
+                console.log(data);
+                newShiftRef.set(data);
+                //this.scheduleObj.addEvent(Data);
+            })
+
+
+        //console.log(this.scheduleObj);
     }
-    onAction
+
 
     navigatingEvent = (args) => {
         console.log(args);
@@ -303,58 +354,66 @@ class ScheduleMain extends React.Component {
             this.refScheduleCurrentCollection.doc(args.deletedRecords[0].Id).delete();
         }
     }
+
+    computeSchedule = () => {
+        //Load scheduleId
+        this.addEvent();
+    }
     render() {
         return (
-            <Paper >
-
+            <Paper style={{ minHeight: "80vh" }}>
                 <CardHeader title="Schedule" action={
                     <Grid container justify="flex-end" spacing={1} direction="row">
                         <Grid item >
-                            <Button variant="contained" color="primary">Compute schedule</Button>
+                            <Button variant="contained" color="primary" onClick={this.computeSchedule}>Compute schedule</Button>
                         </Grid>
                         <Grid item>
                             <Button variant="outlined" color="primary">Pushlish</Button>
                         </Grid>
                     </Grid>
                 } />
+                {this.state.skillDataSrc && this.state.employeeData ?
+                    (<ScheduleComponent currentView="TimelineWeek" selectedDate={this.currentDate}
+                        eventSettings={{
+                            fields: {
+                                subject: { name: "Skill" },
+                            }
+                        }}
 
-                <ScheduleComponent currentView="TimelineWeek" selectedDate={this.currentDate}
-                    eventSettings={{
-                        fields: {
-                            subject: { name: "Skill" },
-                        }
-                    }}
+                        ref={schedule => this.scheduleObj = schedule}
+                        firstDayOfWeek={1}
+                        group={{ resources: ['Staff'] }}
+                        showQuickInfo={false}
+                        editorTemplate={this.editorTemplate}
+                        popupClose={this.popupClose}
+                        navigating={this.navigatingEvent}
+                        actionBegin={this.onActionBegin}
+                    >
 
-                    ref={schedule => this.scheduleObj = schedule}
-                    firstDayOfWeek={1}
-                    group={{ resources: ['Staff'] }}
-                    showQuickInfo={false}
-                    editorTemplate={this.editorTemplate}
-                    popupClose={this.popupClose}
-                    navigating={this.navigatingEvent}
-                    actionBegin={this.onActionBegin}
-                >
+                        <ResourcesDirective>
+                            <ResourceDirective field="StaffId"
+                                title="Staff name"
+                                name="Staff"
+                                allowMultiple={true}
+                                idField="Id"
+                                textField="Name"
+                                colorField="Color"
+                                dataSource={this.state.employeeData} >
+                            </ResourceDirective>
+                        </ResourcesDirective>
+                        <ViewsDirective>
+                            <ViewDirective option='Day' />
+                            <ViewDirective option='Week' />
+                            <ViewDirective option='TimelineDay' startHour="7" />
+                            <ViewDirective option='TimelineWeek' timeScale={{ enable: false }} />
+                        </ViewsDirective>
+                        <Inject services={[Day, TimelineViews, Week, TimelineMonth, Resize, DragAndDrop]} />
+                        {/* <Inject services={[Day, Week, WorkWeek, Month, TimelineViews, TimelineMonth]} /> */}
+                    </ScheduleComponent>)
+                    :
+                    "Loading..."
+                }
 
-                    <ResourcesDirective>
-                        <ResourceDirective field="StaffId"
-                            title="Staff name"
-                            name="Staff"
-                            allowMultiple={true}
-                            idField="Id"
-                            textField="Name"
-                            colorField="Color"
-                            dataSource={this.employeeData} >
-                        </ResourceDirective>
-                    </ResourcesDirective>
-                    <ViewsDirective>
-                        <ViewDirective option='Day' />
-                        <ViewDirective option='Week' />
-                        <ViewDirective option='TimelineDay' startHour="7" />
-                        <ViewDirective option='TimelineWeek' timeScale={{ enable: false }} />
-                    </ViewsDirective>
-                    <Inject services={[Day, TimelineViews, Week, TimelineMonth, Resize, DragAndDrop]} />
-                    {/* <Inject services={[Day, Week, WorkWeek, Month, TimelineViews, TimelineMonth]} /> */}
-                </ScheduleComponent>
             </Paper>
         );
     }
