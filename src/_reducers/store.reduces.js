@@ -4,33 +4,34 @@ export function stores(state = {}, action) {
     switch (action.type) {
         case storeConstants.STORE_GETALL_REQUEST:
             return {
-                ...state,
+                // ...state,
                 loading: true
             };
         case storeConstants.STORE_GETALL_SUCCESS:
             return {
-                ...state,
+                // ...state,
                 items: action.stores,
                 type: action.type,
             };
         case storeConstants.STORE_GETBYID_FAILURE:
             return {
-                ...state,
+                // ...state,
                 error: action.error
             };
         case storeConstants.STORE_GETBYID_REQUEST:
             return {
-                ...state,
+                // ...state,
                 loading: true
             };
         case storeConstants.STORE_GETBYID_SUCCESS:
             return {
-                ...state,
+                // ...state,
                 items: action.store,
+                type: action.type,
             };
         case storeConstants.STORE_GETBYID_FAILURE:
             return {
-                ...state,
+                // ...state,
                 error: action.error
             };
         case storeConstants.STORE_CREAT_REQUEST:

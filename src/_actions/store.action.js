@@ -86,7 +86,7 @@ function getById(id) {
             .then(
                 store => {
                     dispatch(success(store));
-                    dispatch(alertActions.success('Get Store successful'));
+                    dispatch(alertActions.success('Get Store by id successful'));
                 },
                 error => dispatch(failure(error.toString()))
             );

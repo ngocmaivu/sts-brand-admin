@@ -185,7 +185,7 @@ class Stores extends React.Component {
                 renderCell: (params) => {
 
                     return (<span>
-                        <Button color='primary' component={Link} to={"/editStore/"+`${params.id}`}> <Edit fontSize='small' /></Button>
+                        <Button color='primary' component={Link} to={`/editStore/${params.id}`}> <Edit fontSize='small' /></Button>
                         <Button onClick={this.handleDeleteStore(params.id)} style={{ color: 'red' }}> <Delete fontSize='small' /></Button>
                     </span>);
                 }
@@ -194,17 +194,17 @@ class Stores extends React.Component {
         var loading = false;
         
        
-        if (stores.type === "STORE_GETALL_SUCCESS") loading = true;
+        // if (stores.type === "STORE_GETALL_SUCCESS") loading = true;
         // if (stores.type === "STORE_DELETE_SUCCESS") deleting = true;
-        // console.log(deleting);
-        if (!this.props.stores.items) {
+        console.log(this.props.stores.loading);
+        if ( !this.props.stores.items ) {
             return <p>...Loading</p>;
         }
         // var items = JSON.parse(localStorage.getItem("stores"));
         // console.log(stores.items)
         return (
             <React.Fragment>
-                { loading &&
+                {/* { loading &&
                 <Snackbar open={this.state.open} autoHideDuration={3000} onClose={() => this.setState({open: false})} >
                     <Alert  severity="success">
                        Loading store is success!
@@ -215,11 +215,11 @@ class Stores extends React.Component {
                     <Alert  severity="success">
                        Delete store is success!
                     </Alert>
-                </Snackbar>}
+                </Snackbar>} */}
                 <Card style={{ padding: '10px', marginBottom: '15px' }}>
                     <div> <h1>Store page</h1> {this.renderToolbar()}</div>
                 </Card>
-                <Paper className={this.props.classes.container}>
+                <Paper>
                     <div style={{ height: 452, width: '100%' }}>
                         <DataGrid disableColumnFilter rows={stores.items} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
                             paginationMode="server" rowCount={100} />

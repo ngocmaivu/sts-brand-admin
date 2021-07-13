@@ -28,6 +28,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import { RegisterPage } from './RegisterPage';
 import SettingBrandSkill from './ProfilePage/SettingBrandSkill';
 import EditStore from './EditStore/EditStore';
+import StoreTimekeeping from './Timekeeping/StoreTimekeeping';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -64,7 +65,7 @@ class App extends React.Component {
               <Switch>
               <Route path="/login" component={LoginPage} />
                 <Layout>
-                  <PrivateRoute path="/" exact> <Stores /> </PrivateRoute>
+                  <PrivateRoute path="/" exact> <BrandHome /> </PrivateRoute>
                   <Route path="/stores" exact>
                     <Stores />
                   </Route>
@@ -77,7 +78,7 @@ class App extends React.Component {
                   <Route path="/editbrand" exact>
                     <EditBrand />
                   </Route>
-                  <Route path="/editStore/:id" render={(props) => <EditStore {...props} />}exact />
+                  <Route path="/editStore/:id" render={(props) => <EditStore {...props} />}/>
                     {/* <EditStore />
                   </Route> */}
                   <Route path="/stores/new" >
@@ -96,6 +97,9 @@ class App extends React.Component {
                   </Route>
                   <Route path="/schedule/view">
                     <ScheduleMain />
+                  </Route>
+                  <Route path="/storeTimekeeping" exact>
+                    <StoreTimekeeping/>
                   </Route>
                   <Route path="/schedule/setting">
                     <SettingSchedule />

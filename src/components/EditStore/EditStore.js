@@ -33,7 +33,6 @@ const useStyles = makeStyles((theme) => ({
 class EditStore extends React.Component {
     constructor(props) {
         super(props);
-
         this.state = {
             store: {
                 name: props.stores.items.name,
@@ -82,16 +81,17 @@ class EditStore extends React.Component {
 
     render() {
         const { stores, type } = this.props;
-        console.log(stores.items)
+        console.log(this.props)
         if (!this.props.stores.items) {
             return <p>...Loading</p>;
         }
+        console.log(stores.items)
         return (
             <React.Fragment>
                 <Card style={{ padding: '10px', marginBottom: '20px' }}>
                     <h1>Edit Store</h1>
                 </Card>
-                <Paper style={{ padding: '20px' }} className={this.props.classes.container} elevation={0}>
+                <Paper style={{ padding: '20px' }} elevation={0}>
                     <form>
                         <Grid container direction="column" spacing={1}>
                             <Grid container item spacing={3} >
@@ -102,7 +102,7 @@ class EditStore extends React.Component {
                                     </FormControl>
                                 </Grid>
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid item xs={12}> 
                                 <FormControl margin="normal" fullWidth>
                                     <FormLabel >Store's Address</FormLabel>
                                     <TextField name="address" size="small" variant="outlined" defaultValue={stores.items.address} onChange={this.handleChange} />
@@ -111,7 +111,7 @@ class EditStore extends React.Component {
                             <Grid item xs={12} >
                                 <FormControl margin="normal" fullWidth>
                                     <FormLabel >Phone Number</FormLabel>
-                                    <TextField name="phone" size="small" variant="outlined" defaultValue={stores.items.hotline} onChange={this.handleChange} />
+                                    <TextField name="phone" size="small" variant="outlined" defaultValue={stores.items.phone} onChange={this.handleChange} />
                                 </FormControl>
                             </Grid>
                             <Grid item xs={12}>

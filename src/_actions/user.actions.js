@@ -25,7 +25,7 @@ function login(username, password) {
                         dispatch(alertActions.error("Invalid user name or password"));
                     } else {
                         dispatch(success(user));
-                        history.push({ pathname: '/stores' });
+                        history.push({ pathname: '/brandhome' });
                     }
                 },
                 error => {
