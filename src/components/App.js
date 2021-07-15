@@ -22,6 +22,7 @@ import SettingSchedule from './view/schedule/SettingSchedule';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import EditBrand from './ProfilePage/EditBrand';
+import AvailablePage from './view/schedule/Available';
 
 class App extends React.Component {
 
@@ -64,6 +65,9 @@ class App extends React.Component {
                   </Route>
                   <Route path="/schedule/setting">
                     <SettingSchedule />
+                  </Route>
+                  <Route path="/schedule/available">
+                    <AvailablePage />
                   </Route>
                   <Route path="/brandhome">
                     <BrandHome />

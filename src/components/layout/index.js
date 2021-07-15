@@ -82,9 +82,9 @@ const useStyles = makeStyles((theme) => ({
     marginTop: appBarHeight,
     flexGrow: 1,
    
-    padding: 20,
+    padding: 10,
     backgroundColor: '#e3f2fd',
-    padding: theme.spacing(3),
+    padding: theme.spacing(2),
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
@@ -236,9 +236,16 @@ if (user === null) {
         },
         {
           type: 'item',
-          id: 'activity',
+          id: 'setting',
           title: 'Setting',
           url: '/schedule/setting',
+          icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+        },
+        {
+          type: 'item',
+          id: 'available',
+          title: 'Available',
+          url: '/schedule/available',
           icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
         }
       ]

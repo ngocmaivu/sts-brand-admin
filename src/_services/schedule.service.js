@@ -143,3 +143,16 @@ export const deleteDemand = async (id) => {
     }
 }
 
+export const getShiftRegisterDatas = async (weekId) => {
+    try {
+
+        const response = await sts.get(`/week-schedules/${weekId}/shift-registers`, {
+            headers: authHeader(),
+        });
+        return response.data;
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+};

@@ -1,12 +1,212 @@
 import React from 'react';
 
+import { createStyles, withStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+import { CardContent, CardHeader, Divider, FormControl, FormLabel, Grid, Typography } from '@material-ui/core';
+import WeekPicker from './WeekPicker';
+import { format, isSameDay, startOfWeek, } from 'date-fns';
+import { getStaffs, getShiftRegisterDatas, getWeekSchedule, } from '../../../_services';
 
-class Available extends React.Component{
 
-    render(){
-        <div>
-{/* list nv + dayInWeek */}
+const styles = (Theme) => createStyles({
+    container: {
+        height: '100%'
+    },
+    containerContent: {
+        padding: "20px 20px"
+    },
+
+});
+class AvailablePage extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            dateStart: startOfWeek(new Date(), {
+                weekStartsOn: 1
+            }),
+            weekScheduleId: null,
+            constraintData: null,
+            staffs: null,
+            tabIndex: 0
+        };
+    }
+
+    loadData = async () => {
+        // ShiftRegisterData.find(shiftRegister.username == "").timeWorks.
+
+        var staffs = await getStaffs();
+
+
+        this.setState({
+            staffs: staffs
+        });
+
+
+    }
+
+    updateWeekScheuleId = async () => {
+        const WeekSchedule = await getWeekSchedule(new Date(this.state.dateStart));
+
+        if (!WeekSchedule) {
+            console.log("GET WeekSchedule ERROR");
+            return;
+        }
+        console.log(WeekSchedule.id);
+        this.setState({ weekScheduleId: WeekSchedule.id });
+    }
+
+    updateShiftRegisterDatas = async () => {
+        await this.updateWeekScheuleId();
+        const shiftRegisterDatas = await getShiftRegisterDatas(this.state.weekScheduleId);
+
+        // this.renderConstraintData(storeScheduleDetails);
+        this.renderShiftRegisterDatas(shiftRegisterDatas);
+    }
+
+    renderShiftRegisterDatas = (shiftRegisterDatas) => {
+        // staffs = staffs.map(staff =>
+        // ({
+        //     Name: `${staff.firstName} ${staff.lastName}`,
+        //     Id: staff.username,
+        //     shiftRegisters: ShiftRegisterData.find(shiftRegister.username == staff.username)
+        // }));
+
+        if (this.state.staffs) {
+            this.setState({
+                shiftRegisterDatas: this.state.staffs.map(staff => {
+                    return {
+                        fullname: `${staff.firstName} ${staff.lastName}`,
+                        username: staff.username,
+                        timeWorks: shiftRegisterDatas.filter(
+                            shiftRegister => shiftRegister.username == staff.username
+                        ).map(({ id, timeStart, timeEnd }) => ({
+                            id, timeStart, timeEnd
+                        }))
+                    }
+                })
+            })
+        }
+    }
+
+    renderAvailableRow = (shiftRegisterData) => {
+        var days = [1, 2, 3, 4, 5, 6, 0];
+        var formatPattern = "HH:mm";
+        return (
+            <TableRow key={shiftRegisterData.username} style={{ height: 88 }}>
+                <TableCell align="left" variant="body" style={{ verticalAlign: 'top' }}>
+                    <Grid container direction="column">
+                        <Grid item>
+                            <Typography variant="subtitle1">{shiftRegisterData.fullname}</Typography>
+                        </Grid>
+                        <Grid item>
+                            <Typography variant="subtitle1">{shiftRegisterData.fullname}</Typography>
+                        </Grid>
+                    </Grid>
+                </TableCell>
+                {
+                    days.map((day) => (
+                        <TableCell key={day} align="center" style={{ verticalAlign: 'top' }}>
+                            <Grid container direction="column">
+                                {
+                                    shiftRegisterData.timeWorks.filter(
+                                        timeWork => {
+                                            var date = new Date(timeWork.timeStart);
+                                            return date.getDay() == day
+                                        }
+                                    ).map((timeWork, index) => ((<Grid item>
+                                        <Typography key={timeWork.id} variant="subtitle1" gutterBottom>
+                                            {`${format(new Date(timeWork.timeStart), formatPattern)} - 
+                                            ${format(new Date(timeWork.timeEnd), formatPattern)}`}</Typography>
+                                    </Grid>)
+                                    ))
+                                }
+                            </Grid>
+
+                        </TableCell>
+                    ))
+                }
+            </TableRow >
+        );
+    }
+
+    componentDidMount = async () => {
+        await this.loadData();
+        await this.updateShiftRegisterDatas();
+    }
+
+    componentDidUpdate = (prevProps, prevState, snapshot) => {
+        if (!isSameDay(prevState.dateStart, this.state.dateStart)) {
+            this.setState({ shiftRegisterDatas: null });
+            this.updateShiftRegisterDatas();
+            // console.log(prevState.dateStart, this.state.dateStart);
+        }
+    }
+
+    handleWeekChange = async (date) => {
+        if (isSameDay(startOfWeek(date, {
+            weekStartsOn: 1
+        }), this.state.dateStart)) return;
+
+        this.setState({
+            dateStart: startOfWeek(date, {
+                weekStartsOn: 1
+            })
+        });
+    }
+
+    render() {
+
+
+        return (<div>
+            <Paper className={this.props.classes.container}>
+                <CardHeader title={
+                    <Typography variant="h2">
+                        Availability
+                    </Typography>
+                } disableTypography={false}
+                />
+                <Divider />
+                <CardContent className={this.props.classes.containerContent}>
+                    <FormControl margin="normal" variant="outlined" >
+                        <FormLabel labe>Select Week</FormLabel>
+
+                        <WeekPicker onChange={this.handleWeekChange} value={this.state.dateStart} />
+                    </FormControl>
+                    <TableContainer>
+                        <Table aria-label="simple table" >
+                            <TableHead>
+                                <TableRow >
+                                    <TableCell align="left" variant="head" >Username</TableCell>
+                                    <TableCell align="center"><Typography variant="h4">Mon</Typography></TableCell>
+                                    <TableCell align="center">Tue</TableCell>
+                                    <TableCell align="center">Wed</TableCell>
+                                    <TableCell align="center">Thu</TableCell>
+                                    <TableCell align="center">Fri</TableCell>
+                                    <TableCell align="center">Sat</TableCell>
+                                    <TableCell align="center">Sun</TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {
+                                    this.state.shiftRegisterDatas ?
+                                        this.state.shiftRegisterDatas.map(
+                                            shiftRegisterData => this.renderAvailableRow(shiftRegisterData)
+                                        ) : "...Loading"
+                                }
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </CardContent>
+            </Paper>
         </div>
+        );
     }
 }
-export default Available;
+export default withStyles(styles)(AvailablePage);
