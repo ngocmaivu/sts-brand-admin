@@ -4,7 +4,7 @@ export const levels = [
         label: "Beginner", value: 1
     },
     {
-        label: "Immegiate", value: 2
+        label: "Intermediate", value: 2
     },
     {
         label: "Experience", value: 3

@@ -8,12 +8,12 @@ import {
 } from "@syncfusion/ej2-react-schedule";
 import { extend, isNullOrUndefined, L10n } from '@syncfusion/ej2-base';
 
-import { Card, CardHeader, Grid, Paper, Button } from '@material-ui/core';
+import { Card, CardHeader, Grid, Paper, Button, withStyles, Modal, createStyles, Divider, CardContent, LinearProgress } from '@material-ui/core';
 import { ShiftEditor } from './ShiftEditor';
 import firebase from "../../../firebase";
 import { getFirstDayOfWeek, isSameDay, convertShift, convertShiftToFireBaseObj } from "../../../ultis/scheduleHandle";
 import scheduleData from './scheduleData.json';
-
+import { getDocs } from "firebase/firestore";
 
 L10n.load({
     'en-US': {
@@ -26,7 +26,22 @@ L10n.load({
         }
     }
 });
+const styles = (theme) => createStyles({
+    modal: {
+        display: 'flex',
+        padding: theme.spacing(1),
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    modalContent: {
+        width: 400,
 
+
+        boxShadow: theme.shadows[5],
+
+    },
+
+});
 class ScheduleMain extends React.Component {
     constructor() {
         super(...arguments);
@@ -40,7 +55,7 @@ class ScheduleMain extends React.Component {
         //     { Name: 'Margaret', Id: 6, GroupId: 2, Color: '#9e5fff', }
         // ];
 
-
+        this.rootRef = React.createRef(null);
 
         this.PreInsertObj = {
             StartTime: null,
@@ -103,7 +118,8 @@ class ScheduleMain extends React.Component {
 
     state = {
         skillDataSrc: null,
-        employeeData: null
+        employeeData: null,
+        openWaitingComputeModal: false
     }
     loadData = async () => {
 
@@ -277,7 +293,6 @@ class ScheduleMain extends React.Component {
         }
     }
     addEvent = async () => {
-
         const WeekSchedule = await getWeekSchedule(getFirstDayOfWeek(this.currentDate));
         let wId = WeekSchedule.id;
         console.log("ID:" + wId)
@@ -304,8 +319,33 @@ class ScheduleMain extends React.Component {
                 //this.scheduleObj.addEvent(Data);
             })
 
-
         //console.log(this.scheduleObj);
+    }
+
+    clearEvent = () => {
+        var batch = firebase.firestore().batch();
+        console.log(this.refScheduleCurrentCollection);
+
+        // }).then();
+        // firebase.firestore().getDocs(this.refScheduleCurrentCollection);
+        // // this.refScheduleCurrentCollection.getDocs().then(val => {
+        // //     val.map((val) => {
+        // //         batch.delete(val)
+        // //     })
+
+        // //     batch.commit();
+        // // })
+        this.refScheduleCurrentCollection.get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                // doc.data() is never undefined for query doc snapshots
+                console.log(doc.id, " => ", doc.data());
+                console.log(doc);
+                batch.delete(doc.ref);
+            });
+
+            batch.commit();
+        });
+
     }
 
 
@@ -357,13 +397,22 @@ class ScheduleMain extends React.Component {
 
     computeSchedule = () => {
         //Load scheduleId
-        this.addEvent();
+        this.setState({ openWaitingComputeModal: true });
+
+        setTimeout(() => {
+            this.addEvent();
+            this.setState({ openWaitingComputeModal: false });
+        }, 3000)
+
     }
     render() {
         return (
             <Paper style={{ minHeight: "80vh" }}>
                 <CardHeader title="Schedule" action={
                     <Grid container justify="flex-end" spacing={1} direction="row">
+                        <Grid item >
+                            <Button variant="contained" color="primary" onClick={this.clearEvent}>Clear schedule</Button>
+                        </Grid>
                         <Grid item >
                             <Button variant="contained" color="primary" onClick={this.computeSchedule}>Compute schedule</Button>
                         </Grid>
@@ -413,10 +462,28 @@ class ScheduleMain extends React.Component {
                     :
                     "Loading..."
                 }
+                <Modal
+                    disablePortal
+                    disableEnforceFocus
+                    disableAutoFocus
+                    open={this.state.openWaitingComputeModal}
+                    aria-labelledby="server-modal-title"
+                    aria-describedby="server-modal-description"
+                    className={this.props.classes.modal}
+                    container={() => this.rootRef.current}
+                >
+                    <Card className={this.props.classes.modalContent}>
+                        <CardHeader title="Auto build" />
+                        <Divider />
+                        <CardContent>
+                            <LinearProgress />
+                        </CardContent>
+                    </Card>
 
+                </Modal>
             </Paper>
         );
     }
 }
 
-export default ScheduleMain;
+export default withStyles(styles)(ScheduleMain);

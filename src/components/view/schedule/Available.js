@@ -188,13 +188,13 @@ class AvailablePage extends React.Component {
                             <TableHead>
                                 <TableRow >
                                     <TableCell align="left" variant="head" >Username</TableCell>
-                                    <TableCell align="center"><Typography variant="h4">Mon</Typography></TableCell>
-                                    <TableCell align="center">Tue</TableCell>
-                                    <TableCell align="center">Wed</TableCell>
-                                    <TableCell align="center">Thu</TableCell>
-                                    <TableCell align="center">Fri</TableCell>
-                                    <TableCell align="center">Sat</TableCell>
-                                    <TableCell align="center">Sun</TableCell>
+                                    <TableCell align="center"><Typography variant="h4">Mon, {this.state.dateStart.getDate()}</Typography></TableCell>
+                                    <TableCell align="center">Tue, {this.state.dateStart.getDate() + 1}</TableCell>
+                                    <TableCell align="center">Wed, {this.state.dateStart.getDate() + 2}</TableCell>
+                                    <TableCell align="center">Thu, {this.state.dateStart.getDate() + 3}</TableCell>
+                                    <TableCell align="center">Fri, {this.state.dateStart.getDate() + 4}</TableCell>
+                                    <TableCell align="center">Sat, {this.state.dateStart.getDate() + 5}</TableCell>
+                                    <TableCell align="center">Sun, {this.state.dateStart.getDate() + 6}</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>

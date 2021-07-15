@@ -150,6 +150,10 @@ class Staffs extends React.Component {
         // setPageSize(params.pageSize);
     };
 
+    getFullName(params) {
+        return `${params.getValue(params.id, 'firstName') || ''} ${params.getValue(params.id, 'lastName') || ''
+            }`;
+    }
 
     render() {
 
@@ -159,16 +163,19 @@ class Staffs extends React.Component {
             {
                 field: 'counterStatus', headerName: 'No', width: 77, align: "center", headerAlign: 'center', headerClassName: 'header-table', filterable: false, sortable: false,
             },
-            { field: 'username', headerName: 'User Name', flex: 1, align: "center", headerAlign: 'center', },
-            // { field: 'name', headerName: 'Staff Name', width: 250 },
+            { field: 'username', headerName: 'User Name', flex: 1, align: "left", headerAlign: 'left', },
+            {
+                field: 'fullname', headerName: 'Full name', flex: 0.5, valueGetter: this.getFullName
+            },
             {
                 field: 'dateStart', headerName: 'Hire On', flex: 1, align: "center", headerAlign: 'center',
                 valueGetter: (params) => {
-
                     return (new Date(params.value)).toLocaleDateString('en-GB');
                 }
             },
-
+            {
+                field: 'email', headerName: 'Email', width: 250, headerAlign: 'center',
+            },
 
             {
                 field: 'action', headerName: "Actions", flex: 0.5, sortable: false, filterable: false,
@@ -177,7 +184,7 @@ class Staffs extends React.Component {
                 renderCell: (params) => {
                     const onClick = () => {
                         console.log(params);
-                        this.setState({ openDeleteDialog: true, deleteUserId: params.id});
+                        this.setState({ openDeleteDialog: true, deleteUserId: params.id });
                     }
 
                     return (<span>

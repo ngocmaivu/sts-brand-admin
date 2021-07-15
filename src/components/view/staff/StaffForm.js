@@ -3,14 +3,14 @@ import { Field, reduxForm, formValueSelector } from 'redux-form';
 import { Accordion, AccordionDetails, AccordionSummary, Button, Card, CardContent, CardHeader, Checkbox, Chip, Divider, FormControl, FormControlLabel, FormLabel, Grid, makeStyles, MenuItem, OutlinedInput, Paper, Select, TextField, Typography, useTheme } from '@material-ui/core';
 import { CardCustom } from '../../CardCustom';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-
+import {levels} from "../../../_constants/levelData";
 class StaffForm extends React.Component {
 
     constructor(props) {
         super(props);
 
         this.skills = props.skills;
-        this.skillLevels = props.skillLevels;
+
         console.log(props);
     }
 
@@ -53,7 +53,7 @@ class StaffForm extends React.Component {
                     level: formValues[`skill${skill.id}Level`]
                 }
             });
-            
+
         const dataSubmit = {
             generalInfo: {
                 username: formValues.username,
@@ -90,9 +90,9 @@ class StaffForm extends React.Component {
                     </AccordionSummary>
                     <AccordionDetails>
                         <Field name={`skill${skill.id}Level`} component={this.renderSelect} label="Skill level" >
-                            <MenuItem value={0} selected>Beginner</MenuItem>
-                            <MenuItem value={1}>Immegiate</MenuItem>
-                            <MenuItem value={2}>Experience</MenuItem>
+                            {levels.map(level => (
+                                <MenuItem key={level.value} value={level.value} selected>{level.label}</MenuItem>
+                            ))}
                         </Field>
                     </AccordionDetails>
 
