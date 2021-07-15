@@ -76,13 +76,13 @@ export function getDateJSONFrom(dateStart, day, hoursIndouble) {
 // }
 
 export function convertDemandDataToDemandPresent(demandData, dateStart) {
-    console.log(demandData);
+    // console.log(demandData);
 
     var day = getDay(new Date(demandData.workStart)) == 0 ? 6 : getDay(new Date(demandData.workStart)) - MONDAY;
     return {
         id: demandData.id,
         skillId: demandData.skillId,
-        level: demandData.skillId,
+        level: demandData.level,
         quantity: demandData.quantity,
         day: day,
         start: getHoursInRoundDoubleFormat(demandData.workStart),

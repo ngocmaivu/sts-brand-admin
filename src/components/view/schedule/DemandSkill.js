@@ -10,12 +10,7 @@ function DemandSkill({ skillDemand, onDelete, onEdit }) {
 
                 return (
                     <Grid key={index} item style={{ backgroundColor: "#f3f5f6", height: "100%" }}>
-                        <DemandCard start={demand.start}
-                            end={demand.end}
-                            demandId={demand.id}
-                            skillId={skillDemand.skillId}
-                            quantity={demand.quantity}
-                            level={demand.level}
+                        <DemandCard {...demand}
                             onDelete={onDelete}
                             onEdit={onEdit} />
                     </Grid>);

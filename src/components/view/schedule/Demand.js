@@ -368,7 +368,7 @@ class DemandPage extends React.Component {
         var demandList = demandDatas.map(demand => {
             return convertDemandDataToDemandPresent(demand, this.props.dateStart);
         });
-        console.log(demandList);
+        //console.log(demandList);
 
         this.setState({
             dataSrc: this.days.map(
@@ -471,11 +471,11 @@ class DemandPage extends React.Component {
                 );
                 this.resetEditor();
                 return;
-                
+
             case UPDATE:
-                var tmp = convertDemandPresentToDemandData(demandNew, this.props.dateStart)
-                console.log(tmp);
-                response = await updateDemand(convertDemandPresentToDemandData(demandNew, this.props.dateStart));
+                var updateObj = convertDemandPresentToDemandData(demandNew, this.props.dateStart)
+                console.log(updateObj);
+                response = await updateDemand(updateObj);
                 // if (response) {
                 this.setState(
                     prevState => {
