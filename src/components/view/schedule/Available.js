@@ -12,6 +12,7 @@ import { CardContent, CardHeader, Divider, FormControl, FormLabel, Grid, Typogra
 import WeekPicker from './WeekPicker';
 import { format, isSameDay, startOfWeek, } from 'date-fns';
 import { getStaffs, getShiftRegisterDatas, getWeekSchedule, } from '../../../_services';
+import { getTotalHoursPerWeek } from '../../../ultis/scheduleHandle';
 
 
 const styles = (Theme) => createStyles({
@@ -98,6 +99,9 @@ class AvailablePage extends React.Component {
     renderAvailableRow = (shiftRegisterData) => {
         var days = [1, 2, 3, 4, 5, 6, 0];
         var formatPattern = "HH:mm";
+
+        var totalHoursPerWeek = getTotalHoursPerWeek(shiftRegisterData.timeWorks);
+
         return (
             <TableRow key={shiftRegisterData.username} style={{ height: 88 }}>
                 <TableCell align="left" variant="body" style={{ verticalAlign: 'top' }}>
@@ -106,7 +110,7 @@ class AvailablePage extends React.Component {
                             <Typography variant="subtitle1">{shiftRegisterData.fullname}</Typography>
                         </Grid>
                         <Grid item>
-                            <Typography variant="subtitle1">{shiftRegisterData.fullname}</Typography>
+                            <Typography variant="subtitle2">{`${totalHoursPerWeek} hrs`}</Typography>
                         </Grid>
                     </Grid>
                 </TableCell>
@@ -175,7 +179,7 @@ class AvailablePage extends React.Component {
                 <Divider />
                 <CardContent className={this.props.classes.containerContent}>
                     <FormControl margin="normal" variant="outlined" >
-                        <FormLabel labe>Select Week</FormLabel>
+                        <FormLabel >Select Week</FormLabel>
 
                         <WeekPicker onChange={this.handleWeekChange} value={this.state.dateStart} />
                     </FormControl>

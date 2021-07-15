@@ -1,4 +1,4 @@
-import { getDay, addDays } from 'date-fns';
+import { getDay, addDays, intervalToDuration } from 'date-fns';
 
 const MONDAY = 1;
 
@@ -58,7 +58,7 @@ export function getDateJSONFrom(dateStart, day, hoursIndouble) {
 
     let minutes = hoursIndouble - Math.floor(hoursIndouble);
     minutes = minutes * 60;
-    
+
     date.setUTCHours(hours, minutes);
     console.log(date.toJSON());
     console.log(date);
@@ -100,5 +100,19 @@ export function convertDemandPresentToDemandData(demandData, dateStart) {
         workStart: getDateJSONFrom(dateStart, demandData.day, demandData.start),
         workEnd: getDateJSONFrom(dateStart, demandData.day, demandData.end),
     }
+}
+
+export function getTotalHoursPerWeek(timeWorks) {
+    let totalMinutesPerWeek = 0;
+
+    timeWorks.forEach(timeWork => {
+        let duration = intervalToDuration({
+            start: new Date(timeWork.timeStart),
+            end: new Date(timeWork.timeEnd)
+        });
+        totalMinutesPerWeek += duration.hours * 60 + duration.minutes;
+    });
+
+    return totalMinutesPerWeek / 60;
 }
 
