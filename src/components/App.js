@@ -8,7 +8,7 @@ import theme from '../themes/Theme';
 import { ThemeProvider } from '@material-ui/styles';
 import Staffs from './view/staff/Staffs';
 import Stores from './view/Stores';
-import {StoreNew} from './view/StoreNew';
+import { StoreNew } from './view/StoreNew';
 import { PrivateRoute } from './PrivateRoute';
 import Profile from './ProfilePage/Profile';
 import EditProfile from './ProfilePage/EditProfile';
@@ -51,11 +51,11 @@ class App extends React.Component {
                   <Route path="/stores/new" >
                     <StoreNew />
                   </Route>
-                  <Route path="/staff" exact>
+                  <Route path="/staffs" exact>
                     <Staffs />
                   </Route>
                   <Route exact path="/staff/new" component={StaffNew} />
-                  {/* <Route exact path="/staff/:id" component={Staff} /> */}
+                  <Route exact path="/staff/info/:id" component={Staff} />
 
                   <Route path="/notify">
                     <Notification />

@@ -81,7 +81,7 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 12,
     marginTop: appBarHeight,
     flexGrow: 1,
-   
+
     padding: 10,
     backgroundColor: '#e3f2fd',
     padding: theme.spacing(2),
@@ -186,9 +186,9 @@ if (user === null) {
     },
     {
       id: 'staffs',
-      title: 'Staff',
+      title: 'Staffs',
       type: 'item',
-      url: '/staff',
+      url: '/staffs',
       icon: <GroupOutlinedIcon />
     },
     {
@@ -217,7 +217,7 @@ if (user === null) {
       id: 'staffs',
       title: 'Staff',
       type: 'item',
-      url: '/staff',
+      url: '/staffs',
       icon: <GroupOutlinedIcon />
     },
     {

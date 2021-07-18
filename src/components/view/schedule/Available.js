@@ -13,6 +13,7 @@ import WeekPicker from './WeekPicker';
 import { format, isSameDay, startOfWeek, } from 'date-fns';
 import { getStaffs, getShiftRegisterDatas, getWeekSchedule, } from '../../../_services';
 import { getTotalHoursPerWeek } from '../../../ultis/scheduleHandle';
+import { Skeleton } from '@material-ui/lab';
 
 
 const styles = (Theme) => createStyles({
@@ -96,48 +97,56 @@ class AvailablePage extends React.Component {
         }
     }
 
-    renderAvailableRow = (shiftRegisterData) => {
+    renderAvailableRows = () => {
         var days = [1, 2, 3, 4, 5, 6, 0];
         var formatPattern = "HH:mm";
 
-        var totalHoursPerWeek = getTotalHoursPerWeek(shiftRegisterData.timeWorks);
-
-        return (
-            <TableRow key={shiftRegisterData.username} style={{ height: 88 }}>
-                <TableCell align="left" variant="body" style={{ verticalAlign: 'top' }}>
-                    <Grid container direction="column">
-                        <Grid item>
-                            <Typography variant="subtitle1">{shiftRegisterData.fullname}</Typography>
-                        </Grid>
-                        <Grid item>
-                            <Typography variant="subtitle2">{`${totalHoursPerWeek} hrs`}</Typography>
-                        </Grid>
-                    </Grid>
-                </TableCell>
-                {
-                    days.map((day) => (
-                        <TableCell key={day} align="center" style={{ verticalAlign: 'top' }}>
+        return this.state.shiftRegisterDatas.map(
+            shiftRegisterData => {
+                let totalHoursPerWeek = getTotalHoursPerWeek(shiftRegisterData.timeWorks, "timeStart", "timeEnd");
+                console.log(shiftRegisterData.username);
+                return (
+                    <TableRow key={shiftRegisterData.username} style={{ height: 88 }}>
+                        <TableCell align="left" variant="body" style={{ verticalAlign: 'top' }}>
                             <Grid container direction="column">
-                                {
-                                    shiftRegisterData.timeWorks.filter(
-                                        timeWork => {
-                                            var date = new Date(timeWork.timeStart);
-                                            return date.getDay() == day
-                                        }
-                                    ).map((timeWork, index) => ((<Grid item>
-                                        <Typography key={timeWork.id} variant="subtitle1" gutterBottom>
-                                            {`${format(new Date(timeWork.timeStart), formatPattern)} - 
-                                            ${format(new Date(timeWork.timeEnd), formatPattern)}`}</Typography>
-                                    </Grid>)
-                                    ))
-                                }
+                                <Grid item>
+                                    <Typography variant="subtitle1">{shiftRegisterData.fullname}</Typography>
+                                </Grid>
+                                <Grid item>
+                                    <Typography variant="subtitle2">{`${totalHoursPerWeek} hrs`}</Typography>
+                                </Grid>
                             </Grid>
-
                         </TableCell>
-                    ))
-                }
-            </TableRow >
-        );
+                        {
+                            days.map((day) => (
+                                <TableCell key={`${day}`} align="center" style={{ verticalAlign: 'top' }}>
+                                    <Grid container direction="column">
+                                        {
+                                            shiftRegisterData.timeWorks.filter(
+                                                timeWork => {
+                                                    var date = new Date(timeWork.timeStart);
+                                                    return date.getDay() == day
+                                                }
+                                            ).map((timeWork, index) => ((
+                                                <Grid item key={index}>
+                                                    <Typography variant="subtitle1" gutterBottom>
+                                                        {`${format(new Date(timeWork.timeStart), formatPattern)} - 
+                                            ${format(new Date(timeWork.timeEnd), formatPattern)}`}</Typography>
+                                                </Grid>)
+                                            ))
+                                        }
+                                    </Grid>
+
+                                </TableCell>
+                            ))
+                        }
+                    </TableRow >
+                );
+            }
+        )
+
+
+
     }
 
     componentDidMount = async () => {
@@ -197,19 +206,30 @@ class AvailablePage extends React.Component {
                                     <TableCell align="center">Sun, {this.state.dateStart.getDate() + 6}</TableCell>
                                 </TableRow>
                             </TableHead>
-                            <TableBody>
-                                {
-                                    this.state.shiftRegisterDatas ?
-                                        this.state.shiftRegisterDatas.map(
-                                            shiftRegisterData => this.renderAvailableRow(shiftRegisterData)
-                                        ) : "...Loading"
-                                }
-                            </TableBody>
+                            {
+                                this.state.shiftRegisterDatas ?
+                                    (
+                                        <TableBody>
+                                            {
+                                                this.renderAvailableRows()
+                                            }
+                                        </TableBody>
+                                    )
+                                    : (
+                                        <Skeleton variant="rect"style={{ width: "100%", height: "700px" }} >
+                                            <TableBody style={{ width: "100%", height: "700px" }}>
+
+
+                                            </TableBody>
+                                        </Skeleton>
+                                    )
+                            }
+
                         </Table>
                     </TableContainer>
                 </CardContent>
             </Paper>
-        </div>
+        </div >
         );
     }
 }

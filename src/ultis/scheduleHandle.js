@@ -102,13 +102,13 @@ export function convertDemandPresentToDemandData(demandData, dateStart) {
     }
 }
 
-export function getTotalHoursPerWeek(timeWorks) {
+export function getTotalHoursPerWeek(timeWorks, timeStartKey, timeEndKey) {
     let totalMinutesPerWeek = 0;
 
     timeWorks.forEach(timeWork => {
         let duration = intervalToDuration({
-            start: new Date(timeWork.timeStart),
-            end: new Date(timeWork.timeEnd)
+            start: new Date(timeWork[timeStartKey]),
+            end: new Date(timeWork[timeEndKey])
         });
         totalMinutesPerWeek += duration.hours * 60 + duration.minutes;
     });

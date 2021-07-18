@@ -32,8 +32,7 @@ function Alert(props) {
 function StaffNew(props) {
 
     const classes = useStyles();
-    const dataNew = {
-    };
+
 
     const onSubmit = (data) => {
         props.createStaff(data);
@@ -93,6 +92,8 @@ function StaffNew(props) {
 
 
 const mapStateToProps = (state) => {
+
+
 
     return {
         initialValues: state.staffs.data,

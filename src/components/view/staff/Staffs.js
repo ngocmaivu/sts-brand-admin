@@ -73,7 +73,7 @@ const styles = (Theme) => createStyles({
 class Staffs extends React.Component {
 
     state = {
-        searchValue: this.props.searchValue, openDeleteDialog: false, deleteUserId: null, openAddDialog: false,
+        searchValue: this.props.searchValue, openDeleteDialog: false, deleteId: null, openAddDialog: false,
         pageSize: 10, rowCount: 0, pageIndex: 1, loading: false, datas: this.props.users
     };
 
@@ -108,7 +108,7 @@ class Staffs extends React.Component {
                     onKeyPress={this.handleSearchSubmit} />
 
                 <Button variant="outlined" className={this.props.classes.searchButton} component={Link}
-                    to="/staff/new"> <AddIcon />ADD STAFF</Button>
+                    to="/staff/new"> <AddIcon />ADD STAFDF</Button>
 
             </div>
         );
@@ -120,30 +120,30 @@ class Staffs extends React.Component {
             this.setState({ openDeleteDialog: false });
         }
 
-        //         return (
-        //             <Dialog
-        //                 open={this.state.openDeleteDialog}
-        //                 onClose={handleClose}
-        //                 aria-labelledby="alert-dialog-title"
-        //                 aria-describedby="alert-dialog-description"
-        //             >
-        //                 <DialogTitle id="alert-dialog-title">{"Delete Dialog?"}</DialogTitle>
-        //                 <DialogContent>
-        //                     <DialogContentText id="alert-dialog-description">
-        //                         {`Do you want to delete user: ${this.state.deleteUserId}`}
-        //                     </DialogContentText>
-        //                 </DialogContent>
-        //                 <DialogActions>
-        //                     <Button onClick={handleClose} color="primary">
-        //                         Cancel
-        //                     </Button>
-        //                     <Button onClick={() => { this.props.deleteUser(this.state.deleteUserId); this.setState({ deleteUserId: null }); handleClose(); }} color="primary" autoFocus>
-        //                         Confirm
-        //                     </Button>
+        return (
+            <Dialog
+                open={this.state.openDeleteDialog}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">{"Delete Dialog?"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        {`Do you want to delete user: ${this.state.deleteId}`}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={() => { this.props.deleteStaff(this.state.deleteId); this.setState({ deleteId: null }); handleClose(); }} color="primary" autoFocus>
+                        Confirm
+                    </Button>
 
-        //                 </DialogActions>
-        //             </Dialog>
-        //         );
+                </DialogActions>
+            </Dialog>
+        );
     }
 
     handlePageSizeChange = (params) => {
@@ -184,11 +184,11 @@ class Staffs extends React.Component {
                 renderCell: (params) => {
                     const onClick = () => {
                         console.log(params);
-                        this.setState({ openDeleteDialog: true, deleteUserId: params.id });
+                        this.setState({ openDeleteDialog: true, deleteId: params.id });
                     }
 
                     return (<span>
-                        <Button className={classes.button} variant='outlined' color='primary' component={Link} to="/stores/1"
+                        <Button className={classes.button} variant='outlined' color='primary' component={Link} to={"/staff/info/" + params.id}
                         > <VisibilityOutlined fontSize='small' /></Button>
                         <Button onClick={onClick} className={`${classes.button} ${classes.deleteButton}`} variant='outlined'> <CloseOutlinedIcon fontSize='small' /></Button>
                     </span>);
@@ -222,7 +222,8 @@ class Staffs extends React.Component {
                                     <Skeleton animation="wave" variant="rect" height="20px" />
                                 </Grid>
                             </Grid>
-                        ) : <DataGrid disableColumnFilter rows={this.props.datas} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
+                        ) : <DataGrid disableColumnFilter rows={this.props.datas} 
+                        columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
                             paginationMode="server" rowCount={this.props.rowCount} />}
 
                     </div>

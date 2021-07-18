@@ -1,6 +1,6 @@
 import React from 'react';
 import './schedule.css';
-import { loadSkills, getStaffs, getWeekSchedule, computeSchedule } from "../../../_services";
+import { loadSkills, getStaffs, getWeekSchedule, triggerCompute, checkCompute } from "../../../_services";
 import {
     ScheduleComponent, Inject, Day, Week,
     TimelineViews, TimelineMonth, ViewsDirective, ViewDirective, Resize, DragAndDrop, ResourcesDirective, ResourceDirective
@@ -8,12 +8,12 @@ import {
 } from "@syncfusion/ej2-react-schedule";
 import { extend, isNullOrUndefined, L10n } from '@syncfusion/ej2-base';
 
-import { Card, CardHeader, Grid, Paper, Button, withStyles, Modal, createStyles, Divider, CardContent, LinearProgress } from '@material-ui/core';
+import { Card, CardHeader, Grid, Paper, Button, withStyles, Modal, createStyles, Divider, CardContent, LinearProgress, Typography } from '@material-ui/core';
 import { ShiftEditor } from './ShiftEditor';
 import firebase from "../../../firebase";
-import { getFirstDayOfWeek, isSameDay, convertShift, convertShiftToFireBaseObj } from "../../../ultis/scheduleHandle";
-import scheduleData from './scheduleData.json';
-import { getDocs } from "firebase/firestore";
+import { getFirstDayOfWeek, isSameDay, convertShift, convertShiftToFireBaseObj, getTotalHoursPerWeek } from "../../../ultis/scheduleHandle";
+import { getScheduleDataInput } from "../../../_actions";
+import { connect } from 'react-redux';
 
 L10n.load({
     'en-US': {
@@ -26,6 +26,7 @@ L10n.load({
         }
     }
 });
+
 const styles = (theme) => createStyles({
     modal: {
         display: 'flex',
@@ -42,10 +43,15 @@ const styles = (theme) => createStyles({
     },
 
 });
+
 class ScheduleMain extends React.Component {
     constructor() {
         super(...arguments);
-
+        this.state = {
+            skillDataSrc: null,
+            employeeData: null,
+            openWaitingComputeModal: false,
+        }
         // this.employeeData = [
         //     { Name: 'Alice', Id: 1, GroupId: 1, Color: '#bbdc00',},
         //     { Name: 'Nancy', Id: 2, GroupId: 2, Color: '#9e5fff', },
@@ -111,17 +117,20 @@ class ScheduleMain extends React.Component {
         }).catch((error) => {
             console.log("Error getting document:", error);
         });
-
-
-
     }
 
-    state = {
-        skillDataSrc: null,
-        employeeData: null,
-        openWaitingComputeModal: false
+
+
+    componentDidUpdate = (prevState) => {
+        if (this.updateResourceHeaderTemplate) {
+            this.scheduleObj.resourceHeaderTemplate = this.resourceHeaderTemplate;
+        }
     }
+
+
+
     loadData = async () => {
+
 
         var skills = await loadSkills();
         if (skills != null) {
@@ -130,8 +139,12 @@ class ScheduleMain extends React.Component {
             })
             console.log(skills);
         }
+
         var staffs = await getStaffs();
-        staffs = staffs.map(staff => ({ Name: `${staff.firstName} ${staff.lastName}`, Id: staff.username, }))
+        console.log(staffs);
+
+        staffs = staffs.map(staff => ({ Name: `${staff.firstName} ${staff.lastName}`, Id: staff.username }));
+        console.log(staffs);
 
         this.setState({
             employeeData: staffs
@@ -146,20 +159,17 @@ class ScheduleMain extends React.Component {
         if (this.state.skillDataSrc && this.state.employeeData) {
             this.getDataSource();
         }
-
-
     }
 
     componentWillUnmount = () => {
         if (this.unSub)
             this.unSub();
-
     }
 
-
+    //----------------
     getDataSource = async () => {
         const ref = firebase.firestore().collection("brands");
-        let unSub = null;
+
         //Get datasource
         await ref.doc(`${this.BrandId}-${this.StoreId}`).collection("schedules").get().then((snapshot) => {
             let isExistWeekSchedule = false;
@@ -197,8 +207,11 @@ class ScheduleMain extends React.Component {
 
                             //this.dataSource = src;
                             // let schObj = document.querySelector('.e-schedule').ej2_instances[0];
-                            if (this.scheduleObj)
+                            if (this.scheduleObj) {
                                 this.scheduleObj.eventSettings.dataSource = src;
+                                this.getTotalHoursPerWeek();
+                            }
+
                             //schObj.eventSettings.dataSource = src;
 
                         });
@@ -237,6 +250,8 @@ class ScheduleMain extends React.Component {
     unSubDataSource = () => {
         this.unSub();
     }
+
+
     //----------------
 
     setStartTime = (StartTime) => {
@@ -288,53 +303,29 @@ class ScheduleMain extends React.Component {
                 (args.data).Skill = this.state.skillDataSrc.find(e => e.id == skillElement.value).name;
 
             }
-            console.log(this.scheduleObj.eventSettings.dataSource);
+            // console.log(this.scheduleObj.eventSettings.dataSource);
 
         }
     }
-    addEvent = async () => {
+
+
+    triggerComputeSchedule = async () => {
         const WeekSchedule = await getWeekSchedule(getFirstDayOfWeek(this.currentDate));
         let wId = WeekSchedule.id;
         console.log("ID:" + wId)
-        const datas = await computeSchedule(wId);
-        console.log(datas);
-        //const datas = scheduleData;
-        if (datas && datas.shiftAssignments && datas.shiftAssignments.length != 0)
-            datas.shiftAssignments.forEach(e => {
-                let Data = {
-                    Skill: this.state.skillDataSrc.find(skill => skill.id = e.skillId).name,
-                    SkillId: e.skillId,
-                    EndTime: new Date(e.timeEnd),
-                    StartTime: new Date(e.timeStart),
-                    StaffId: e.username,
-                    Description: ""
-                };
+        const data = await triggerCompute(wId);
+        return data.id;
+    }
 
-                const newShiftRef = this.refScheduleCurrentCollection.doc();
-                Data.Id = newShiftRef.id;
-                console.log('new shift Id:' + newShiftRef.id);
-                const data = convertShiftToFireBaseObj(Data);
-                console.log(data);
-                newShiftRef.set(data);
-                //this.scheduleObj.addEvent(Data);
-            })
-
-        //console.log(this.scheduleObj);
+    checkComputeResult = async (shiftScheduleResultId) => {
+        let result = await checkCompute(shiftScheduleResultId);
+        return result;
     }
 
     clearEvent = () => {
         var batch = firebase.firestore().batch();
         console.log(this.refScheduleCurrentCollection);
 
-        // }).then();
-        // firebase.firestore().getDocs(this.refScheduleCurrentCollection);
-        // // this.refScheduleCurrentCollection.getDocs().then(val => {
-        // //     val.map((val) => {
-        // //         batch.delete(val)
-        // //     })
-
-        // //     batch.commit();
-        // // })
         this.refScheduleCurrentCollection.get().then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 // doc.data() is never undefined for query doc snapshots
@@ -344,6 +335,7 @@ class ScheduleMain extends React.Component {
             });
 
             batch.commit();
+            // this.getTotalHoursPerWeek();
         });
 
     }
@@ -358,6 +350,8 @@ class ScheduleMain extends React.Component {
             console.log('Change Week');
             this.unSub();
             this.getDataSource();
+
+
         } else {
             //Update Ref Schedule
             this.currentDate = args.currentDate;
@@ -366,7 +360,9 @@ class ScheduleMain extends React.Component {
     }
 
     onActionBegin = async (args) => {
-        console.log(args);
+        //console.log(args);
+
+
         if (args.requestType == "eventChange") {
             this.refScheduleCurrentCollection.doc(args.changedRecords[0].Id).update(convertShiftToFireBaseObj(args.changedRecords[0]));
         } else if (args.requestType === 'eventCreate' && args.data.length > 0) {
@@ -393,18 +389,117 @@ class ScheduleMain extends React.Component {
         } else if (args.requestType == "eventRemove") {
             this.refScheduleCurrentCollection.doc(args.deletedRecords[0].Id).delete();
         }
+
+        // this.updateTotalHoursPersWeek();
     }
 
-    computeSchedule = () => {
+    computeSchedule = async () => {
         //Load scheduleId
         this.setState({ openWaitingComputeModal: true });
+        let shiftScheduleResultId = await this.triggerComputeSchedule();
 
-        setTimeout(() => {
-            this.addEvent();
-            this.setState({ openWaitingComputeModal: false });
-        }, 3000)
+        let checkResultInterval = setInterval(async () => {
+            let result = await this.checkComputeResult(shiftScheduleResultId);
+            if (result.shiftAssignments) {
+                clearInterval(checkResultInterval);
+                this.setState({ openWaitingComputeModal: false });
+                if (result.shiftAssignments.length != 0) {
+
+                    console.log("Feasible");
+
+                    result.shiftAssignments.forEach(e => {
+
+                        let Data = {
+                            Skill: this.state.skillDataSrc.find(skill => skill.id == e.skillId).name,
+                            SkillId: e.skillId,
+                            EndTime: new Date(e.timeEnd),
+                            StartTime: new Date(e.timeStart),
+                            StaffId: e.username,
+                            Description: ""
+                        };
+
+                        const newShiftRef = this.refScheduleCurrentCollection.doc();
+                        Data.Id = newShiftRef.id;
+                        console.log('new shift Id:' + newShiftRef.id);
+                        const data = convertShiftToFireBaseObj(Data);
+                        console.log(data);
+                        newShiftRef.set(data);
+                        //this.scheduleObj.addEvent(Data);
+                    });
+
+                } else {
+                    console.log("Infeasible");
+                }
+            } {
+                console.log("...Waiting");
+            }
+
+        }, 5000);
 
     }
+
+    resourceHeaderTemplate = (props) => {
+        console.log(props);
+        //this.getTotalHoursPerWeek(props.resourceData.Id);
+        return (
+            <div className="template-wrap"><div className="employee-category">
+
+                <div className="employee-name">
+                    <Typography variant="subtitle1">
+                        {this.getEmployeeName(props)}</Typography></div>
+                <div id={`total-hours-${props.resourceData.Id}`}>{`0 hrs/week`}</div>
+            </div></div>
+        );
+    }
+
+    getEmployeeName(props) {
+        return props.resourceData.Name;
+    }
+
+    updateTotalHoursPersWeek() {
+        var arr = this.scheduleObj.eventSettings.dataSource;
+        var employeeDatas = this.state.employeeData;
+        if (arr.length != 0) {
+
+            employeeDatas.forEach(
+                staff => {
+                    let timeWorks = arr.filter(shift => shift.StaffId == staff.Id);
+                    console.log(timeWorks);
+                    let totalHours = getTotalHoursPerWeek(timeWorks, "StartTime", 'EndTime');
+                    staff.TotalHours = totalHours;
+
+                    document.getElementById(`total-hours-${staff.Id}`).textContent = `${totalHours} hrs/week`;
+                }
+            );
+            console.log(employeeDatas);
+
+            //this.updateResourceHeaderTemplate = true;
+            //this.setState({ employeeData: employeeDatas });
+        } else {
+            employeeDatas.forEach(
+                staff => {
+                    document.getElementById(`total-hours-${staff.Id}`).textContent = `${0} hrs/week`;
+                }
+
+            );
+        }
+    }
+
+    getTotalHoursPerWeek = (trigger) => {
+
+        this.getTotalHoursPerWeekInterval = setInterval(() => {
+            console.log("getTotalHoursPerWeek ");
+
+            if (this.scheduleObj) {
+                this.updateTotalHoursPersWeek();
+                clearInterval(this.getTotalHoursPerWeekInterval);
+            }
+
+        }, 1000);
+
+
+    }
+
     render() {
         return (
             <Paper style={{ minHeight: "80vh" }}>
@@ -437,6 +532,7 @@ class ScheduleMain extends React.Component {
                         popupClose={this.popupClose}
                         navigating={this.navigatingEvent}
                         actionBegin={this.onActionBegin}
+                        resourceHeaderTemplate={this.resourceHeaderTemplate}
                     >
 
                         <ResourcesDirective>
@@ -456,7 +552,7 @@ class ScheduleMain extends React.Component {
                             <ViewDirective option='TimelineDay' startHour="7" />
                             <ViewDirective option='TimelineWeek' timeScale={{ enable: false }} />
                         </ViewsDirective>
-                        <Inject services={[Day, TimelineViews, Week, TimelineMonth, Resize, DragAndDrop]} />
+                        <Inject services={[Day, TimelineViews, Week, TimelineMonth, DragAndDrop]} />
                         {/* <Inject services={[Day, Week, WorkWeek, Month, TimelineViews, TimelineMonth]} /> */}
                     </ScheduleComponent>)
                     :
@@ -486,4 +582,13 @@ class ScheduleMain extends React.Component {
     }
 }
 
-export default withStyles(styles)(ScheduleMain);
+const mapStateToProps = (state) => {
+
+}
+
+export default connect(
+    null,
+    {
+        getScheduleDataInput
+    }
+)(withStyles(styles)(ScheduleMain));
