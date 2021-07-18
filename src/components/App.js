@@ -22,6 +22,7 @@ import SettingSchedule from './view/schedule/SettingSchedule';
 import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import EditBrand from './ProfilePage/EditBrand';
+import AvailablePage from './view/schedule/Available';
 import { alertActions } from '../_actions';
 import MuiAlert from '@material-ui/lab/Alert';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -85,13 +86,14 @@ class App extends React.Component {
                   <Route path="/stores/new" >
                     <StoreNew />
                   </Route>
-                  <Route path="/staff" exact>
+                  <Route path="/staffs" exact>
                     <Staffs />
                   </Route>
                   <Route path="/settingSkill" exact>
                     <SettingBrandSkill />
                   </Route>
                   <Route exact path="/staff/new" component={StaffNew} />
+                  <Route exact path="/staff/info/:id" component={Staff} />
                   {/* <Route exact path="/staff/:id" component={Staff} /> */}
                   <Route path="/notify">
                     <Notification />
@@ -104,6 +106,9 @@ class App extends React.Component {
                   </Route>
                   <Route path="/schedule/setting">
                     <SettingSchedule />
+                  </Route>
+                  <Route path="/schedule/available">
+                    <AvailablePage />
                   </Route>
                   <Route path="/brandhome">
                     <BrandHome />

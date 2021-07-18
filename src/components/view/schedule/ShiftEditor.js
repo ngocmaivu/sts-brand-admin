@@ -14,13 +14,13 @@ export function ShiftEditor({ parentProps, setStartTime, setEndTime, setStaffId,
     const [start, setStart] = useState("");
     const [end, setEnd] = useState("");
     const [skill, setSkill] = useState(parentProps.SkillId);
-
+    console.log()
     const handleStart = (e) => {
         setStart(e.target.value);
         if (e.target.value) {
-        const StartTime = new Date(parentProps.startTime || parentProps.StartTime);
-        StartTime.setHours(e.target.value.getHours(), e.target.value.getMinutes());
-        setStartTime(StartTime);
+            const StartTime = new Date(parentProps.startTime || parentProps.StartTime);
+            StartTime.setHours(e.target.value.getHours(), e.target.value.getMinutes());
+            setStartTime(StartTime);
         }
     }
     const handleEnd = (e) => {
@@ -34,6 +34,7 @@ export function ShiftEditor({ parentProps, setStartTime, setEndTime, setStaffId,
     }
 
     useEffect(() => {
+        console.log("hello");
         //INIT
         setStaffId(parentProps.StaffId);
         let tmp = new Date(parentProps.startTime || parentProps.StartTime);

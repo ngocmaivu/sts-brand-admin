@@ -81,10 +81,10 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 12,
     marginTop: appBarHeight,
     flexGrow: 1,
-   
-    padding: 20,
+
+    padding: 10,
     backgroundColor: '#e3f2fd',
-    padding: theme.spacing(3),
+    padding: theme.spacing(2),
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
@@ -186,9 +186,9 @@ if (user === null) {
     },
     {
       id: 'staffs',
-      title: 'Staff',
+      title: 'Staffs',
       type: 'item',
-      url: '/staff',
+      url: '/staffs',
       icon: <GroupOutlinedIcon />
     },
     {
@@ -224,7 +224,7 @@ if (user === null) {
       id: 'staffs',
       title: 'Staff',
       type: 'item',
-      url: '/staff',
+      url: '/staffs',
       icon: <GroupOutlinedIcon />
     },
     {
@@ -243,9 +243,16 @@ if (user === null) {
         },
         {
           type: 'item',
-          id: 'activity',
+          id: 'setting',
           title: 'Setting',
           url: '/schedule/setting',
+          icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+        },
+        {
+          type: 'item',
+          id: 'available',
+          title: 'Available',
+          url: '/schedule/available',
           icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
         }
       ]
