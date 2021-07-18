@@ -23,19 +23,51 @@ import { MuiPickersUtilsProvider } from '@material-ui/pickers';
 import DateFnsUtils from '@date-io/date-fns';
 import EditBrand from './ProfilePage/EditBrand';
 import AvailablePage from './view/schedule/Available';
+import { alertActions } from '../_actions';
+import MuiAlert from '@material-ui/lab/Alert';
+import Snackbar from '@material-ui/core/Snackbar';
+import { RegisterPage } from './RegisterPage';
+import SettingBrandSkill from './ProfilePage/SettingBrandSkill';
+import EditStore from './EditStore/EditStore';
+import StoreTimekeeping from './Timekeeping/StoreTimekeeping';
 
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 class App extends React.Component {
 
+  constructor(props) {
+    super(props);
+    history.listen((location, action) => {
+      // clear alert on location change
+      this.props.clearAlerts();
+    });
+  }
+  state = { open: false }
   render() {
+    const { alert } = this.props;
+
+    if (alert.message === "" || !alert.message) {
+      this.state.open = false
+    }
+    else this.state.open = true
     return (
       <div>
         <ThemeProvider theme={theme}>
+          <Snackbar open={this.state.open} autoHideDuration={3000} onClose={() => this.state.open = false} >
+            <Alert severity="success">
+              {alert.message &&
+                <div className={`alert ${alert.type}`}>{alert.message}</div>
+              }
+            </Alert>
+          </Snackbar>
+          {/* <MuiPickersUtilsProvider utils={DatePicker}> */}
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Router history={history} >
               <Switch>
-                <Route path="/login" component={LoginPage} />
+              <Route path="/login" component={LoginPage} />
                 <Layout>
-                  <PrivateRoute path="/" exact> <Stores /> </PrivateRoute>
+                  <PrivateRoute path="/" exact> <BrandHome /> </PrivateRoute>
                   <Route path="/stores" exact>
                     <Stores />
                   </Route>
@@ -48,20 +80,29 @@ class App extends React.Component {
                   <Route path="/editbrand" exact>
                     <EditBrand />
                   </Route>
+                  <Route path="/editStore/:id" render={(props) => <EditStore {...props} />}/>
+                    {/* <EditStore />
+                  </Route> */}
                   <Route path="/stores/new" >
                     <StoreNew />
                   </Route>
                   <Route path="/staffs" exact>
                     <Staffs />
                   </Route>
+                  <Route path="/settingSkill" exact>
+                    <SettingBrandSkill />
+                  </Route>
                   <Route exact path="/staff/new" component={StaffNew} />
                   <Route exact path="/staff/info/:id" component={Staff} />
-
+                  {/* <Route exact path="/staff/:id" component={Staff} /> */}
                   <Route path="/notify">
                     <Notification />
                   </Route>
                   <Route path="/schedule/view">
                     <ScheduleMain />
+                  </Route>
+                  <Route path="/storeTimekeeping" exact>
+                    <StoreTimekeeping/>
                   </Route>
                   <Route path="/schedule/setting">
                     <SettingSchedule />
@@ -83,5 +124,12 @@ class App extends React.Component {
     );
   }
 }
+function mapState(state) {
+  const { alert } = state;
+  return { alert };
+}
 
-export default connect()(App);
+const actionCreators = {
+  clearAlerts: alertActions.clear
+};
+export default connect(mapState, actionCreators)(App);

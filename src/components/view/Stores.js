@@ -1,18 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import { connect } from 'react-redux';
 import { Button, createStyles, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, InputAdornment, TextField, withStyles, Paper, Card } from '@material-ui/core';
-// import { getUsers, deleteUser } from "../actions";
+import Snackbar from '@material-ui/core/Snackbar';
 import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
 import AddIcon from '@material-ui/icons/Add';
-import CloseOutlinedIcon from '@material-ui/icons/CloseOutlined';
-import VisibilityOutlined from '@material-ui/icons/VisibilityOutlined';
-import AddUser from '../dialogs/AddUser';
+import MuiAlert from '@material-ui/lab/Alert';
 import { Link } from 'react-router-dom';
 // import { users } from "../../../dataTest/user"
 import { storeActions } from '../../_actions';
 import { Delete, Edit, ImageSearch, ImageSearchTwoTone, SearchTwoTone, ViewAgenda, ViewStreamOutlined } from '@material-ui/icons';
 import { store } from '../../_helpers';
+import { isThisSecond } from 'date-fns';
+
+function Alert(props) {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const styles = (Theme) => createStyles({
     root: {
@@ -70,7 +73,7 @@ const styles = (Theme) => createStyles({
         padding: 20
     }
 })
-
+var deleting = false;
 
 class Stores extends React.Component {
 
@@ -80,7 +83,7 @@ class Stores extends React.Component {
     }
     state = {
         searchValue: '', openDeleteDialog: false, deleteUserId: null, openAddDialog: false,
-        pageSize: 10, rowCount: 0, pageIndex: 1,
+        pageSize: 10, rowCount: 0, pageIndex: 1, open: true, setOpen: false
     };
 
     handleSearchValueChange = (event) => {
@@ -88,64 +91,84 @@ class Stores extends React.Component {
     }
 
     handleSearchSubmit = (e) => { }
-    
 
-   
     handleDeleteStore(id) {
-        return (e) => this.props.deleteStore(id);
+        return (e) => { this.props.deleteStore(id); deleting = true}
     }
 
     renderToolbar = () => {
         return (
             <div className={this.props.classes.toolbar}>
                 <TextField style={{ height: '40px', width: '600px' }} placeholder="search" size='small' variant="outlined"
-                 />
+                />
                 {/* <SearchOutlinedIcon style={{marginLeft: '-350px', color: '#50A625'}} /> */}
-                <Button style={{marginLeft: '-350px', color: '#009966'}}> <SearchTwoTone fontSize='small' /></Button>
+                <Button style={{ marginLeft: '-350px', color: '#009966' }}> <SearchTwoTone fontSize='small' /></Button>
                 <Button variant="outlined" className={this.props.classes.searchButton} component={Link}
                     to="/stores/new"> <AddIcon />Add Store</Button>
             </div>
         );
     }
 
-    renderDeleteDialog = () => {
 
-        const handleClose = () => {
-            this.setState({ openDeleteDialog: false });
-        }
+    // renderDeleteDialog = () => {
+    //     const [open, setOpen] = React.useState(false);
 
-        return (
-            <Dialog
-                open={this.state.openDeleteDialog}
-                onClose={handleClose}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogTitle id="alert-dialog-title">{"Delete Dialog?"}</DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                        {`Do you want to delete user: ${this.state.deleteUserId}`}
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} color="primary">
-                        Cancel
-                    </Button>
-                    <Button onClick={() => { this.props.deleteUser(this.state.deleteUserId); this.setState({ deleteUserId: null }); handleClose(); }} color="primary" autoFocus>
-                        Confirm
-                    </Button>
+    //     const handleClick = () => {
+    //         setOpen(true);
+    //     };
 
-                </DialogActions>
-            </Dialog>
-        );
-    }
+    //     const handleClose = (event, reason) => {
+    //         if (reason === 'clickaway') {
+    //             return;
+    //         }
+    //         setOpen(false);
+    //     };
+
+    //     return (
+
+    //         <Dialog
+    //             open={this.state.openDeleteDialog}
+    //             onClose={handleClose}
+    //             aria-labelledby="alert-dialog-title"
+    //             aria-describedby="alert-dialog-description"
+    //         >
+    //             <DialogTitle id="alert-dialog-title">{"Delete Dialog?"}</DialogTitle>
+    //             <DialogContent>
+    //                 <DialogContentText id="alert-dialog-description">
+    //                     {`Do you want to delete user: ${this.state.deleteUserId}`}
+    //                 </DialogContentText>
+    //             </DialogContent>
+    //             <DialogActions>
+    //                 <Button onClick={handleClose} color="primary">
+    //                     Cancel
+    //                 </Button>
+    //                 <Button onClick={() => { this.handleDeleteStore(store.id) }} >
+    //                     Confirm
+    //                 </Button>
+    //                 <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+    //                     <Alert onClose={handleClose} severity="success">
+    //                         This is a success message!
+    //                     </Alert>
+    //                 </Snackbar>
+
+    //             </DialogActions>
+    //         </Dialog>
+    //     );
+    // }
 
     handlePageSizeChange = (params) => {
     };
 
+    handleClick = (id) => {
+        this.props.deleteStore(id);
+        
+    };
 
+    
     render() {
-        const {stores}  = this.props;
+        const { stores, type} = this.props;
+
+
         const columns = [
             { field: 'id', headerName: 'Store ID', width: 200 },
             { field: 'name', headerName: 'Name', width: 300 },
@@ -155,49 +178,48 @@ class Stores extends React.Component {
                 headerName: 'Phone',
                 width: 200,
             },
-            // {
-            //     field: 'storeManager',
-            //     headerName: 'Store Manager',
-            //     width: 200,
-            // },
-            // {
-            //     field: 'stt',
-            //     headerName: 'Status',
-            //     width: 150,
-            // },
-
             {
                 field: 'action', headerName: "Actions", flex: 0.3, sortable: false, filterable: false,
                 headerAlign: 'center',
                 width: 50,
                 renderCell: (params) => {
-                    const onClick = () => {
-                        this.setState({ openDeleteDialog: true, deleteUserId: params.getValue('id') });
-                    }
 
                     return (<span>
-                        <Button color='primary' component={Link} to="/changeStoreManager/"> <Edit fontSize='small' /></Button>
-                        {/* <Button color='primary' component={Link} to="/changeStoreManager/"> < fontSize='small' /></Button> */}
-                        <Button onClick={onClick} style={{color: 'red'}}> <Delete fontSize='small' /></Button>
+                        <Button color='primary' component={Link} to={`/editStore/${params.id}`}> <Edit fontSize='small' /></Button>
+                        <Button onClick={this.handleDeleteStore(params.id)} style={{ color: 'red' }}> <Delete fontSize='small' /></Button>
                     </span>);
                 }
-
             }
         ];
-
-        if (!this.props.stores.items) {
+        var loading = false;
+        
+       
+        // if (stores.type === "STORE_GETALL_SUCCESS") loading = true;
+        // if (stores.type === "STORE_DELETE_SUCCESS") deleting = true;
+        console.log(this.props.stores.loading);
+        if ( !this.props.stores.items ) {
             return <p>...Loading</p>;
         }
         // var items = JSON.parse(localStorage.getItem("stores"));
         // console.log(stores.items)
         return (
             <React.Fragment>
+                {/* { loading &&
+                <Snackbar open={this.state.open} autoHideDuration={3000} onClose={() => this.setState({open: false})} >
+                    <Alert  severity="success">
+                       Loading store is success!
+                    </Alert>
+                </Snackbar>}
+                { deleting &&
+                <Snackbar open={this.state.open} autoHideDuration={3000} onClose={() => this.setState({open: false})} >
+                    <Alert  severity="success">
+                       Delete store is success!
+                    </Alert>
+                </Snackbar>} */}
                 <Card style={{ padding: '10px', marginBottom: '15px' }}>
-                   <div> <h1>Store page</h1> {this.renderToolbar()}</div>
+                    <div> <h1>Store page</h1> {this.renderToolbar()}</div>
                 </Card>
-                <Paper className={this.props.classes.container}>
-
-                   
+                <Paper>
                     <div style={{ height: 452, width: '100%' }}>
                         <DataGrid disableColumnFilter rows={stores.items} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
                             paginationMode="server" rowCount={100} />
@@ -209,8 +231,8 @@ class Stores extends React.Component {
     }
 }
 function mapState(state) {
-    const { stores } = state;
-    return {stores};
+    const { stores, deleting } = state;
+    return { stores, deleting };
 }
 
 export default connect(mapState, {

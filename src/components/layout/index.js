@@ -18,7 +18,7 @@ import ProfileIcon from "@material-ui/icons/Person";
 import jwt_decode from "jwt-decode";
 // import Logout from "../auth/Logout";
 import ProfileSection from "./ProfileSection";
-import { CalendarTodayOutlined, FiberDvr, FiberManualRecord, Home, NotificationsNoneOutlined, Store } from "@material-ui/icons";
+import { CalendarTodayOutlined, FiberDvr, FiberManualRecord, Home, NotificationsNoneOutlined, Settings, Store } from "@material-ui/icons";
 import NavItem from "./NavItem";
 import NavCollapse from "./NavCollapse";
 
@@ -199,13 +199,20 @@ if (user === null) {
       icon: <CalendarTodayOutlined />
     },
     {
+      id: 'brandskills',
+      title: 'Setting Brand Skill',
+      url: '/settingSkill',
+      type: 'item',
+      icon: <Settings />
+    },
+    {
       id: 'profile',
       title: 'Profile',
       type: 'item',
       url: "/profile",
       icon: <ProfileIcon />
     })
-  else INIT_DATA.items.push(
+  else if(user.role === "store manager") INIT_DATA.items.push(
     {
       id: 'home',
       title: 'Home',
@@ -251,6 +258,13 @@ if (user === null) {
       ]
     },
     {
+      id: 'timekeeping',
+      title: 'Timekeeping',
+      url: '/storeTimekeeping',
+      type: 'item',
+      icon: <CalendarTodayOutlined />
+    },
+    {
       type: 'collapse',
       id: 'notify',
       title: 'Notification',
@@ -280,7 +294,7 @@ if (user === null) {
       url: "/profile",
       icon: <ProfileIcon />
     }
-  )
+  ) 
 }
 
 export default function MainLayout(props) {

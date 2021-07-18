@@ -4,32 +4,34 @@ export function stores(state = {}, action) {
     switch (action.type) {
         case storeConstants.STORE_GETALL_REQUEST:
             return {
-                ...state,
+                // ...state,
                 loading: true
             };
         case storeConstants.STORE_GETALL_SUCCESS:
             return {
-                ...state,
+                // ...state,
                 items: action.stores,
+                type: action.type,
             };
         case storeConstants.STORE_GETBYID_FAILURE:
             return {
-                ...state,
+                // ...state,
                 error: action.error
             };
         case storeConstants.STORE_GETBYID_REQUEST:
             return {
-                ...state,
+                // ...state,
                 loading: true
             };
         case storeConstants.STORE_GETBYID_SUCCESS:
             return {
-                ...state,
-                items: action.stores,
+                // ...state,
+                items: action.store,
+                type: action.type,
             };
         case storeConstants.STORE_GETBYID_FAILURE:
             return {
-                ...state,
+                // ...state,
                 error: action.error
             };
         case storeConstants.STORE_CREAT_REQUEST:
@@ -62,6 +64,22 @@ export function stores(state = {}, action) {
                 ...state,
                 error: action.error
             };
+
+        case storeConstants.MANAGER_STORE_UPDATE_REQUEST:
+            return {
+                ...state,
+                updating: true
+            };
+        case storeConstants.MANAGER_STORE_UPDATE_SUCCESS:
+            return {
+                ...state,
+                items: action.store
+            };
+        case storeConstants.MANAGER_STORE_UPDATE_FAILURE:
+            return {
+                ...state,
+                error: action.error
+            };
         case storeConstants.STORE_DELETE_REQUEST:
             // add 'deleting:true' property to user being deleted
             return {
@@ -75,7 +93,8 @@ export function stores(state = {}, action) {
         case storeConstants.STORE_DELETE_SUCCESS:
             // remove deleted user from state
             return {
-                items: state.items.filter(store => store.id !== action.id)
+                items: state.items.filter(store => store.id !== action.id),
+                type: action.type,
             };
         case storeConstants.STORE_GETALL_FAILURE:
             // remove 'deleting:true' property and add 'deleteError:[error]' property to user 

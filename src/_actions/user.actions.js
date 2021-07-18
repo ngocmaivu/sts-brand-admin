@@ -8,6 +8,8 @@ export const userActions = {
     logout,
     register,
     getAll,
+    getByUserName,
+    updateUser,
     delete: _delete
 };
 
@@ -17,9 +19,14 @@ function login(username, password) {
 
         userService.login(username, password)
             .then(
-                user => { 
-                    dispatch(success(user));
-                    history.push({ pathname: '/stores' });
+                user => {
+                    if (user.role === "staff") {
+                        dispatch(failure("Invalid user name or password"));
+                        dispatch(alertActions.error("Invalid user name or password"));
+                    } else {
+                        dispatch(success(user));
+                        history.push({ pathname: '/brandhome' });
+                    }
                 },
                 error => {
                     dispatch(failure(error.toString()));
@@ -44,7 +51,7 @@ function register(user) {
 
         userService.register(user)
             .then(
-                user => { 
+                user => {
                     dispatch(success());
                     history.push('/login');
                     dispatch(alertActions.success('Registration successful'));
@@ -75,6 +82,46 @@ function getAll() {
     function request() { return { type: userConstants.GETALL_REQUEST } }
     function success(users) { return { type: userConstants.GETALL_SUCCESS, users } }
     function failure(error) { return { type: userConstants.GETALL_FAILURE, error } }
+}
+
+function getByUserName() {
+    return dispatch => {
+        dispatch(request());
+
+        userService.getUserProfile()
+            .then(
+                userInfor => {
+                    dispatch(success(userInfor));
+                },
+                error => dispatch(failure(error.toString()))
+            );
+
+    };
+
+    function request() { return { type: userConstants.GET_USER_REQUEST } }
+    function success(userInfor) { return { type: userConstants.GET_USER_SUCCESS, userInfor} }
+    function failure(error) { return { type: userConstants.GET_USER_FAILURE, error } }
+}
+
+function updateUser(user) {
+    return dispatch => {
+        dispatch(request());
+
+        userService.update(user)
+            .then(
+                user => {
+                    dispatch(success(user));
+                    history.push('/profile');
+                    dispatch(alertActions.success('Update user successful'));
+                    console.log("Update user " + user);
+                },
+                error => dispatch(failure(error.toString()))
+            );
+    };
+
+    function request() { return { type: userConstants.UPDATE_USER_REQUEST } }
+    function success(user) { return { type: userConstants.UPDATE_USER_SUCCESS, user } }
+    function failure(error) { return { type: userConstants.UPDATE_USER_FAILURE, error } }
 }
 
 // prefixed function name with underscore because delete is a reserved word in javascript

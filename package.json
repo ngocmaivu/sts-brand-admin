@@ -1,6 +1,9 @@
 {
   "name": "sts-brand",
   "version": "0.1.0",
+  "engines": {
+    "node": "14.x"
+  },
   "private": true,
   "homepage": "https://manager-sts.herokuapp.com/",
   "dependencies": {
@@ -42,6 +45,7 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
     "sass-loader": "^10.1.1",
+    "typescript": "^4.3.4",
     "web-vitals": "^1.1.2",
     "yup": "^0.32.9"
   },

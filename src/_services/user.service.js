@@ -2,6 +2,7 @@
 import { authHeader } from '../_helpers';
 import jwt_decode from "jwt-decode";
 
+const userInfor = JSON.parse(localStorage.getItem("jwt_decode"))
 export const userService = {
     login,
     logout,
@@ -9,6 +10,7 @@ export const userService = {
     getAll,
     getById,
     update,
+    getUserProfile,
     delete: _delete
 };
 
@@ -29,10 +31,22 @@ function login(username, password) {
         });
 }
 
+function getUserProfile() {
+    const requestOptions = {
+        method: 'GET',
+        headers: authHeader(),
+        // body: JSON.stringify({ username})
+    };
+
+    return fetch(`https://sts-project.azurewebsites.net/api/users/profile`, requestOptions)
+        .then(handleResponse)
+}
+
 function logout() {
     // remove user from local storage to log user out
     localStorage.removeItem('user');
     localStorage.removeItem('jwt_decode');
+    localStorage.removeItem('userInfor');
 }
 
 function getAll() {
@@ -70,7 +84,7 @@ function update(user) {
         body: JSON.stringify(user)
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/users/${user.id}`, requestOptions).then(handleResponse);;
+    return fetch(`https://sts-project.azurewebsites.net/api/users`, requestOptions).then(handleResponse);;
 }
 
 // prefixed function name with underscore because delete is a reserved word in javascript
