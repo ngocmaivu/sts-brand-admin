@@ -10,6 +10,7 @@ const INIT = {
     searchValue: "",
     error: "",
     data: null,
+
     stores: null,
     skills: null,
     message: null
@@ -31,6 +32,7 @@ export function staffReducer(state = INIT, action) {
 
         case staffConstants.STAFF_GETALL_FAILURE:
             return { ...state, error: action.payload.error };
+
         case staffConstants.STAFF_DELETE_SUCCESS:
             console.log('DELETE ' + action.payload);
             let datas = _.omit(state.datas, action.payload);
@@ -44,11 +46,18 @@ export function staffReducer(state = INIT, action) {
 
         case staffConstants.STAFF_LOAD:
             return { ...state, data: action.payload.data, skills: action.payload.skills, stores: action.payload.stores };
+
         case staffConstants.STAFF_CREATE_FAILURE:
             return { ...state, error: "Fail Create" };
+
         case staffConstants.STAFF_CREATE_SUCCESS:
             return { ...state, message: "SUCCESS" };
+
+        case staffConstants.STAFF_GET:
+            
+            return { ...state, ...action.payload };
+
         default:
-            return state
+            return state;
     }
 }

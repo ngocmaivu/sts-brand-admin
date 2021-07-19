@@ -1,4 +1,4 @@
-import { createStyles, Tab, Tabs, withStyles, makeStyles, Grid, CardHeader, CardContent, Card, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Select, MenuItem, FormControl, FormLabel, TextField } from '@material-ui/core';
+import { createStyles, Tab, Tabs, withStyles, Grid, CardHeader, CardContent, Card, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Select, MenuItem, FormControl, FormLabel, TextField, FormHelperText } from '@material-ui/core';
 import React from 'react';
 import PropTypes from 'prop-types';
 import DemandSkill from './DemandSkill';
@@ -7,6 +7,7 @@ import { loadSkills, getWeekScheduleDemand, updateDemand, deleteDemand, createDe
 import { addDays, differenceInDays } from 'date-fns';
 import { levelInit, levels } from "../../../_constants/levelData";
 import { convertDemandDataToDemandPresent, convertDemandPresentToDemandData, } from "../../../ultis/scheduleHandle";
+import DemandEditor from './DemandEditor';
 const styles = (theme) => createStyles({
 
     root: {
@@ -44,7 +45,6 @@ const styles = (theme) => createStyles({
         "& .MuiInputBase-root": {
             padding: "0 0 0 10px"
         }
-
     },
 
 });
@@ -368,7 +368,7 @@ class DemandPage extends React.Component {
         var demandList = demandDatas.map(demand => {
             return convertDemandDataToDemandPresent(demand, this.props.dateStart);
         });
-        console.log(demandList);
+        //console.log(demandList);
 
         this.setState({
             dataSrc: this.days.map(
@@ -471,11 +471,11 @@ class DemandPage extends React.Component {
                 );
                 this.resetEditor();
                 return;
-                
+
             case UPDATE:
-                var tmp = convertDemandPresentToDemandData(demandNew, this.props.dateStart)
-                console.log(tmp);
-                response = await updateDemand(convertDemandPresentToDemandData(demandNew, this.props.dateStart));
+                var updateObj = convertDemandPresentToDemandData(demandNew, this.props.dateStart)
+                console.log(updateObj);
+                response = await updateDemand(updateObj);
                 // if (response) {
                 this.setState(
                     prevState => {
@@ -515,11 +515,56 @@ class DemandPage extends React.Component {
         }
     }
 
+    renderDemandEditor = () => {
+
+        let data = {
+            level: this.state.level,
+            quantity: this.state.quantity,
+            startTime: this.state.startTime,
+            endTime: this.state.endTime,
+            skillIdSelect: this.state.skillIdSelect,
+        }
+
+        const handleClose = () => {
+            this.setState({ openEditDialog: false });
+        }
+
+        const onSubmit = (data) => {
+            this.setState(
+                {
+                    level: data.level,
+                    quantity: data.quantity,
+                    startTime: data.startTime,
+                    endTime: data.endTime,
+                    skillIdSelect: data.skillIdSelect,
+                }
+            );
+
+            this.onSaveEditor();
+        }
+
+        return (<DemandEditor
+            data={data}
+            openEditDialog={this.state.openDeleteDialog}
+            skillSrc={this.state.skillSrc}
+            handleClose={handleClose}
+            onSubmit={onSubmit}
+            onCancel={
+                () => {
+                    this.setState({ currentAction: NONE });
+                }
+            }
+
+
+        />);
+    }
+    
     renderEditDialog = () => {
 
         const handleClose = () => {
             this.setState({ openEditDialog: false });
         }
+
 
         return (
             <Dialog
@@ -532,7 +577,7 @@ class DemandPage extends React.Component {
                 <DialogContent>
                     <Grid container>
                         <Grid item xs={12}>
-                            <FormControl margin="normal" fullWidth>
+                            <FormControl margin="normal" error fullWidth>
                                 <FormLabel >Select skill</FormLabel>
                                 <Select variant="outlined"
                                     value={this.state.skillIdSelect ? this.state.skillIdSelect : ""}
@@ -540,6 +585,7 @@ class DemandPage extends React.Component {
                                     {this.state.skillSrc.map(skill => (
                                         <MenuItem key={skill.id} value={skill.id}>{skill.name}</MenuItem>))}
                                 </Select>
+                                <FormHelperText >Error</FormHelperText>
                             </FormControl>
                         </Grid>
                         <Grid item container>

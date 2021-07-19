@@ -41,7 +41,7 @@ function DemandCard({ start, end, quantity, level, onDelete, onEdit, demandId, s
     const handleClose = () => {
         setAnchorEl(null);
     };
-    console.log(skillId);
+
     return (<Card className={classes.cardSkillDemand} elevation={0} >
         <CardHeader disableTypography={false}
             title={<Typography variant="h5" style={{ color: "#2196F3" }}>{`${timeToString(start)} - ${timeToString(end)}`}</Typography>}

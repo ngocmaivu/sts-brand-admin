@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { loadStaffNew, createStaff } from '../../../_actions'
 import { Skeleton } from '@material-ui/lab';
 import MuiAlert from '@material-ui/lab/Alert';
+
 const useStyles = makeStyles((theme) => ({
     container: {
 
@@ -31,8 +32,7 @@ function Alert(props) {
 function StaffNew(props) {
 
     const classes = useStyles();
-    const dataNew = {
-    };
+
 
     const onSubmit = (data) => {
         props.createStaff(data);
@@ -83,7 +83,6 @@ function StaffNew(props) {
                 </Grid>
 
             </div> : <StaffForm onSubmit={onSubmit} skills={props.skills} stores={props.stores}
-                skillLevels={props.skillLevels}
                 initialValues={{ ...props.initialValues, }} />}
 
         </Paper >
@@ -91,18 +90,15 @@ function StaffNew(props) {
 }
 
 
-const skillLevels = [
-    { value: 0, title: "Beginner" },
-    { value: 1, title: "Immegiate" },
-    { value: 2, title: "Experience" },
-];
 
 const mapStateToProps = (state) => {
+
+
 
     return {
         initialValues: state.staffs.data,
         skills: state.staffs.skills,
-        skillLevels: skillLevels,
+
         stores: state.staffs.stores
     };
 }

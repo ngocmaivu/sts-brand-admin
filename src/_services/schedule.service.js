@@ -83,7 +83,7 @@ export const getWeekScheduleDemand = async (weekId) => {
     }
 }
 
-export const computeSchedule = async (weekScheduleId) => {
+export const triggerCompute = async (weekScheduleId) => {
     try {
 
         const response = await sts.post("/manager/schedule", { weekScheduleId: weekScheduleId }, { headers: authHeader() });
@@ -96,6 +96,20 @@ export const computeSchedule = async (weekScheduleId) => {
         return null;
     }
 };
+
+export const checkCompute = async (shiftScheduleResultId) => {
+    try {
+
+        const response = await sts.post("/manager/schedule/result", { shiftScheduleResultId: shiftScheduleResultId }, { headers: authHeader() });
+
+        return response.data;
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+};
+
 
 export const commitConstraint = async (constraint) => {
     try {
@@ -124,7 +138,6 @@ export const createDemand = async (demand, weekScheduleId) => {
 export const updateDemand = async (demand) => {
     try {
         const response = await sts.put(`/week-schedule-details/${demand.id}`, { ...demand }, { headers: authHeader() });
-
         return response.data;
     } catch (error) {
         console.log(error);
@@ -143,3 +156,39 @@ export const deleteDemand = async (id) => {
     }
 }
 
+export const getShiftRegisterDatas = async (weekId) => {
+    try {
+
+        const response = await sts.get(`/week-schedules/${weekId}/shift-registers`, {
+            headers: authHeader(),
+        });
+        return response.data;
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+};
+
+export const getScheduleDatas = async (weekScheduleId) => {
+    try {
+        const response = await sts.post("/manager/schedule/data", { weekScheduleId }, { headers: authHeader() });
+
+        return { ...response.data, isError: false };
+    } catch (error) {
+        console.log(error);
+        return { isError: true, message: "Error" };
+    }
+};
+
+export const getStaffInfo = (id) => async dispatch => {
+
+    try {
+        const response = await sts.get(`/admin/users/${id}`, { headers: authHeader(), });
+
+        return response.data;
+    } catch (e) {
+        console.log(e);
+    }
+
+}

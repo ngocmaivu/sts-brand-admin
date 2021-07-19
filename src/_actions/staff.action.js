@@ -52,16 +52,34 @@ export const loadStaffNew = () => async dispatch => {
     skills.forEach(skill => (
         init_data[`skill${skill.id}Level`] = 0
     ));
+
     dispatch({ type: staffConstants.STAFF_LOAD, payload: { data: init_data, skills, stores } });
 }
 
 
-export const loadStaff = () => {
+export const getStaffInfo = (id) => async dispatch => {
+    const skills = await loadSkills();
+    const stores = await loadStores();
+    const init_data = {};
+    try {
+        const response = await sts.get(`/admin/users/${id}`, { headers: authHeader(), });
 
+        dispatch({ type: staffConstants.STAFF_GET, payload: { skills, stores, data: response.data } });
+    } catch (e) {
+        console.log(e);
+    }
 
 }
-export const deleteStaff = (id) => async dispatch => {
 
+export const deleteStaff = (id) => async dispatch => {
+    //TODO fix
+    try {
+        const api = `/admin/users/${id}`;
+        const response = await sts.delete(api, { headers: authHeader() });
+        dispatch({ type: staffConstants.STAFF_DELETE_SUCCESS, payload: id });
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 const loadSkills = async () => {
@@ -83,3 +101,4 @@ const loadStores = async () => {
         console.log(e);
     }
 }
+

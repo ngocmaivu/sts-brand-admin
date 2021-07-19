@@ -4,7 +4,7 @@ export const levels = [
         label: "Beginner", value: 1
     },
     {
-        label: "Immegiate", value: 2
+        label: "Intermediate", value: 2
     },
     {
         label: "Experience", value: 3
@@ -12,9 +12,10 @@ export const levels = [
 ];
 
 export function getLevelLable(value) {
+
     let level = levels.find(lv => lv.value == value);
     if (level) {
-        return level.label
+        return level.label;
     }
     return "Out of system level";
 }

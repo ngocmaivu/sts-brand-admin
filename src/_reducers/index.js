@@ -8,7 +8,7 @@ import {skill} from './skill.reducers';
 import { alert } from './alert.reducer';
 import { staffReducer as staffs } from "./staff.reducers";
 import { reducer as reducerForm } from 'redux-form';
-
+import { scheduleReducer as schedule } from './schedule.reducer';
 const rootReducer = combineReducers({
   authentication,
   registration,
@@ -19,6 +19,7 @@ const rootReducer = combineReducers({
   skill,
   form: reducerForm,
   stores,
+  schedule
 });
 
 export default rootReducer;
