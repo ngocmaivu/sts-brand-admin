@@ -65,7 +65,7 @@ class App extends React.Component {
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Router history={history} >
               <Switch>
-              <Route path="/" component={LoginPage} />
+              {/* <Route path="/" component={LoginPage} /> */}
               <Route path="/login" component={LoginPage} />
               <Route path="/register" component={RegisterPage} />
                 <Layout>
