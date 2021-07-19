@@ -36,9 +36,9 @@ class EditBrand extends React.Component {
 
         this.state = {
             brand: {
-                name: props.brand.items.name,
+                name: '',
                 // address: '',
-                hotline: props.brand.items.hotline,
+                hotline: '',
                 logoImg: '',
             },
             submitted: false,
@@ -78,7 +78,16 @@ class EditBrand extends React.Component {
         console.log('this is:', brand);
     }
     componentDidMount() {
+
         this.props.getByID();
+        this.setState({
+            brand: {
+                name: this.props.brand.items.name,
+                // address: '',
+                hotline: this.props.brand.items.hotline,
+                logoImg: '',
+            },
+        })
     }
 
 

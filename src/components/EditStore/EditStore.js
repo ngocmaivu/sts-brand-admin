@@ -35,9 +35,9 @@ class EditStore extends React.Component {
         super(props);
         this.state = {
             store: {
-                name: props.stores.items.name,
-                address: props.stores.items.address,
-                phone: props.stores.items.phone,
+                name: props.store.items.name,
+                address: props.store.items.address,
+                phone: props.store.items.phone,
                 id: props.match.params.id
             },
             submitted: false,
@@ -64,7 +64,7 @@ class EditStore extends React.Component {
         event.preventDefault();
 
         this.setState({ submitted: true });
-        const { stores } = this.state;
+        const { store } = this.state;
 
     }
     handleClick(event) {
@@ -80,12 +80,12 @@ class EditStore extends React.Component {
 
 
     render() {
-        const { stores, type } = this.props;
+        const { store, type } = this.props;
         console.log(this.props)
-        if (!this.props.stores.items) {
+        if (!this.props.store.items) {
             return <p>...Loading</p>;
         }
-        console.log(stores.items)
+        console.log(store.items)
         return (
             <React.Fragment>
                 <Card style={{ padding: '10px', marginBottom: '20px' }}>
@@ -98,25 +98,25 @@ class EditStore extends React.Component {
                                 <Grid item xs={6}>
                                     <FormControl margin="normal" fullWidth>
                                         <FormLabel >Store name</FormLabel>
-                                        <TextField name="name" size="small" variant="outlined" defaultValue={stores.items.name} onChange={this.handleChange} />
+                                        <TextField name="name" size="small" variant="outlined" defaultValue={store.items.name} onChange={this.handleChange} />
                                     </FormControl>
                                 </Grid>
                             </Grid>
-                            <Grid item xs={12}> 
+                            <Grid item xs={12}>
                                 <FormControl margin="normal" fullWidth>
                                     <FormLabel >Store's Address</FormLabel>
-                                    <TextField name="address" size="small" variant="outlined" defaultValue={stores.items.address} onChange={this.handleChange} />
+                                    <TextField name="address" size="small" variant="outlined" defaultValue={store.items.address} onChange={this.handleChange} />
                                 </FormControl>
                             </Grid>
                             <Grid item xs={12} >
                                 <FormControl margin="normal" fullWidth>
                                     <FormLabel >Phone Number</FormLabel>
-                                    <TextField name="phone" size="small" variant="outlined" defaultValue={stores.items.phone} onChange={this.handleChange} />
+                                    <TextField name="phone" size="small" variant="outlined" defaultValue={store.items.phone} onChange={this.handleChange} />
                                 </FormControl>
                             </Grid>
                             <Grid item xs={12}>
                                 <Button variant="contained" color="primary" onClick={() => this.handleClick()}>Save change</Button>
-                                <Button variant="outlined" color="primary" component={Link} to="/stores">Cancel </Button>
+                                <Button variant="outlined" color="primary" component={Link } to="/stores">Cancel </Button>
                             </Grid>
                         </Grid>
 
@@ -129,8 +129,8 @@ class EditStore extends React.Component {
 }
 
 function mapState(state) {
-    const { stores, deleting } = state;
-    return { stores, deleting };
+    const { store, deleting } = state;
+    return { store, deleting };
 }
 
 export default connect(mapState, {

@@ -12,6 +12,7 @@ import { storeActions } from '../../_actions';
 import { Delete, Edit, ImageSearch, ImageSearchTwoTone, SearchTwoTone, ViewAgenda, ViewStreamOutlined } from '@material-ui/icons';
 import { store } from '../../_helpers';
 import { isThisSecond } from 'date-fns';
+import  {confirmAlert} from 'react-confirm-alert';
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -77,6 +78,11 @@ var deleting = false;
 
 class Stores extends React.Component {
 
+    constructor(props){
+        super(props);
+        // this.handleDeleteStore = this.handleDeleteStore.bind(this);
+      }
+
     componentDidMount() {
         // this.props.getAllByPage(this.state.pageIndex,this.state.pageSize);
         this.props.getAllByPage();
@@ -93,7 +99,23 @@ class Stores extends React.Component {
     handleSearchSubmit = (e) => { }
 
     handleDeleteStore(id) {
-        return (e) => { this.props.deleteStore(id); deleting = true}
+        console.log("delete" + id)
+        // window.confirm('Are you sure, you wanna delete?')
+        // confirmAlert({
+        //     title:'',
+        //     message: 'Are you sure, you wanna delete?',
+        //     buttons: [
+        //       {
+        //         label: 'Yes',
+        //         onClick: () =>  {return (e) => { this.props.deleteStore(id); deleting = true}}
+        //       },
+        //       {
+        //         label: 'No',
+        //         onClick: () => '',
+        //       }
+        //     ]
+        //   })
+        // return (e) => { this.props.deleteStore(id); deleting = true}
     }
 
     renderToolbar = () => {
@@ -159,10 +181,10 @@ class Stores extends React.Component {
     handlePageSizeChange = (params) => {
     };
 
-    handleClick = (id) => {
-        this.props.deleteStore(id);
+    // handleClick = (id) => {
+    //     this.props.deleteStore(id);
         
-    };
+    // };
 
     
     render() {
