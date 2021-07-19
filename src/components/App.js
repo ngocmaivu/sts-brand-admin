@@ -103,9 +103,9 @@ class App extends React.Component {
                   <Route path="/schedule/view">
                     <ScheduleMain />
                   </Route>
-                  <Route path="/timekeeping" exact>
+                  {/* <Route path="/timekeeping" exact>
                     <StoreTimekeeping/>
-                  </Route>
+                  </Route> */}
                   <Route path="/schedule/setting">
                     <SettingSchedule />
                   </Route>
