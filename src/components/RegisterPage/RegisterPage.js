@@ -1,9 +1,18 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
-import { userActions } from '../../_actions';
+import { Box, Button, Card, createStyles, Divider, Grid, TextField, Typography, withStyles } from '@material-ui/core';
+import { brandActions, userActions } from '../../_actions';
 import './register.css'
-
+import Person from '@material-ui/icons/Person';
+import { DateRange, Email, Label, LocationCity, LocationOn, Lock, PeopleAltOutlined, Phone, Store } from '@material-ui/icons';
+import Dropdown from 'react-dropdown';
+import 'react-dropdown/style.css';
+import { Male, Female } from "react-gender";
+const options = [
+    'Male', 'Female'
+];
+var defaultOption = options[0];
 class RegisterPage extends React.Component {
     constructor(props) {
         super(props);
@@ -15,10 +24,17 @@ class RegisterPage extends React.Component {
                 firstName: '',
                 lastName: '',
                 dob: '',
-                gender: '',
+                gender: defaultOption,
+                type: '',
                 email: '',
                 phone: '',
                 address: '',
+            },
+            brand: {
+                name: '',
+                address: '',
+                logoImg: '',
+                hotline: '',
             },
             submitted: false
         };
@@ -29,10 +45,16 @@ class RegisterPage extends React.Component {
 
     handleChange(event) {
         const { name, value } = event.target;
-        const { user } = this.state;
+        const { user, brand } = this.state;
         this.setState({
             user: {
                 ...user,
+                [name]: value
+            }
+        });
+        this.setState({
+            brand: {
+                ...brand,
                 [name]: value
             }
         });
@@ -40,77 +62,160 @@ class RegisterPage extends React.Component {
 
     handleSubmit(event) {
         event.preventDefault();
-
+        
         this.setState({ submitted: true });
-        const { user } = this.state;
+        const { user, brand } = this.state;
+        user.gender = defaultOption;
         if (user.firstName && user.lastName && user.username && user.password) {
             this.props.register(user);
+            this.props.createBrand(brand);
         }
     }
 
+    _onSelect(){
+        if(defaultOption === options[0]) defaultOption = options[1];
+        else defaultOption = options[0];
+        console.log(defaultOption)
+    }
     render() {
         const { registering } = this.props;
-        const { user, submitted } = this.state;
+        const { user, submitted, brand } = this.state;
+        
         return (
-            <div classname='container'>
-                <div className="d-flex justify-content-center h-200">
-                    <div className="card">
-                        <div className="card-header">
-                            <h3>Register</h3>
+            <React.Fragment>
+                <Grid
+                    container
+                    spacing={0}
+                    direction="column"
+                    alignItems="center"
+                    justify="center"
+                    style={{ minHeight: '40vw' }}
+                >
+                    <br />
+                    <Typography variant="h1" style={{ textAlign: 'center' }} color='primary'>Register</Typography>
+                    <br />
+                    <Divider></Divider>
+                    <br />
+
+                    <form name="form">
+                        <div className="input-group form-group">
+                            <Person color="primary" />
+                            <TextField style={{ height: '7px', width: '380px' }} type="text" name="username" placeholder="User name" value={user.username} onChange={this.handleChange} />
                         </div>
-                        <div className="card-body">
-                            <form name="form" onSubmit={this.handleSubmit}>
-                                <div className={'form-group' + (submitted && !user.username ? ' has-error' : '')}>
-                                    <label htmlFor="userName">User Name</label>
-                                    <input type="text" className="form-control" name="userName" value={user.userName} onChange={this.handleChange} />
-                                    {submitted && !user.userName &&
-                                        <div className="help-block">User Name is required</div>
-                                    }
-                                </div>
-                                <div className={'form-group' + (submitted && !user.password ? ' has-error' : '')}>
-                                    <label htmlFor="password">Password</label>
-                                    <input type="text" className="form-control" name="password" value={user.password} onChange={this.handleChange} />
-                                    {submitted && !user.password &&
-                                        <div className="help-block">Passwork is required</div>
-                                    }
-                                </div>
-                                <div className={'form-group' + (submitted && !user.firstName ? ' has-error' : '')}>
-                                    <label htmlFor="firstName">First Name</label>
-                                    <input type="text" className="form-control" name="firstName" value={user.firstName} onChange={this.handleChange} />
-                                    {submitted && !user.password &&
-                                        <div className="help-block">First Name is required</div>
-                                    }
-                                </div>
-                                <div className={'form-group' + (submitted && !user.email ? ' has-error' : '')}>
-                                    <label htmlFor="lastName">Last Name</label>
-                                    <input type="text" className="form-control" name="email" value={user.lastName} onChange={this.handleChange} />
-                                    {submitted && !user.lastName &&
-                                        <div className="help-block">Last Name is required</div>
-                                    }
-                                </div>
-                                <div className={'form-group' + (submitted && !user.email ? ' has-error' : '')}>
-                                    <label htmlFor="email">Email</label>
-                                    <input type="text" className="form-control" name="email" value={user.email} onChange={this.handleChange} />
-                                    {submitted && !user.email &&
-                                        <div className="help-block">Email is required</div>
-                                    }
-                                </div>
-                                <div className={'form-group' + (submitted && !user.password ? ' has-error' : '')}>
-                                    <label htmlFor="text">More Information</label>
-                                    <input type="text" className="form-control" name="password" value={user.password} onChange={this.handleChange} />
-                                    {submitted && !user.password &&
-                                        <div className="help-block">Password is required</div>
-                                    }
-                                </div>
-                                <div className="form-group">
-                                    <button className="btn btn-primary">Add</button>
-                                    <Link to="/login" className="btn btn-link">Cancel</Link>
-                                </div>
-                            </form>
+                        {submitted && !user.username &&
+                            <div style={{ color: 'red', }} className="help-block">Username is required</div>
+                        }
+                        {submitted && user.username.length < 4 &&
+                            <div style={{ color: 'red', }} className="help-block">Username is must be more than 4</div>
+                        }
+                        <br />
+                        <div className="input-group form-group">
+                            <Lock color="primary" />
+                            <TextField style={{ height: '7px', width: '380px' }} type="password" name="password" placeholder="Password" value={user.password} onChange={this.handleChange} />
                         </div>
-                    </div>
-                </div>
-            </div>
+                        {submitted && !user.password &&
+                            <div style={{ color: 'red', }} className="help-block">Password is required</div>
+                        }
+                        <br />
+                        <Grid container direction="row" spacing={1}>
+                            <div className="input-group form-group">
+                                <Person color="primary" />
+                                <TextField style={{ height: '7px', width: '180px' }} type="firstName" name="firstName" placeholder="First name" value={user.firstName} onChange={this.handleChange} />
+                            </div>
+
+                            <br />
+                            <div className="input-group form-group">
+                                <Person color="primary" />
+                                <TextField style={{ height: '7px', width: '180px' }} type="lastName" name="lastName" placeholder="Last name" value={user.lastName} onChange={this.handleChange} />
+                            </div>
+
+                        </Grid>
+                        <br />
+                        <div className="input-group form-group">
+                            <DateRange color="primary" />
+                            <TextField style={{ height: '7px', width: '380px' }} type="Date" name="dob" placeholder="Date of birth" value={user.dob} onChange={this.handleChange} />
+                        </div>
+                        <br />
+                        <div className="input-group form-group">
+                            {/* < color="primary" /> */}
+                            {/* <Male style={{}} color="#419fcf" />
+                            <Female color="#f378ac" /> */}
+                            <Dropdown style={{}} name="gender" variant="outlined" options={options} onChange={this._onSelect} value={defaultOption} placeholder="Select gender" />
+
+                        </div>
+                        {/* <br/>
+                            {submitted && !user.firstName &&
+                                <div style={{ color: 'red', }} className="help-block">First Name is required</div>
+                            }
+                            {submitted && !user.lastName &&
+                                <div style={{ color: 'red', }} className="help-block">Last Name is required</div>
+                            } */}
+                        <br />
+                        <div className="input-group form-group">
+                            <Email color="primary" />
+                            <TextField style={{ height: '7px', width: '380px' }} type="email" name="email" placeholder="Email" value={user.email} onChange={this.handleChange} />
+                        </div>
+                        {submitted && !user.email &&
+                            <div style={{ color: 'red', }} className="help-block">Email is required</div>
+                        }
+                        <br />
+                        <div className="input-group form-group">
+                            <Phone color="primary" />
+                            <TextField style={{ height: '7px', width: '380px' }} type="phone" name="phone" placeholder="Phone" value={user.phone} onChange={this.handleChange} />
+                        </div>
+                        {submitted && !user.phone &&
+                            <div style={{ color: 'red', }} className="help-block">Phone is required</div>
+                        }
+                        <br />
+                        <div className="input-group form-group">
+                            <LocationCity color="primary" />
+                            <TextField style={{ height: '7px', width: '380px' }} type="address" name="address" placeholder="Address" value={user.address} onChange={this.handleChange} />
+                        </div>
+                        {submitted && !user.address &&
+                            <div style={{ color: 'red', }} className="help-block">Address is required</div>
+                        }
+                        <br />
+                        <Typography variant="h4" style={{ textAlign: 'center' }} >Brand Information</Typography>
+                        <br />
+                        <div className="input-group form-group">
+                            <Store color="primary" />
+                            <TextField style={{ height: '7px', width: '380px' }} type="brandName" name="brandName" placeholder="Brand Name" value={brand.name} onChange={this.handleChange} />
+                        </div>
+                        {submitted && !brand.name &&
+                            <div style={{ color: 'red', }} className="help-block">Brand Name is required</div>
+                        }
+                        <br />
+                        <div className="input-group form-group">
+                            <LocationOn color="primary" />
+                            <TextField style={{ height: '7px', width: '380px' }} type="hotline" name="hotline" placeholder="Hotline" value={brand.hotline} onChange={this.handleChange} />
+                        </div>
+                        {submitted && !brand.hotline &&
+                            <div style={{ color: 'red', }} className="help-block">Hotline is required</div>
+                        }
+                        <br />
+                        <div className="input-group form-group">
+                            <LocationOn color="primary" />
+                            <TextField style={{ height: '7px', width: '380px' }} type="address" name="address" placeholder="Address" value={brand.address} onChange={this.handleChange} />
+                        </div>
+                        {submitted && !brand.address &&
+                            <div style={{ color: 'red', }} className="help-block">Address is required</div>
+                        }
+                        <br />
+                        <div className="form-group">
+                            {/* <button className="btn btn-primary">Add</button> */}
+                            <div>
+                                {registering &&
+                                    <img src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+                                }
+                                <Button style={{ height: '40px', width: '160px', marginLeft: '80px' }} color="primary" variant="contained" onClick={this.handleSubmit}>Register</Button>
+                                <Button component={Link} to="/login" className="btn btn-link">Cancel</Button>
+                            </div>
+
+                        </div>
+                    </form>
+
+                </Grid>
+            </React.Fragment>
         );
     }
 }
@@ -121,7 +226,9 @@ function mapState(state) {
 }
 
 const actionCreators = {
-    register: userActions.register
+    register: userActions.register,
+    createBrand: brandActions.create,
+
 }
 
 const connectedRegisterPage = connect(mapState, actionCreators)(RegisterPage);
