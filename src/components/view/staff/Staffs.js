@@ -108,7 +108,7 @@ class Staffs extends React.Component {
                     onKeyPress={this.handleSearchSubmit} />
 
                 <Button variant="outlined" className={this.props.classes.searchButton} component={Link}
-                    to="/staff/new"> <AddIcon />ADD STAFDF</Button>
+                    to="/staff/new"> <AddIcon />ADD STAFF</Button>
 
             </div>
         );

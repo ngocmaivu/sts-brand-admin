@@ -558,7 +558,7 @@ class DemandPage extends React.Component {
 
         />);
     }
-    
+
     renderEditDialog = () => {
 
         const handleClose = () => {

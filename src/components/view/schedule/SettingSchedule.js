@@ -15,18 +15,18 @@ import './schedule.css';
 import { Tab } from '@material-ui/core';
 import { Field, reduxForm, formValueSelector } from 'redux-form';
 import PropTypes from 'prop-types';
-import Demand from './Demand';
+import Demand from '../demand';
 import SettingConstraintsForm from './SettingConstraintsForm';
 import { getWeekScheduleConstraint, getWeekSchedule, commitConstraint } from "../../../_services";
 
 import { getFirstDayOfWeek } from "../../../ultis/scheduleHandle";
-import WeekPicker from "./WeekPicker";
+import WeekPicker from "../../WeekPicker";
 const styles = (theme) => createStyles({
     container: {
         padding: 10,
         height: "100%"
     },
-   
+
 })
 
 
@@ -157,7 +157,7 @@ class SettingSchedule extends React.Component {
 
         this.renderConstraintData(storeScheduleDetails);
     }
-    
+
     componentDidMount = async () => {
         await this.updateConstraintData();
     }

@@ -1,18 +1,14 @@
 import React, { useState } from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import { connect } from 'react-redux';
-import { Button, createStyles, Dialog, DialogContent, DialogContentText, DialogTitle, DialogActions, InputAdornment, TextField, withStyles, Paper, Card } from '@material-ui/core';
-import Snackbar from '@material-ui/core/Snackbar';
-import SearchOutlinedIcon from '@material-ui/icons/SearchOutlined';
-import AddIcon from '@material-ui/icons/Add';
+import { Button, createStyles, Dialog, DialogContent, TableCell, DialogContentText, DialogTitle, DialogActions, InputAdornment, TextField, withStyles, Paper, Card, Grid, TableContainer, Table, TableHead, TableRow, TableBody, IconButton, Collapse } from '@material-ui/core';
+
 import MuiAlert from '@material-ui/lab/Alert';
-import { Link } from 'react-router-dom';
-// import { users } from "../../../dataTest/user"
-import { storeActions } from '../../_actions';
-import { Delete, Edit, ImageSearch, ImageSearchTwoTone, SearchTwoTone, ViewAgenda, ViewStreamOutlined } from '@material-ui/icons';
-import { store } from '../../_helpers';
-import { isThisSecond } from 'date-fns';
-import { KeyboardDatePicker } from '@material-ui/pickers';
+import { Delete, Edit, ImageSearch, ImageSearchTwoTone, SearchTwoTone, ViewAgenda, ViewStreamOutlined, VisibilityOutlined } from '@material-ui/icons';
+import { Skeleton } from '@material-ui/lab';
+import { DateRangePicker, DateRangePickerComponent } from '@syncfusion/ej2-react-calendars';
+import { TimeKeepingRow } from './TimeKeepingRow';
+
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -73,33 +69,154 @@ const styles = (Theme) => createStyles({
     container: {
         padding: 20
     }
-})
-var deleting = false;
+});
+
+const dataSrc = [
+    {
+        username: "lycuong99",
+        firstName: "Ly",
+        lastName: "Cuong",
+        attendances: [
+            {
+                shiftAssignmentId: 1,
+                timeCheckIn: "2021-07-13T08:04:34",
+                timeCheckOut: "2021-07-13T17:04:34",
+                shiftAssignment: {
+                    id: 1,
+                    timeStart: "2021-07-13T08:00:34",
+                    timeEnd: "2021-07-13T17:00:34",
+                    skillId: 1,
+                }
+            },
+            {
+                shiftAssignmentId: 2,
+                timeCheckIn: "2021-07-14T08:00:34",
+                timeCheckOut: "2021-07-14T16:59:34",
+                shiftAssignment: {
+                    id: 2,
+                    timeStart: "2021-07-14T08:00:34",
+                    timeEnd: "2021-07-13T17:00:34",
+                    skillId: 1,
+                }
+            },
+            {
+                shiftAssignmentId: 3,
+                timeCheckIn: "2021-07-15T08:00:34",
+                timeCheckOut: "2021-07-15T17:10:34",
+                shiftAssignment: {
+                    id: 3,
+                    timeStart: "2021-07-15T08:00:34",
+                    timeEnd: "2021-07-15T17:00:34",
+                    skillId: 1,
+                }
+            },
+            {
+                shiftAssignmentId: 4,
+                timeCheckIn: null,
+                timeCheckOut: null,
+                shiftAssignment: {
+                    id: 3,
+                    timeStart: "2021-07-15T08:00:34",
+                    timeEnd: "2021-07-15T17:00:34",
+                    skillId: 1,
+                }
+            },
+            {
+                shiftAssignmentId: 4,
+                timeCheckIn: "2021-07-16T08:00:34",
+                timeCheckOut: "2021-07-16T16:59:34",
+                shiftAssignment: {
+                    id: 4,
+                    timeStart: "2021-07-16T08:00:34",
+                    timeEnd: "2021-07-16T17:00:34",
+                    skillId: 1,
+                }
+            }
+        ]
+    },
+    {
+        username: "lycuong99",
+        firstName: "Ly",
+        lastName: "Cuong",
+        attendances: [
+            {
+                shiftAssignmentId: 1,
+                timeCheckIn: "2021-07-13T08:04:34",
+                timeCheckOut: "2021-07-13T17:04:34",
+                shiftAssignment: {
+                    id: 1,
+                    timeStart: "2021-07-13T08:00:34",
+                    timeEnd: "2021-07-13T17:00:34",
+                    skillId: 1,
+                }
+            },
+            {
+                shiftAssignmentId: 2,
+                timeCheckIn: "2021-07-14T08:00:34",
+                timeCheckOut: "2021-07-14T16:59:34",
+                shiftAssignment: {
+                    id: 2,
+                    timeStart: "2021-07-14T08:00:34",
+                    timeEnd: "2021-07-13T17:00:34",
+                    skillId: 1,
+                }
+            },
+            {
+                shiftAssignmentId: 3,
+                timeCheckIn: "2021-07-15T08:00:34",
+                timeCheckOut: "2021-07-15T17:10:34",
+                shiftAssignment: {
+                    id: 3,
+                    timeStart: "2021-07-15T08:00:34",
+                    timeEnd: "2021-07-15T17:00:34",
+                    skillId: 1,
+                }
+            },
+            {
+                shiftAssignmentId: 4,
+                timeCheckIn: null,
+                timeCheckOut: null,
+                shiftAssignment: {
+                    id: 3,
+                    timeStart: "2021-07-15T08:00:34",
+                    timeEnd: "2021-07-15T17:00:34",
+                    skillId: 1,
+                }
+            },
+            {
+                shiftAssignmentId: 4,
+                timeCheckIn: "2021-07-16T08:00:34",
+                timeCheckOut: "2021-07-16T16:59:34",
+                shiftAssignment: {
+                    id: 4,
+                    timeStart: "2021-07-16T08:00:34",
+                    timeEnd: "2021-07-16T17:00:34",
+                    skillId: 1,
+                }
+            }
+        ]
+    }
+]
 
 class StoreTimekeeping extends React.Component {
 
-    componentDidMount() {
-        // this.props.getAllByPage();
-    }
+
     state = {
         searchValue: '', openDeleteDialog: false, deleteUserId: null, openAddDialog: false,
         pageSize: 10, rowCount: 0, pageIndex: 1, open: true, setOpen: false,
         selectedDate: '2014-08-18T21:11:54',
     };
+    constructor(props) {
+        super(props);
 
-    handleDateChange = (date) => {
-        this.state.selectedDate = date
-    };
+        this.dataSrc = dataSrc;
 
-    handleSearchValueChange = (event) => {
-        this.setState({ searchValue: event.target.value });
     }
 
-    handleSearchSubmit = (e) => { }
 
-    handleDeleteStore(id) {
-        return (e) => { this.props.deleteStore(id); deleting = true }
-    }
+
+
+
 
     renderToolbar = () => {
         return (
@@ -113,82 +230,98 @@ class StoreTimekeeping extends React.Component {
             </div>
         );
     }
-    handlePageSizeChange = (params) => {
+    // {
+    //     shiftAssignmentId: 1,
+    //     timeCheckIn: "2021-07-13T08:04:34",
+    //     timeCheckOut: "2021-07-13T17:04:34",
+    //     shiftAssignment: {
+    //         id: 1,
+    //         timeStart: "2021-07-13T08:00:34",
+    //         timeEnd: "2021-07-13T17:00:34",
+    //         skillId: 1,
+    //     }
+    // }
+
+    renderRows = () => {
+
+        return this.dataSrc.map(user => {
+
+            return (
+                <TimeKeepingRow user={user} />);
+        });
     };
-
-    handleClick = (id) => {
-        this.props.deleteStore(id);
-
-    };
-
 
     render() {
-        // const { StoreTimekeeping, type} = this.props;
 
-        const data = [
-            { id: 2, name: "Chi Nhanh 1", address: "abc", date: "023578951" },
-            { id: 3, name: "Chi Nhanh 1", address: "Quan Phu Nhuan", date: "023578951" },
-            { id: 1, name: "Effoc 1", address: "676 Le Duan", date: "098987667" },
-        ]
-        const columns = [
-            { field: 'id', headerName: 'User ID', width: 200 },
-            { field: 'name', headerName: 'Name', width: 300 },
-            { field: 'address', headerName: 'Address', width: 300 },
-            { field: 'date', headerName: 'Date', width: 200 },
-            {
-                field: 'action', headerName: "Actions", flex: 0.3, sortable: false, filterable: false,
-                headerAlign: 'center',
-                width: 50,
-                renderCell: (params) => {
+        const { classes } = this.props;
 
-                    return (<span>
-                        <Button color='primary'> <Edit fontSize='small' /></Button>
-                        {/* <Button onClick={this.handleDeleteStore(params.id)} style={{ color: 'red' }}> <Delete fontSize='small' /></Button> */}
-                    </span>);
-                }
-            }
-        ];
-
-        // if (!this.props.StoreTimekeeping.items) {
-        //     return <p>...Loading</p>;
-        // }
         return (
             <React.Fragment>
                 <Card style={{ padding: '10px', marginBottom: '15px' }}>
-                    <div> <h1>Store Timekeeping Page</h1> </div>
-                    {/* <form noValidate>
-                        <TextField
-                            id="date"
-                            label="Date From"
-                            type="date"
-                            defaultValue="2017-05-24"
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                        />
--
-                        <TextField
-                            id="date"
-                            label="Date To"
-                            type="date"
-                            defaultValue="2017-05-24"
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                        />
-                    </form> */}
+                    <div> <h1>Timekeeping</h1> {this.renderToolbar()}</div>
+                    <DateRangePickerComponent />
                 </Card>
-                <Paper>
-                    {/* <div style={{ height: 452, width: '100%' }}>
-                        <DataGrid disableColumnFilter rows={data} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
-                            paginationMode="server" rowCount={100} />
-                    </div> */}
+                <Paper className={this.props.classes.container}>
+                    <div style={{ height: 480, width: '100%' }}>
+                        {false ? (
 
-                    
+                            <Grid container spacing={2} direction="column" style={{ padding: 20 }}>
+                                <Grid item xs>
+                                    <Skeleton animation="wave" variant="rect" height="175" />
+                                </Grid>
+                                <Grid item xs>
+                                    <Skeleton animation="wave" variant="rect" height="120" />
+                                </Grid>
+                                <Grid item xs>
+                                    <Skeleton animation="wave" variant="rect" height="70px" />
+                                </Grid>
+                                <Grid item xs>
+                                    <Skeleton animation="wave" variant="rect" height="40px" />
+                                </Grid>
+                                <Grid item xs>
+                                    <Skeleton animation="wave" variant="rect" height="20px" />
+                                </Grid>
+                            </Grid>
+
+                        ) :
+                            <TableContainer>
+                                <Table aria-label="simple table" >
+                                    <TableHead>
+                                        <TableRow >
+                                            <TableCell align="left" variant="head" >Username</TableCell>
+                                            <TableCell align="left" variant="head" >Fullname</TableCell>
+                                            <TableCell align="center">Total Hours</TableCell>
+                                            <TableCell align="center">Total Shift</TableCell>
+                                            <TableCell align="center">Attendance</TableCell>
+                                            <TableCell align="center">Come Lately</TableCell>
+                                            <TableCell align="center">Leave Early</TableCell>
+                                            <TableCell align="center"></TableCell>
+                                        </TableRow>
+                                    </TableHead>
+                                    {
+
+                                        <TableBody>
+                                            {
+                                                this.renderRows()
+                                            }
+                                        </TableBody>
+
+
+                                    }
+
+                                </Table>
+                            </TableContainer>}
+
+                    </div>
+
+
                 </Paper>
             </React.Fragment>
 
+
         );
+
+
     }
 }
 function mapState(state) {
