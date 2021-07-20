@@ -53,7 +53,7 @@ function register(user) {
             .then(
                 user => {
                     dispatch(success());
-                    history.push('/brandhome');
+                    history.push('/login');
                     dispatch(alertActions.success('Registration successful'));
                 },
                 error => {

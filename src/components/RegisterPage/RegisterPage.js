@@ -19,23 +19,26 @@ class RegisterPage extends React.Component {
 
         this.state = {
             user: {
-                username: '',
-                password: '',
-                firstName: '',
-                lastName: '',
-                dob: '',
-                gender: defaultOption,
-                type: '',
-                email: '',
-                phone: '',
-                address: '',
+                generalInfo: {
+                    username: '',
+                    password: '',
+                    firstName: '',
+                    lastName: '',
+                    dob: '',
+                    gender: defaultOption,
+                    type: '',
+                    email: '',
+                    phone: '',
+                    address: '',
+                },
+                brand: {
+                    brandName: '',
+                    brandAddress: '',
+                    logoImg: '',
+                    hotline: '',
+                },
             },
-            brand: {
-                name: '',
-                address: '',
-                logoImg: '',
-                hotline: '',
-            },
+
             submitted: false
         };
 
@@ -44,43 +47,57 @@ class RegisterPage extends React.Component {
     }
 
     handleChange(event) {
-        const { name, value } = event.target;
+        const { name, namebrand, value } = event.target;
         const { user, brand } = this.state;
         this.setState({
             user: {
                 ...user,
-                [name]: value
+
+
+                generalInfo: {
+                    ...user.generalInfo,
+                    [name]: value
+                },
+                brand: {
+                    ...user.brand,
+                    [namebrand]: value
+                },
             }
         });
-        this.setState({
-            brand: {
-                ...brand,
-                [name]: value
-            }
-        });
+        // this.setState({
+        //     brand: {
+        //         ...brand,
+        //         [name]: value
+        //     }
+        // });
+        // console.log("user ne" + user.generalInfo.username)
     }
 
     handleSubmit(event) {
         event.preventDefault();
-        
+
         this.setState({ submitted: true });
         const { user, brand } = this.state;
-        user.gender = defaultOption;
-        if (user.firstName && user.lastName && user.username && user.password) {
-            this.props.register(user);
-            this.props.createBrand(brand);
+        if(defaultOption === "Female")
+        user.generalInfo.gender = 0;
+        else user.generalInfo.gender = 1;
+        console.log(user.generalInfo.username)
+        console.log(user.generalInfo.password)
+        if (user.generalInfo.firstName && user.generalInfo.lastName && user.generalInfo.username && user.generalInfo.password) {
+            this.props.register(user, brand);
+            // this.props.createBrand(brand);
         }
     }
 
-    _onSelect(){
-        if(defaultOption === options[0]) defaultOption = options[1];
+    _onSelect() {
+        if (defaultOption === options[0]) defaultOption = options[1];
         else defaultOption = options[0];
         console.log(defaultOption)
     }
     render() {
         const { registering } = this.props;
         const { user, submitted, brand } = this.state;
-        
+
         return (
             <React.Fragment>
                 <Grid
@@ -100,40 +117,40 @@ class RegisterPage extends React.Component {
                     <form name="form">
                         <div className="input-group form-group">
                             <Person color="primary" />
-                            <TextField style={{ height: '7px', width: '380px' }} type="text" name="username" placeholder="User name" value={user.username} onChange={this.handleChange} />
+                            <TextField style={{ height: '7px', width: '380px' }} type="text" name="username" placeholder="User name" value={user.generalInfo.username} onChange={this.handleChange} />
                         </div>
-                        {submitted && !user.username &&
+                        {submitted && !user.generalInfo.username &&
                             <div style={{ color: 'red', }} className="help-block">Username is required</div>
                         }
-                        {submitted && user.username.length < 4 &&
+                        {/* {submitted && user.generalInfo.username.length < 4 &&
                             <div style={{ color: 'red', }} className="help-block">Username is must be more than 4</div>
-                        }
+                        } */}
                         <br />
                         <div className="input-group form-group">
                             <Lock color="primary" />
-                            <TextField style={{ height: '7px', width: '380px' }} type="password" name="password" placeholder="Password" value={user.password} onChange={this.handleChange} />
+                            <TextField style={{ height: '7px', width: '380px' }} type="password" name="password" placeholder="Password" value={user.generalInfo.password} onChange={this.handleChange} />
                         </div>
-                        {submitted && !user.password &&
+                        {submitted && !user.generalInfo.password &&
                             <div style={{ color: 'red', }} className="help-block">Password is required</div>
                         }
                         <br />
                         <Grid container direction="row" spacing={1}>
                             <div className="input-group form-group">
                                 <Person color="primary" />
-                                <TextField style={{ height: '7px', width: '180px' }} type="firstName" name="firstName" placeholder="First name" value={user.firstName} onChange={this.handleChange} />
+                                <TextField style={{ height: '7px', width: '180px' }} type="firstName" name="firstName" placeholder="First name" value={user.generalInfo.firstName} onChange={this.handleChange} />
                             </div>
 
                             <br />
                             <div className="input-group form-group">
                                 <Person color="primary" />
-                                <TextField style={{ height: '7px', width: '180px' }} type="lastName" name="lastName" placeholder="Last name" value={user.lastName} onChange={this.handleChange} />
+                                <TextField style={{ height: '7px', width: '180px' }} type="lastName" name="lastName" placeholder="Last name" value={user.generalInfo.lastName} onChange={this.handleChange} />
                             </div>
 
                         </Grid>
                         <br />
                         <div className="input-group form-group">
                             <DateRange color="primary" />
-                            <TextField style={{ height: '7px', width: '380px' }} type="Date" name="dob" placeholder="Date of birth" value={user.dob} onChange={this.handleChange} />
+                            <TextField style={{ height: '7px', width: '380px' }} type="Date" name="dob" placeholder="Date of birth" value={user.generalInfo.dob} onChange={this.handleChange} />
                         </div>
                         <br />
                         <div className="input-group form-group">
@@ -144,34 +161,34 @@ class RegisterPage extends React.Component {
 
                         </div>
                         {/* <br/>
-                            {submitted && !user.firstName &&
+                            {submitted && !user.generalInfo.firstName &&
                                 <div style={{ color: 'red', }} className="help-block">First Name is required</div>
                             }
-                            {submitted && !user.lastName &&
+                            {submitted && !user.generalInfo.lastName &&
                                 <div style={{ color: 'red', }} className="help-block">Last Name is required</div>
                             } */}
                         <br />
                         <div className="input-group form-group">
                             <Email color="primary" />
-                            <TextField style={{ height: '7px', width: '380px' }} type="email" name="email" placeholder="Email" value={user.email} onChange={this.handleChange} />
+                            <TextField style={{ height: '7px', width: '380px' }} type="email" name="email" placeholder="Email" value={user.generalInfo.email} onChange={this.handleChange} />
                         </div>
-                        {submitted && !user.email &&
+                        {submitted && !user.generalInfo.email &&
                             <div style={{ color: 'red', }} className="help-block">Email is required</div>
                         }
                         <br />
                         <div className="input-group form-group">
                             <Phone color="primary" />
-                            <TextField style={{ height: '7px', width: '380px' }} type="phone" name="phone" placeholder="Phone" value={user.phone} onChange={this.handleChange} />
+                            <TextField style={{ height: '7px', width: '380px' }} type="phone" name="phone" placeholder="Phone" value={user.generalInfo.phone} onChange={this.handleChange} />
                         </div>
-                        {submitted && !user.phone &&
+                        {submitted && !user.generalInfo.phone &&
                             <div style={{ color: 'red', }} className="help-block">Phone is required</div>
                         }
                         <br />
                         <div className="input-group form-group">
                             <LocationCity color="primary" />
-                            <TextField style={{ height: '7px', width: '380px' }} type="address" name="address" placeholder="Address" value={user.address} onChange={this.handleChange} />
+                            <TextField style={{ height: '7px', width: '380px' }} type="address" name="address" placeholder="Address" value={user.generalInfo.address} onChange={this.handleChange} />
                         </div>
-                        {submitted && !user.address &&
+                        {submitted && !user.generalInfo.address &&
                             <div style={{ color: 'red', }} className="help-block">Address is required</div>
                         }
                         <br />
@@ -179,25 +196,25 @@ class RegisterPage extends React.Component {
                         <br />
                         <div className="input-group form-group">
                             <Store color="primary" />
-                            <TextField style={{ height: '7px', width: '380px' }} type="brandName" name="brandName" placeholder="Brand Name" value={brand.name} onChange={this.handleChange} />
+                            <TextField style={{ height: '7px', width: '380px' }} type="text" namebrand="brandName" placeholder="Brand Name" value={user.brand.name} onChange={this.handleChange} />
                         </div>
-                        {submitted && !brand.name &&
+                        {submitted && !user.brand.name &&
                             <div style={{ color: 'red', }} className="help-block">Brand Name is required</div>
                         }
                         <br />
                         <div className="input-group form-group">
                             <LocationOn color="primary" />
-                            <TextField style={{ height: '7px', width: '380px' }} type="hotline" name="hotline" placeholder="Hotline" value={brand.hotline} onChange={this.handleChange} />
+                            <TextField style={{ height: '7px', width: '380px' }} type="hotline" namebrand="hotline" placeholder="Hotline" value={user.brand.hotline} onChange={this.handleChange} />
                         </div>
-                        {submitted && !brand.hotline &&
+                        {submitted && !user.brand.hotline &&
                             <div style={{ color: 'red', }} className="help-block">Hotline is required</div>
                         }
                         <br />
                         <div className="input-group form-group">
                             <LocationOn color="primary" />
-                            <TextField style={{ height: '7px', width: '380px' }} type="address" name="address" placeholder="Address" value={brand.address} onChange={this.handleChange} />
+                            <TextField style={{ height: '7px', width: '380px' }} type="address" namebrand="brandAddress" placeholder="Address" value={user.brand.address} onChange={this.handleChange} />
                         </div>
-                        {submitted && !brand.address &&
+                        {submitted && !user.brand.address &&
                             <div style={{ color: 'red', }} className="help-block">Address is required</div>
                         }
                         <br />
