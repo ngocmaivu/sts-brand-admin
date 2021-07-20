@@ -65,6 +65,25 @@ export function getDateJSONFrom(dateStart, day, hoursIndouble) {
     return date;
 }
 
+export function convertToJSONDateWithoutChangeValue(dateSrc) {
+    var date = new Date(dateSrc);
+    date.setUTCDate(dateSrc.getDate());
+    date.setUTCHours(dateSrc.getHours());
+    date.setUTCMinutes(dateSrc.getMinutes());
+
+    return date.toJSON();
+}
+
+export function convertDemandData(demandData) {
+    return {
+        id: demandData.id,
+        skillId: demandData.skillId,
+        level: demandData.level,
+        quantity: demandData.quantity,
+        workStart: convertToJSONDateWithoutChangeValue(demandData.workStart),
+        workEnd: convertToJSONDateWithoutChangeValue(demandData.workEnd),
+    }
+}
 // {
 //     "id": 34,
 //     "weekScheduleId": 2,            
@@ -106,11 +125,16 @@ export function getTotalHoursPerWeek(timeWorks, timeStartKey, timeEndKey) {
     let totalMinutesPerWeek = 0;
 
     timeWorks.forEach(timeWork => {
-        let duration = intervalToDuration({
-            start: new Date(timeWork[timeStartKey]),
-            end: new Date(timeWork[timeEndKey])
-        });
-        totalMinutesPerWeek += duration.hours * 60 + duration.minutes;
+        if (timeWork[timeStartKey] && timeWork[timeEndKey]) {
+            let duration = intervalToDuration({
+                start: new Date(timeWork[timeStartKey]),
+                end: new Date(timeWork[timeEndKey])
+            });
+
+            totalMinutesPerWeek += duration.hours * 60 + duration.minutes;
+        }
+
+
     });
 
     return totalMinutesPerWeek / 60;

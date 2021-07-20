@@ -16,6 +16,7 @@ import { LoginPage } from './LoginPage/LoginPage';
 import StaffNew from './view/staff/StaffNew';
 import Staff from './view/staff/Staff';
 import ScheduleMain from './view/schedule';
+import SchedulePlans from './view/weekSchedulePlan';
 import Notification from './view/notification';
 import BrandHome from './BrandHome/BrandHome';
 import SettingSchedule from './view/schedule/SettingSchedule';
@@ -70,7 +71,6 @@ class App extends React.Component {
                 <Route path="/login" component={LoginPage} />
                 <Route path="/register" component={RegisterPage} />
                 <Layout>
-
                   <Route path="/stores" exact>
                     <Stores />
                   </Route>
@@ -104,9 +104,13 @@ class App extends React.Component {
                   <Route path="/schedule/view">
                     <ScheduleMain />
                   </Route>
-                  {/* <Route path="/timekeeping" exact>
-                    <StoreTimekeeping/>
-                  </Route> */}
+
+                  <Route path="/storeTimekeeping" exact>
+                    <StoreTimekeeping />
+                  </Route>
+                  <Route path="/schedule/plans/:status">
+                    <SchedulePlans />
+                  </Route>
                   <Route path="/schedule/setting">
                     <SettingSchedule />
                   </Route>

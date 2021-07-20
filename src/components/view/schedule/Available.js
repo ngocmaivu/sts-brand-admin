@@ -9,7 +9,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import { CardContent, CardHeader, Divider, FormControl, FormLabel, Grid, Typography } from '@material-ui/core';
-import WeekPicker from './WeekPicker';
+import WeekPicker from '../../WeekPicker';
 import { format, isSameDay, startOfWeek, } from 'date-fns';
 import { getStaffs, getShiftRegisterDatas, getWeekSchedule, } from '../../../_services';
 import { getTotalHoursPerWeek } from '../../../ultis/scheduleHandle';

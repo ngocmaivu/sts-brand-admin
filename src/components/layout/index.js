@@ -212,7 +212,7 @@ if (user === null) {
       url: "/profile",
       icon: <ProfileIcon />
     })
-  else if(user.role === "store manager") INIT_DATA.items.push(
+  else if (user.role === "store manager") INIT_DATA.items.push(
     {
       id: 'home',
       title: 'Home',
@@ -236,9 +236,23 @@ if (user === null) {
       children: [
         {
           type: 'item',
-          id: 'request',
+          id: 'view',
           title: 'View',
           url: '/schedule/view',
+          icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+        },
+        {
+          type: 'item',
+          id: 'publish',
+          title: 'Publish',
+          url: '/schedule/plans/publish',
+          icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+        },
+        {
+          type: 'item',
+          id: 'unpublish',
+          title: 'Unpublish',
+          url: '/schedule/plans/unpublish',
           icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
         },
         {
@@ -294,7 +308,7 @@ if (user === null) {
       url: "/profile",
       icon: <ProfileIcon />
     }
-  ) 
+  )
 }
 
 export default function MainLayout(props) {

@@ -4,54 +4,59 @@ import { KeyboardTimePicker, TimePicker } from "@material-ui/pickers";
 import { DateTimePickerComponent, TimePickerComponent } from '@syncfusion/ej2-react-calendars';
 import { MultiSelectComponent } from '@syncfusion/ej2-react-dropdowns';
 import { format, add, subMinutes, sub, endOfDay } from 'date-fns';
+import { levels } from '../../../_constants/levelData';
+
+
 const useStyles = makeStyles((theme) => ({
 
 }));
 
-export function ShiftEditor({ parentProps, setStartTime, setEndTime, setStaffId, skillDataSrc }) {
+export function DemandEditor({ parentProps, setWorkStart, setWorkEnd, setSkillId, skillDataSrc }) {
 
     const classes = useStyles();
     const [start, setStart] = useState("");
     const [end, setEnd] = useState("");
-    const [skill, setSkill] = useState(parentProps.SkillId);
-    console.log()
+
+    const [quantity, setQuantity] = useState(parentProps.quantity ? parentProps.quantity : 1);
+    const [level, setLevel] = useState(parentProps.level);
+
     const handleStart = (e) => {
         setStart(e.target.value);
         if (e.target.value) {
-            const StartTime = new Date(parentProps.startTime || parentProps.StartTime);
-            StartTime.setHours(e.target.value.getHours(), e.target.value.getMinutes());
-            setStartTime(StartTime);
+            const workStart = new Date(parentProps.workStart || parentProps.WorkStart);
+            workStart.setHours(e.target.value.getHours(), e.target.value.getMinutes());
+            setWorkStart(workStart);
         }
     }
 
     const handleEnd = (e) => {
         setEnd(e.target.value);
         if (e.target.value) {
-            const EndTime = new Date(parentProps.startTime || parentProps.StartTime);
-            EndTime.setHours(e.target.value.getHours(), e.target.value.getMinutes());
-            setEndTime(EndTime);
+            const workEnd = new Date(parentProps.workEnd || parentProps.workEnd);
+            workEnd.setHours(e.target.value.getHours(), e.target.value.getMinutes());
+            setWorkEnd(workEnd);
         }
-
     }
 
     useEffect(() => {
 
 
         //INIT
-        setStaffId(parentProps.StaffId);
-        let tmp = new Date(parentProps.startTime || parentProps.StartTime);
-        setStartTime(tmp);
+        setSkillId(parentProps.skillId);
+
+        let tmp = new Date(parentProps.workStart);
         console.log("ALO");
         console.log(tmp);
+        setWorkStart(tmp);
         let startTmp = new Date();
         startTmp.setHours(tmp.getHours(), tmp.getMinutes());
         setStart(startTmp);
-        let tmp1 = new Date(parentProps.endTime || parentProps.EndTime);
-        setEndTime(tmp1);
+
+        let tmp1 = new Date(parentProps.workEnd);
+        setWorkEnd(tmp1);
         let endTmp = new Date();
         endTmp.setHours(tmp1.getHours(), tmp1.getMinutes());
         setEnd(endTmp);
-
 
 
         // setSkill(parentProps.SkillId);
@@ -65,30 +70,37 @@ export function ShiftEditor({ parentProps, setStartTime, setEndTime, setStaffId,
                 <Grid container spacing={3}>
                     <Grid item xs={12}>
                         <FormControl fullWidth>
-                            <FormLabel >Skill</FormLabel>
+                            <FormLabel >Level</FormLabel>
                             <Select variant="outlined"
-                                value={skill ? skill : "0"}
-                                inputProps={{ id: "Skill" }}
-                                onChange={(e) => { setSkill(e.target.value) }}
+                                value={level ? level : 1}
+                                inputProps={{ id: "input-level" }}
+                                onChange={(e) => { setLevel(e.target.value) }}
                                 required
                             >
                                 {
-                                    skillDataSrc.map(e => (
-                                        (<MenuItem key={e.id} value={e.id}>{e.name}</MenuItem>)
+                                    levels.map(e => (
+                                        (<MenuItem key={e.value} value={e.value}>{e.label}</MenuItem>)
                                     ))
                                 }
                             </Select>
 
                         </FormControl>
                     </Grid>
-                    {/* <Grid item >
-                        <MultiSelectComponent placeholder='Choose owner' data-name="StaffId" dataSource={employeeData} fields={fields} value={parentProps.StaffId} />
-                    </Grid> */}
-                    <input type="hidden" />
+                    <Grid item xs={12}>
+                        <FormControl fullWidth>
+                            <FormLabel >Quantity</FormLabel>
+                            <TextField variant="outlined" size="small"
+                                value={quantity}
+                                type="number"
+                                inputProps={{ id: "input-quantity" }}
+                                onChange={(e) => { setQuantity(e.target.value); }} />
+                        </FormControl>
+                    </Grid>
                     <Grid item container xs={12} spacing={5}>
                         <Grid item xs={6}>
                             <FormControl fullWidth>
                                 <FormLabel >From</FormLabel>
+
                                 <TimePickerComponent format='HH:mm' value={start} required onChange={handleStart} min="0:00" strictMode={true} allowEdit={false} />
                             </FormControl>
                         </Grid>
@@ -99,19 +111,7 @@ export function ShiftEditor({ parentProps, setStartTime, setEndTime, setStaffId,
                             </FormControl>
                         </Grid>
                     </Grid>
-                    <Grid item xs={12}>
-                        <FormControl fullWidth>
-                            <FormLabel >Description</FormLabel>
-                            <TextField
-                                inputProps={{ name: "Description", className: "e-field", id: "Description" }}
-                                placeholder="Leave a comment..."
-                                variant="outlined"
-                                multiline
-                                rows={4}
-                                style={{ width: "100%" }}
-                            />
-                        </FormControl>
-                    </Grid>
+
                 </Grid>
             </CardContent>
         </div>

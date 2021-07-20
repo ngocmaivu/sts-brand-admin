@@ -1,15 +1,17 @@
 
 export const levels = [
     {
-        label: "Beginner", value: 1
+        label: "Beginner", value: 1, color: "#a4fd3f"
     },
     {
-        label: "Intermediate", value: 2
+        label: "Intermediate", value: 2, color: "#75ebeb"
     },
     {
-        label: "Experience", value: 3
+        label: "Experience", value: 3, color: "#eb7575"
     },
 ];
+
+
 
 export function getLevelLable(value) {
 
