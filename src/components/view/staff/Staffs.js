@@ -77,6 +77,7 @@ class Staffs extends React.Component {
         pageSize: 10, rowCount: 0, pageIndex: 1, loading: false, datas: this.props.users
     };
 
+
     handleSearchValueChange = (event) => {
         this.setState({ searchValue: event.target.value });
     }
@@ -89,7 +90,26 @@ class Staffs extends React.Component {
     }
 
     componentDidMount() {
-        this.props.getStaffs(this.state.pageIndex, this.state.pageSize, this.state.searchValue);
+        this.props.getStaffs(1, 10, "");
+        // console.log("tong so hang o day ne " + this.state.users.totalCount)
+        // this.props.getStaffs(this.state.pageIndex, this.state.pageSize, this.state.searchValue);
+    }
+
+    handlePageChange = (params) => {
+        console.log(params);
+        if (params.page >= params.pageCount) {
+            this.props.getStaffs(1, params.pageSize, "");
+        } else {
+            this.props.getStaffs(params.page + 1, params.pageSize, "");
+        }
+
+    };
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.pageSize !== this.state.pageSize || prevState.pageIndex !== this.state.pageIndex) {
+            const { searchValue, pageSize, pageIndex } = this.state;
+            const response = this.loadData(searchValue, pageSize, pageIndex);
+        }
     }
 
     handleDeleteStore(id) {
@@ -184,7 +204,7 @@ class Staffs extends React.Component {
                 renderCell: (params) => {
                     const onClick = () => {
                         console.log(params);
-                        this.setState({ openDeleteDialog: true, deleteId: params.id });
+                        this.setState({ openDeleteDialog: true, deleteId: params.getValue('username') });
                     }
 
                     return (<span>
@@ -196,6 +216,11 @@ class Staffs extends React.Component {
 
             }
         ];
+
+        // if (!this.props.users) {
+
+        //     return <p>...Loading</p>;
+        // }
 
         return (
             <React.Fragment><Card style={{ padding: '10px', marginBottom: '15px' }}>
@@ -222,9 +247,10 @@ class Staffs extends React.Component {
                                     <Skeleton animation="wave" variant="rect" height="20px" />
                                 </Grid>
                             </Grid>
-                        ) : <DataGrid disableColumnFilter rows={this.props.datas} 
-                        columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
-                            paginationMode="server" rowCount={this.props.rowCount} />}
+                        ) : <DataGrid disableColumnFilter rows={this.props.datas}
+                            columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
+                            page={this.props.pageIndex - 1}
+                            paginationMode="server" rowCount={this.props.rowCount} onPageChange={this.handlePageChange} onPageSizeChange={this.handlePageChange} />}
 
                     </div>
                     {this.renderDeleteDialog()}
@@ -237,13 +263,17 @@ class Staffs extends React.Component {
     }
 }
 function mapState(state) {
-    const { users } = state;
-    return { datas: Object.values(state.staffs.datas), rowCount: state.users.totalCount };
+    // const { users } = state;
+
+    return {
+        datas: Object.values(state.staffs.datas), pageIndex: state.staffs.currentPage, pageSize: state.staffs.pageSize, rowCount: state.staffs.totalCount,
+        searchValue: state.staffs.searchValue
+    };
 }
 
 export default connect(mapState, {
-    getStaffs: getStaffs,
-    deleteStaff: deleteStaff
+    getStaffs,
+    deleteStaff
 
 })(withStyles(styles, { withTheme: true })(Staffs));
 
