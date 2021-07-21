@@ -1,11 +1,12 @@
 
 import { getTotalHoursPerWeek } from '../../ultis/scheduleHandle';
 
-export function getTotalHours  (attendances) {
-    return getTotalHoursPerWeek(attendances, "timeCheckIn", "timeCheckOut");
+export function getTotalHours(attendances, startKey, endKey) {
+    return getTotalHoursPerWeek(attendances, startKey, endKey);
 }
 
-export function countAttendances(attendances){
+
+export function countAttendances(attendances) {
     var count = 0;
     attendances.forEach(attendance => {
         if (attendance.timeCheckIn && attendance.timeCheckOut) count++;

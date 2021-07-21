@@ -220,13 +220,7 @@ if (user === null) {
       url: '/storehome',
       icon: <Home />
     },
-    {
-      id: 'staffs',
-      title: 'Staff',
-      type: 'item',
-      url: '/staffs',
-      icon: <GroupOutlinedIcon />
-    },
+
     {
       id: 'schedule',
       title: 'Schedule',
@@ -234,49 +228,73 @@ if (user === null) {
       type: 'collapse',
       icon: <EventNoteOutlined />,
       children: [
+        // {
+        //   type: 'item',
+        //   id: 'view',
+        //   title: 'View',
+        //   url: '/schedule/view',
+        //   icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+        // },
         {
           type: 'item',
-          id: 'view',
-          title: 'View',
-          url: '/schedule/view',
-          icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
-        },
-        {
-          type: 'item',
-          id: 'publish',
-          title: 'Publish',
-          url: '/schedule/plans/publish',
+          id: 'available',
+          title: 'Register',
+          url: '/schedule/available',
           icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
         },
         {
           type: 'item',
           id: 'unpublish',
-          title: 'Unpublish',
-          url: '/schedule/plans/unpublish',
+          title: 'Plan',
+          url: '/schedule/plans/unpublished',
           icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
         },
         {
           type: 'item',
-          id: 'setting',
-          title: 'Setting',
-          url: '/schedule/setting',
+          id: 'publish',
+          title: 'Published',
+          url: '/schedule/plans/published',
           icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
         },
-        {
-          type: 'item',
-          id: 'available',
-          title: 'Available',
-          url: '/schedule/available',
-          icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
-        }
+        // {
+        //   type: 'item',
+        //   id: 'setting',
+        //   title: 'Setting',
+        //   url: '/schedule/setting',
+        //   icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+        // },
+
       ]
     },
     {
       id: 'timekeeping',
       title: 'Timekeeping',
       url: '/storeTimekeeping',
+      type: 'collapse',
+      icon: <CalendarTodayOutlined />,
+      children: [
+        {
+          type: 'item',
+          id: 'attandance',
+          title: 'Attandance',
+          url: '/storeTimekeeping/attandance',
+          icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+        },
+        {
+          type: 'item',
+          id: 'work-hours',
+          title: 'Shift',
+          url: '/storeTimekeeping/shift',
+          icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+        },
+      ]
+    },
+    {
+      id: 'staffs',
+      title: 'Staff',
       type: 'item',
-      icon: <CalendarTodayOutlined />
+      url: '/staffs',
+      icon: <GroupOutlinedIcon />
     },
     {
       type: 'collapse',

@@ -8,15 +8,25 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { Button, CardContent, CardHeader, Chip, Divider, FormControl, FormLabel, Grid, IconButton, Tab, Tabs, Typography } from '@material-ui/core';
+import { Button, CardContent, CardHeader, Chip, Divider, FormControl, FormLabel, Grid, IconButton, Tab, Tabs, Tooltip, Typography } from '@material-ui/core';
 import WeekPicker from '../../WeekPicker';
 import { format, isSameDay, startOfWeek, } from 'date-fns';
 import { getStaffs, getShiftRegisterDatas, getWeekSchedule, } from '../../../_services';
 import { getTotalHoursPerWeek } from '../../../ultis/scheduleHandle';
 import { Skeleton } from '@material-ui/lab';
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
+import { fetchWeekSchedules } from "../../../_actions/";
+import PublishOutlinedIcon from '@material-ui/icons/PublishOutlined';
+import PublishRoundedIcon from '@material-ui/icons/PublishRounded';
+import GetAppRoundedIcon from '@material-ui/icons/GetAppRounded';
 import FileCopyOutlinedIcon from '@material-ui/icons/FileCopyOutlined';
 import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined';
+import AddCircleOutlineOutlinedIcon from '@material-ui/icons/AddCircleOutlineOutlined';
+import AddRoundedIcon from '@material-ui/icons/AddRounded';
+import { connect } from 'react-redux';
+import { weekScheduleStatus } from './status';
+import { addDays } from '@syncfusion/ej2-react-schedule';
+import history from '../../../history';
 const styles = (Theme) => createStyles({
     container: {
         height: '100%',
@@ -25,7 +35,11 @@ const styles = (Theme) => createStyles({
     containerContent: {
         padding: "20px 20px"
     },
-
+    weekScheduleRow: {
+        "&:hover": {
+            cursor: "pointer"
+        }
+    }
 });
 
 class WeekPlanManage extends React.Component {
@@ -39,7 +53,7 @@ class WeekPlanManage extends React.Component {
             }),
             weekScheduleId: null,
             tabIndex: 0,
-            
+
         };
     }
 
@@ -54,12 +68,30 @@ class WeekPlanManage extends React.Component {
             })
         });
     }
-    getTitleHeader=()=>{
-        let status =  this.props.match.params.status;
-        if(status)
-        {
-            if(status == "publish") return "Publish Schedule";
-            if(status == "unpublish") return "Unublish Schedule";
+
+    fetchData = async () => {
+        let status = this.props.match.params.status;
+        if (status && (status == "published" || status == "unpublished")) {
+            this.props.fetchWeekSchedules(this.state.dateStart, status);
+        }
+    }
+
+    componentDidUpdate = (prevProps, prevState) => {
+        if (prevState.dateStart != this.state.dateStart || this.props.match.params.status != this.props.status) {
+            this.fetchData();
+        }
+
+    }
+
+    componentDidMount = () => {
+        this.fetchData();
+    }
+
+    getTitleHeader = () => {
+        let status = this.props.match.params.status;
+        if (status) {
+            if (status == "published") return "Published Schedule";
+            if (status == "unpublished") return "Unublish Schedule";
         }
     }
 
@@ -67,6 +99,85 @@ class WeekPlanManage extends React.Component {
         console.log(event);
         this.setState({ tabIndex: newValue });
     }
+
+    handleRowClick = (id) => {
+        console.log("Redirect");
+        history.push(`/schedule/plans/detail/${id}`);
+    }
+    renderWeekScheduleRows = () => {
+        const dateFormat = "dd/MM/yyyy";
+        return this.props.weekSchedules.map(weekSchedule => {
+
+
+            return (
+                <TableRow key={weekSchedule.id} hover className={this.props.classes.weekScheduleRow} onClick={
+                    () => { this.handleRowClick(weekSchedule.id); }
+                } >
+                    <TableCell align="center">{weekSchedule.id}</TableCell>
+                    <TableCell align="left" variant="head" >Plan name</TableCell>
+                    <TableCell align="center">{format(new Date(weekSchedule.dateStart), dateFormat)}</TableCell>
+                    <TableCell align="center">{format(addDays((new Date(weekSchedule.dateStart)), 6), dateFormat)}</TableCell>
+                    <TableCell align="center">{format(new Date(weekSchedule.dateCreated), dateFormat)}</TableCell>
+                    <TableCell align="center">Create By</TableCell>
+                    <TableCell align="center">Last result</TableCell>
+                    <TableCell align="center">
+                        {
+                            this.renderActionButtons(weekSchedule.status, weekSchedule.id)
+                        }
+                    </TableCell>
+                </TableRow>
+            );
+        })
+    }
+    renderActionButtons = (status, id) => {
+        switch (status) {
+            case weekScheduleStatus.PUBLISHED:
+                return (
+                    <React.Fragment>
+                        <Tooltip title="Duplicate">
+                            <IconButton>
+                                <FileCopyOutlinedIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete" >
+                            <IconButton>
+                                <DeleteOutlineOutlinedIcon />
+                            </IconButton>
+                        </Tooltip>
+
+                        <Tooltip title="Unpublish">
+                            <IconButton>
+                                <GetAppRoundedIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </React.Fragment>
+                );
+            case weekScheduleStatus.UNPUBLISHED:
+                return (
+                    <React.Fragment>
+                        <Tooltip title="Duplicate">
+                            <IconButton>
+                                <FileCopyOutlinedIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete">
+                            <IconButton>
+                                <DeleteOutlineOutlinedIcon />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Publish">
+                            <IconButton>
+                                <PublishRoundedIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </React.Fragment>
+                );
+
+            default:
+        }
+    }
+
+
     render() {
         return (<div>
             <Paper style={{ padding: 16, marginBottom: 32 }} elevation={0}>  <Typography variant="h2">
@@ -79,8 +190,14 @@ class WeekPlanManage extends React.Component {
             </Paper>
 
             <Paper className={this.props.classes.container}>
-                <CardHeader title={this.getTitleHeader()} titleTypographyProps={{variant: "h3"}} style={{paddingTop:10}} />
-                
+                <CardHeader title={this.getTitleHeader()} titleTypographyProps={{ variant: "h3" }} style={{ paddingTop: 10 }}
+                    action={
+                        this.props.match.params.status == "unpublished" ?
+                            (<IconButton color="primary"  >
+                                <AddRoundedIcon />
+                            </IconButton>) : null
+                    } />
+
                 {/* <Typography variant="h4">{this.getTitleHeader()} </Typography> */}
                 <Divider />
                 <CardContent className={this.props.classes.containerContent}>
@@ -89,66 +206,23 @@ class WeekPlanManage extends React.Component {
                         <Table aria-label="simple table" >
                             <TableHead>
                                 <TableRow >
-                                    <TableCell align="center">Id</TableCell>
+                                    <TableCell align="center">WeekId</TableCell>
                                     <TableCell align="left" variant="head" >Plan name</TableCell>
-                                    <TableCell align="center">Date Create</TableCell>
-
+                                    <TableCell align="center">From Date</TableCell>
+                                    <TableCell align="center">To Date</TableCell>
+                                    <TableCell align="center">Create Date</TableCell>
+                                    <TableCell align="center">Create By</TableCell>
                                     <TableCell align="center">Last result</TableCell>
                                     <TableCell align="center">Actions</TableCell>
-                                    <TableCell align="center">Publish</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody style={{ width: "100%", height: "700px" }}>
-                                <TableRow hover>
-                                    <TableCell align="center">1</TableCell>
-                                    <TableCell align="left" variant="head" >First Schedule</TableCell>
-
-                                    <TableCell align="center">20/10/2022</TableCell>
-
-                                    <TableCell align="center">
-                                        <Chip
-                                            label="Successfull"
-                                            variant="outlined"
-                                        /></TableCell>
-                                    <TableCell align="center">
-                                        {/* <IconButton>
-                                            <VisibilityOutlinedIcon />
-                                        </IconButton> */}
-                                        <IconButton>
-                                            <FileCopyOutlinedIcon />
-                                        </IconButton>
-                                        <IconButton>
-                                            <DeleteOutlineOutlinedIcon />
-                                        </IconButton>
-
-                                    </TableCell>
-                                    <TableCell align="center"><Button>Publish</Button></TableCell>
-                                </TableRow>
-                                <TableRow hover>
-                                    <TableCell align="center">2</TableCell>
-                                    <TableCell align="left" variant="head" >Two Schedule</TableCell>
-
-                                    <TableCell align="center">20/10/2022</TableCell>
-
-                                    <TableCell align="center">
-                                        <Chip
-                                            label="Successfull"
-                                            variant="outlined"
-                                        /></TableCell>
-                                    <TableCell align="center">
-                                        {/* <IconButton>
-                                            <VisibilityOutlinedIcon />
-                                        </IconButton> */}
-                                        <IconButton>
-                                            <FileCopyOutlinedIcon />
-                                        </IconButton>
-                                        <IconButton>
-                                            <DeleteOutlineOutlinedIcon />
-                                        </IconButton>
-
-                                    </TableCell>
-                                    <TableCell align="center"><Button>Publish</Button></TableCell>
-                                </TableRow>
+                                {
+                                    this.props.weekSchedules ?
+                                        (
+                                            this.renderWeekScheduleRows()
+                                        ) : "...Loading"
+                                }
                             </TableBody>
 
                         </Table>
@@ -159,4 +233,16 @@ class WeekPlanManage extends React.Component {
         );
     }
 }
-export default withRouter(withStyles(styles)(WeekPlanManage));
+
+const mapStateToProps = (state) => {
+    return {
+        weekSchedules: state.schedule.weekSchedules,
+        status: state.schedule.status
+    }
+}
+export default connect(
+    mapStateToProps, {
+    fetchWeekSchedules
+}
+)(
+    withRouter(withStyles(styles)(WeekPlanManage)));

@@ -42,7 +42,8 @@ export default createMuiTheme({
 
         common: {
             white: customWhite,
-            purpleBg: purpleMin
+            purpleBg: purpleMin,
+            blue50 : value.blue50
         },
         danger: {
             main: '#c70000'

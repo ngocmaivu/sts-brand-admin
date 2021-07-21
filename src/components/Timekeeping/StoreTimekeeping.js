@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import { connect } from 'react-redux';
-import { Button, createStyles, Dialog, DialogContent, TableCell, DialogContentText, DialogTitle, DialogActions, InputAdornment, TextField, withStyles, Paper, Card, Grid, TableContainer, Table, TableHead, TableRow, TableBody, IconButton, Collapse } from '@material-ui/core';
+import { Button, createStyles, Dialog, DialogContent, TableCell, DialogContentText, DialogTitle, DialogActions, InputAdornment, TextField, withStyles, Paper, Card, Grid, TableContainer, Table, TableHead, TableRow, TableBody, IconButton, Collapse, Typography, FormControl, FormLabel } from '@material-ui/core';
 
 import MuiAlert from '@material-ui/lab/Alert';
 import { Delete, Edit, ImageSearch, ImageSearchTwoTone, SearchTwoTone, ViewAgenda, ViewStreamOutlined, VisibilityOutlined } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 import { DateRangePicker, DateRangePickerComponent } from '@syncfusion/ej2-react-calendars';
 import { TimeKeepingRow } from './TimeKeepingRow';
-
+import { loadSkills } from "../../_services";
+import { ShiftUserTable } from './ShiftUserTable';
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -68,6 +69,9 @@ const styles = (Theme) => createStyles({
     },
     container: {
         padding: 20
+    },
+    theadCell: {
+        color: "#fff"
     }
 });
 
@@ -85,7 +89,7 @@ const dataSrc = [
                     id: 1,
                     timeStart: "2021-07-13T08:00:34",
                     timeEnd: "2021-07-13T17:00:34",
-                    skillId: 1,
+                    skillId: 18,
                 }
             },
             {
@@ -96,7 +100,7 @@ const dataSrc = [
                     id: 2,
                     timeStart: "2021-07-14T08:00:34",
                     timeEnd: "2021-07-13T17:00:34",
-                    skillId: 1,
+                    skillId: 18,
                 }
             },
             {
@@ -107,7 +111,7 @@ const dataSrc = [
                     id: 3,
                     timeStart: "2021-07-15T08:00:34",
                     timeEnd: "2021-07-15T17:00:34",
-                    skillId: 1,
+                    skillId: 18,
                 }
             },
             {
@@ -115,29 +119,29 @@ const dataSrc = [
                 timeCheckIn: null,
                 timeCheckOut: null,
                 shiftAssignment: {
-                    id: 3,
+                    id: 5,
                     timeStart: "2021-07-15T08:00:34",
                     timeEnd: "2021-07-15T17:00:34",
-                    skillId: 1,
+                    skillId: 18,
                 }
             },
             {
-                shiftAssignmentId: 4,
+                shiftAssignmentId: 5,
                 timeCheckIn: "2021-07-16T08:00:34",
                 timeCheckOut: "2021-07-16T16:59:34",
                 shiftAssignment: {
-                    id: 4,
+                    id: 5,
                     timeStart: "2021-07-16T08:00:34",
                     timeEnd: "2021-07-16T17:00:34",
-                    skillId: 1,
+                    skillId: 18,
                 }
             }
         ]
     },
     {
-        username: "lycuong99",
-        firstName: "Ly",
-        lastName: "Cuong",
+        username: "dpDao",
+        firstName: "Pham",
+        lastName: "Dao",
         attendances: [
             {
                 shiftAssignmentId: 1,
@@ -147,7 +151,7 @@ const dataSrc = [
                     id: 1,
                     timeStart: "2021-07-13T08:00:34",
                     timeEnd: "2021-07-13T17:00:34",
-                    skillId: 1,
+                    skillId: 18,
                 }
             },
             {
@@ -158,7 +162,7 @@ const dataSrc = [
                     id: 2,
                     timeStart: "2021-07-14T08:00:34",
                     timeEnd: "2021-07-13T17:00:34",
-                    skillId: 1,
+                    skillId: 18,
                 }
             },
             {
@@ -169,7 +173,7 @@ const dataSrc = [
                     id: 3,
                     timeStart: "2021-07-15T08:00:34",
                     timeEnd: "2021-07-15T17:00:34",
-                    skillId: 1,
+                    skillId: 18,
                 }
             },
             {
@@ -177,21 +181,21 @@ const dataSrc = [
                 timeCheckIn: null,
                 timeCheckOut: null,
                 shiftAssignment: {
-                    id: 3,
+                    id: 4,
                     timeStart: "2021-07-15T08:00:34",
                     timeEnd: "2021-07-15T17:00:34",
-                    skillId: 1,
+                    skillId: 18,
                 }
             },
             {
-                shiftAssignmentId: 4,
-                timeCheckIn: "2021-07-16T08:00:34",
-                timeCheckOut: "2021-07-16T16:59:34",
+                shiftAssignmentId: 5,
+                timeCheckIn: "2021-07-16T17:00:34",
+                timeCheckOut: "2021-07-16T22:59:34",
                 shiftAssignment: {
-                    id: 4,
+                    id: 5,
                     timeStart: "2021-07-16T08:00:34",
                     timeEnd: "2021-07-16T17:00:34",
-                    skillId: 1,
+                    skillId: 18,
                 }
             }
         ]
@@ -202,22 +206,24 @@ class StoreTimekeeping extends React.Component {
 
 
     state = {
-        searchValue: '', openDeleteDialog: false, deleteUserId: null, openAddDialog: false,
+        searchValue: '', openDeleteDialog: false, deleteUserId: null, openAttendanceDialog: false,
         pageSize: 10, rowCount: 0, pageIndex: 1, open: true, setOpen: false,
-        selectedDate: '2014-08-18T21:11:54',
+        selectedDate: '2014-08-18T21:11:54', selectedUser: null,
     };
     constructor(props) {
         super(props);
-
         this.dataSrc = dataSrc;
-
     }
+    initData = async () => {
+        var skills = await loadSkills();
 
-
-
-
-
-
+        this.setState({
+            skillSrc: skills,
+        });
+    }
+    componentDidMount = async () => {
+        await this.initData();
+    }
     renderToolbar = () => {
         return (
             <div className={this.props.classes.toolbar}>
@@ -230,38 +236,62 @@ class StoreTimekeeping extends React.Component {
             </div>
         );
     }
-    // {
-    //     shiftAssignmentId: 1,
-    //     timeCheckIn: "2021-07-13T08:04:34",
-    //     timeCheckOut: "2021-07-13T17:04:34",
-    //     shiftAssignment: {
-    //         id: 1,
-    //         timeStart: "2021-07-13T08:00:34",
-    //         timeEnd: "2021-07-13T17:00:34",
-    //         skillId: 1,
-    //     }
-    // }
-
     renderRows = () => {
-
-        return this.dataSrc.map(user => {
+        return this.dataSrc.map((user, index) => {
 
             return (
-                <TimeKeepingRow user={user} />);
+                <TimeKeepingRow user={user} skillSrc={this.state.skillSrc} index={index} onRowClick={() => {
+                    this.handleRowClick(user);
+                }} />);
         });
     };
 
+    handleRowClick = (user) => {
+        this.setState({ selectedUser: user, openAttendanceDialog: true });
+
+    }
+    renderAttandanceDialog = () => {
+
+        const handleClose = () => { this.setState({ openAttendanceDialog: false }); };
+
+        return (
+            <Dialog
+                onClose={handleClose}
+                fullWidth={true}
+                maxWidth="lg"
+                open={this.state.openAttendanceDialog}>
+                <DialogTitle id="customized-dialog-title" onClose={handleClose}>
+                    <Typography variant="h3">{`Scheduled Hours - ${this.state?.selectedUser?.firstName} ${this.state?.selectedUser?.lastName}`}</Typography>
+                </DialogTitle>
+                <DialogContent dividers>
+                    {
+                        this.state.selectedUser ? (
+                            <ShiftUserTable user={this.state.selectedUser} skillSrc={this.state.skillSrc} />
+                        ) : "No Content"
+                    }
+
+                </DialogContent>
+                <DialogActions>
+                    <Button autoFocus onClick={handleClose} color="primary">
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>);
+    }
     render() {
 
         const { classes } = this.props;
 
         return (
             <React.Fragment>
-                <Card style={{ padding: '10px', marginBottom: '15px' }}>
+                <Card style={{ padding: '10px', marginBottom: '15px' }} elevation={0}>
                     <div> <h1>Timekeeping</h1> {this.renderToolbar()}</div>
-                    <DateRangePickerComponent />
+                    <FormControl>
+                        <FormLabel>Select Date</FormLabel>
+                        <DateRangePickerComponent />
+                    </FormControl>
                 </Card>
-                <Paper className={this.props.classes.container}>
+                <Paper className={this.props.classes.container} elevation={0}>
                     <div style={{ height: 480, width: '100%' }}>
                         {false ? (
 
@@ -286,16 +316,23 @@ class StoreTimekeeping extends React.Component {
                         ) :
                             <TableContainer>
                                 <Table aria-label="simple table" >
-                                    <TableHead>
-                                        <TableRow >
-                                            <TableCell align="left" variant="head" >Username</TableCell>
-                                            <TableCell align="left" variant="head" >Fullname</TableCell>
-                                            <TableCell align="center">Total Hours</TableCell>
-                                            <TableCell align="center">Total Shift</TableCell>
-                                            <TableCell align="center">Attendance</TableCell>
-                                            <TableCell align="center">Come Lately</TableCell>
-                                            <TableCell align="center">Leave Early</TableCell>
-                                            <TableCell align="center"></TableCell>
+                                    <TableHead style={{ backgroundColor: "#111936" }}>
+                                        <TableRow>
+                                            <TableCell align="left" variant="head"  >
+                                                <Typography variant="h4" className={classes.theadCell}>#</Typography>
+                                            </TableCell>
+                                            <TableCell align="left" variant="head" style={{ color: "#fff" }} >
+                                                <Typography variant="h4" className={classes.theadCell}>Username</Typography>
+                                            </TableCell>
+                                            <TableCell align="left" variant="head" style={{ color: "#fff" }}>
+                                                <Typography variant="h4" className={classes.theadCell}>
+                                                    Fullname</Typography></TableCell>
+                                            <TableCell align="center"><Typography variant="h4" className={classes.theadCell}>
+                                                Total Hours</Typography></TableCell>
+                                            <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Total Shift</Typography></TableCell>
+                                            <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Attendance</Typography></TableCell>
+
+
                                         </TableRow>
                                     </TableHead>
                                     {
@@ -306,7 +343,6 @@ class StoreTimekeeping extends React.Component {
                                             }
                                         </TableBody>
 
-
                                     }
 
                                 </Table>
@@ -314,7 +350,7 @@ class StoreTimekeeping extends React.Component {
 
                     </div>
 
-
+                    {this.renderAttandanceDialog()}
                 </Paper>
             </React.Fragment>
 

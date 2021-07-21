@@ -81,6 +81,7 @@ class AvailablePage extends React.Component {
         // }));
 
         if (this.state.staffs) {
+			if(shiftRegisterDatas)
             this.setState({
                 shiftRegisterDatas: this.state.staffs.map(staff => {
                     return {
