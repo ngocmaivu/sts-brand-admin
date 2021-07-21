@@ -2,7 +2,7 @@
 .schedule-custom.e-schedule .e-vertical-view.e-week-view .e-work-cells,
 .schedule-custom.e-schedule .e-vertical-view.e-week-view .e-date-header-wrap table col,
 .schedule-custom.e-schedule .e-vertical-view.e-week-view .e-content-wrap table col {
-    width: 300px;
+    width: 250px;
 }
 
 .schedule-custom.e-schedule .e-vertical-view.e-work-week-view .e-work-cells,
@@ -13,5 +13,5 @@
 
 .schedule-custom.e-schedule .e-month-view .e-work-cells,
 .schedule-custom.e-schedule .e-month-view .e-date-header-wrap table col {
-    width: 300px;
+    width: 280px;
 }

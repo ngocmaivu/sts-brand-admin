@@ -81,20 +81,20 @@ class AvailablePage extends React.Component {
         // }));
 
         if (this.state.staffs) {
-			if(shiftRegisterDatas)
-            this.setState({
-                shiftRegisterDatas: this.state.staffs.map(staff => {
-                    return {
-                        fullname: `${staff.firstName} ${staff.lastName}`,
-                        username: staff.username,
-                        timeWorks: shiftRegisterDatas.filter(
-                            shiftRegister => shiftRegister.username == staff.username
-                        ).map(({ id, timeStart, timeEnd }) => ({
-                            id, timeStart, timeEnd
-                        }))
-                    }
+            if (shiftRegisterDatas)
+                this.setState({
+                    shiftRegisterDatas: this.state.staffs.map(staff => {
+                        return {
+                            fullname: `${staff.firstName} ${staff.lastName}`,
+                            username: staff.username,
+                            timeWorks: shiftRegisterDatas.filter(
+                                shiftRegister => shiftRegister.username == staff.username
+                            ).map(({ id, timeStart, timeEnd }) => ({
+                                id, timeStart, timeEnd
+                            }))
+                        }
+                    })
                 })
-            })
         }
     }
 
@@ -137,7 +137,6 @@ class AvailablePage extends React.Component {
                                             ))
                                         }
                                     </Grid>
-
                                 </TableCell>
                             ))
                         }
@@ -217,12 +216,9 @@ class AvailablePage extends React.Component {
                                         </TableBody>
                                     )
                                     : (
-                                        <Skeleton variant="rect"style={{ width: "100%", height: "700px" }} >
-                                            <TableBody style={{ width: "100%", height: "700px" }}>
 
+                                        <Skeleton variant="rect" style={{ width: "100%", height: "700px" }} ></Skeleton>
 
-                                            </TableBody>
-                                        </Skeleton>
                                     )
                             }
 
