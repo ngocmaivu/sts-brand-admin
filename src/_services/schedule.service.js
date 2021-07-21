@@ -1,6 +1,7 @@
 import sts from '../apis/sts';
 import { authHeader } from "../_helpers/auth-header";
 import { getFirstDayOfWeek } from "../ultis/scheduleHandle";
+
 export const loadStores = async () => {
     try {
         const response = await sts.get("/brands/stores/all", { headers: authHeader(), });
@@ -191,4 +192,19 @@ export const getStaffInfo = (id) => async dispatch => {
         console.log(e);
     }
 
+}
+
+export const fetchWeekSchedule = async (dateStart, status) => {
+    try {
+        const response = await sts.get(`/week-schedules`, {
+            params: {
+                dateStart: new Date(dateStart),
+                status: status
+            },
+            headers: authHeader(),
+        });
+        return response.data;
+    } catch (e) {
+        console.log(e);
+    }
 }

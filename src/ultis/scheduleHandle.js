@@ -140,3 +140,12 @@ export function getTotalHoursPerWeek(timeWorks, timeStartKey, timeEndKey) {
     return totalMinutesPerWeek / 60;
 }
 
+export function getHourDuration(start, end) {
+
+    let duration = intervalToDuration({
+        start: new Date(start),
+        end: new Date(end)
+    });
+    let result = duration.hours * 60 + duration.minutes;
+    return (result/60).toFixed(1);
+}

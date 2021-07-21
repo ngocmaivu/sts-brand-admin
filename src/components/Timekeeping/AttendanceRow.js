@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { IconButton, makeStyles, TableCell, TableRow, Paper, Collapse, Box, Typography, TableHead, TableBody, Table, TableContainer, Grid } from "@material-ui/core";
-import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
-import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+
 import { countAttendances, getCountEarlyAndLately, getTotalShift } from "./timekeeping.ultil";
 import { format, intervalToDuration } from 'date-fns';
 import { getHourDuration } from '../../ultis/scheduleHandle';
@@ -29,10 +28,10 @@ function getTotalHours(timeWorks, timeStartKey, timeEndKey) {
     let totalMinutesPerWeek = 0;
 
     timeWorks.forEach(timeWork => {
-        if (timeWork.shiftAssignment[timeStartKey] && timeWork.shiftAssignment[timeEndKey]) {
+        if (timeWork[timeStartKey] && timeWork[timeEndKey]) {
             let duration = intervalToDuration({
-                start: new Date(timeWork.shiftAssignment[timeStartKey]),
-                end: new Date(timeWork.shiftAssignment[timeEndKey])
+                start: new Date(timeWork[timeStartKey]),
+                end: new Date(timeWork[timeEndKey])
             });
 
             totalMinutesPerWeek += duration.hours * 60 + duration.minutes;
@@ -43,11 +42,11 @@ function getTotalHours(timeWorks, timeStartKey, timeEndKey) {
     return totalMinutesPerWeek / 60;
 }
 
-export function TimeKeepingRow(props) {
+export function AttendanceRow(props) {
 
     const { user, onRowClick, index } = props;
     const classes = useRowStyles();
-    const totalHours = getTotalHours(user.attendances, 'timeStart', "timeEnd").toFixed(2);
+    const totalHours = getTotalHours(user.attendances, 'timeCheckIn', "timeCheckOut").toFixed(2);
     const totalShifts = getTotalShift(user.attendances);
     const count_Attendances = countAttendances(user.attendances);
     const { comeLately, leaveEarly } = getCountEarlyAndLately(user.attendances);
@@ -61,6 +60,8 @@ export function TimeKeepingRow(props) {
             <TableCell align="center">{totalHours}</TableCell>
             <TableCell align="center">{totalShifts}</TableCell>
             <TableCell align="center">{count_Attendances}</TableCell>
+            <TableCell align="center">{comeLately}</TableCell>
+            <TableCell align="center">{leaveEarly}</TableCell>
         </TableRow>
     );
 

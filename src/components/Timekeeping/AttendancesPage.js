@@ -10,6 +10,7 @@ import { DateRangePicker, DateRangePickerComponent } from '@syncfusion/ej2-react
 import { TimeKeepingRow } from './TimeKeepingRow';
 import { loadSkills } from "../../_services";
 import { ShiftUserTable } from './ShiftUserTable';
+import { AttendanceRow } from './AttendanceRow';
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -202,8 +203,8 @@ const dataSrc = [
     }
 ]
 
-class StoreTimekeeping extends React.Component {
 
+class AttendancesPage extends React.Component {
 
     state = {
         searchValue: '', openDeleteDialog: false, deleteUserId: null, openAttendanceDialog: false,
@@ -240,7 +241,7 @@ class StoreTimekeeping extends React.Component {
         return this.dataSrc.map((user, index) => {
 
             return (
-                <TimeKeepingRow user={user} skillSrc={this.state.skillSrc} index={index} onRowClick={() => {
+                <AttendanceRow user={user} skillSrc={this.state.skillSrc} index={index} onRowClick={() => {
                     this.handleRowClick(user);
                 }} />);
         });
@@ -331,7 +332,8 @@ class StoreTimekeeping extends React.Component {
                                                 Total Hours</Typography></TableCell>
                                             <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Total Shift</Typography></TableCell>
                                             <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Attendance</Typography></TableCell>
-
+                                            <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Come Lately</Typography></TableCell>
+                                            <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Leave Early</Typography></TableCell>
 
                                         </TableRow>
                                     </TableHead>
@@ -369,5 +371,5 @@ export default connect(mapState, {
     // getAllByPage: storeActions.getAllByPage,
     // deleteStore: storeActions.delete
 
-})(withStyles(styles, { withTheme: true })(StoreTimekeeping));
+})(withStyles(styles, { withTheme: true })(AttendancesPage));
 
