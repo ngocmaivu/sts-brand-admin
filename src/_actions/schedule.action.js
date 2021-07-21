@@ -70,3 +70,13 @@ export const fetchWeekSchedule = (id) => async dispatch => {
     }
 }
 
+export const fetchSkillSrc = () => async dispatch => {
+    try {
+        const response = await sts.get("/brands/skills/all", { headers: authHeader(), });
+        dispatch({ type: scheduleConstants.FETCH_SKILL_SRC, payload: response.data });
+    } catch (e) {
+        console.log('Load Skill Fail');
+        console.log(e);
+    }
+}
+

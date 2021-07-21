@@ -13,6 +13,7 @@ import {
 import { extend, isNullOrUndefined, L10n } from '@syncfusion/ej2-base';
 import { DemandEditor } from './DemandEditor';
 import "./demand.css";
+import { connect } from 'react-redux';
 
 const styles = (theme) => createStyles({
 
@@ -97,13 +98,6 @@ class DemandPage extends React.Component {
         ];
     }
 
-    initData = async () => {
-        var skills = await loadSkills();
-
-        this.setState({
-            skillSrc: skills,
-        });
-    }
 
     loadDemandDatas = async () => {
         if (this.scheduleObj) {
@@ -114,12 +108,12 @@ class DemandPage extends React.Component {
     }
 
     componentDidMount = async () => {
-        await this.initData();
+
         await this.loadDemandDatas();
         // console.log(this.scheduleObj?.eventSettings);
     }
     componentDidUpdate = async (prevProps, prevState, snapshot) => {
-        if (prevProps.weekScheduleId != this.props.weekScheduleId && this.state.skillSrc) {
+        if (prevProps.weekScheduleId != this.props.weekScheduleId && this.props.skillSrc) {
             await this.loadDemandDatas();
         }
     }
@@ -233,7 +227,7 @@ class DemandPage extends React.Component {
         return (
             <div className={classes.root} >
                 {
-                    this.state.skillSrc ? (
+                    this.props.skillSrc ? (
                         <ScheduleComponent
                             currentView="Week" selectedDate={this.currentDate}
                             cssClass="schedule-custom"
@@ -266,7 +260,7 @@ class DemandPage extends React.Component {
                                     allowMultiple={true}
                                     idField="id"
                                     textField="name"
-                                    dataSource={this.state.skillSrc}
+                                    dataSource={this.props.skillSrc}
 
 
                                 >
@@ -287,8 +281,17 @@ class DemandPage extends React.Component {
 
 
 }
+const mapStateToProps = (state) => {
+    return {
+        skillSrc: state.schedule.skillSrc
+    }
+}
 
-export default withStyles(styles, { withTheme: true })(DemandPage);
+export default connect(
+    mapStateToProps, {
+
+}
+)(withStyles(styles, { withTheme: true })(DemandPage));
 
 
 
