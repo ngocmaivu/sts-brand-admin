@@ -32,8 +32,8 @@ class RegisterPage extends React.Component {
                     address: '',
                 },
                 brand: {
-                    brandName: '',
-                    brandAddress: '',
+                    name: '',
+                    address: '',
                     logoImg: '',
                     hotline: '',
                 },
@@ -49,12 +49,9 @@ class RegisterPage extends React.Component {
     handleChange(event) {
         const { name, namebrand, value } = event.target;
         const { user, brand } = this.state;
-        console.log(user.brand.brandName)
         this.setState({
             user: {
                 ...user,
-
-
                 generalInfo: {
                     ...user.generalInfo,
                     [name]: value
@@ -65,13 +62,6 @@ class RegisterPage extends React.Component {
                 },
             }
         });
-        // this.setState({
-        //     brand: {
-        //         ...brand,
-        //         [name]: value
-        //     }
-        // });
-        // console.log("user ne" + user.generalInfo.username)
     }
 
     handleSubmit(event) {
@@ -82,8 +72,8 @@ class RegisterPage extends React.Component {
         if(defaultOption === "Female")
         user.generalInfo.gender = 0;
         else user.generalInfo.gender = 1;
-        console.log(user.brand.brandName)
-        console.log(user.brand.brandAddress)
+        console.log(user.brand.name)
+        console.log(user.brand.address)
         console.log(user.generalInfo.username)
         console.log(user.generalInfo.password)
         if (user.generalInfo.firstName && user.generalInfo.lastName && user.generalInfo.username && user.generalInfo.password) {
@@ -199,9 +189,9 @@ class RegisterPage extends React.Component {
                         <br />
                         <div className="input-group form-group">
                             <Store color="primary" />
-                            <TextField style={{ height: '7px', width: '380px' }} type="text" name="brandName" placeholder="Brand Name" value={user.brand.brandName} onChange={this.handleChange} />
+                            <TextField style={{ height: '7px', width: '380px' }} type="text" name="name" placeholder="Brand Name" value={user.brand.name} onChange={this.handleChange} />
                         </div>
-                        {submitted && !user.brand.brandName &&
+                        {submitted && !user.brand.name &&
                             <div style={{ color: 'red', }} className="help-block">Brand Name is required</div>
                         }
                         <br />
@@ -215,9 +205,9 @@ class RegisterPage extends React.Component {
                         <br />
                         <div className="input-group form-group">
                             <LocationOn color="primary" />
-                            <TextField style={{ height: '7px', width: '380px' }} type="address" name="brandAddress" placeholder="Address" value={user.brand.brandAddress} onChange={this.handleChange} />
+                            <TextField style={{ height: '7px', width: '380px' }} type="address" name="address" placeholder="Address" value={user.brand.address} onChange={this.handleChange} />
                         </div>
-                        {submitted && !user.brand.brandAddress &&
+                        {submitted && !user.brand.address &&
                             <div style={{ color: 'red', }} className="help-block">Address is required</div>
                         }
                         <br />

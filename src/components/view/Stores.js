@@ -74,7 +74,7 @@ const styles = (Theme) => createStyles({
         padding: 20
     }
 })
-var deleting = false;
+var tmp = 1;
 
 class Stores extends React.Component {
 
@@ -213,15 +213,13 @@ class Stores extends React.Component {
                 }
             }
         ];
-        var loading = false;
-        
-       
         // if (stores.type === "STORE_GETALL_SUCCESS") loading = true;
         // if (stores.type === "STORE_DELETE_SUCCESS") deleting = true;
-        console.log(this.props.stores.loading);
-        if ( !this.props.stores.items ) {
+        console.log(tmp );
+        if ( !this.props.stores.items ||  stores.type !== "STORE_GETALL_SUCCESS") {
             return <p>...Loading</p>;
         }
+        tmp++;
         // var items = JSON.parse(localStorage.getItem("stores"));
         // console.log(stores.items)
         return (
@@ -244,7 +242,7 @@ class Stores extends React.Component {
                 <Paper>
                     <div style={{ height: 452, width: '100%' }}>
                         <DataGrid disableColumnFilter rows={stores.items} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
-                            paginationMode="server" rowCount={100} />
+                            paginationMode="server"/>
                     </div>
                 </Paper>
             </React.Fragment>

@@ -133,3 +133,96 @@ function _delete(id) {
     function success(id) { return { type: storeConstants.STORE_DELETE_SUCCESS, id } }
     function failure(id, error) { return { type: storeConstants.STORE_DELETE_FAILURE, id, error } }
 }
+
+// import sts from '../apis/sts';
+// import { storeConstants } from "../_constants"
+// import { authHeader } from "../_helpers/auth-header";
+// const userInfor = JSON.parse(localStorage.getItem("jwt_decode"))
+
+// export const createStore = (data) => async dispatch => {
+//     try {
+//         const response = await sts.post("/stores", { ...data }, { headers: authHeader() });
+//         dispatch({ type: storeConstants.STORE_CREAT_SUCCESS });
+//     } catch (e) {
+//         console.log(e);
+//         dispatch({ type: storeConstants.STORE_CREAT_FAILURE });
+//         // TODO excepction
+
+//     }
+// }
+
+// export const getStore = (pageIndex, pageSize, searchValue) => async dispatch => {
+//     try {
+//         //TODO Phân quyền brand/store ở đây
+
+
+//         if (searchValue === "") {
+//             searchValue = null;
+//         }
+//         var response = null;
+
+//         response = await sts.get("/brands/stores", {
+//             headers: authHeader(),
+//             params: {
+//                 PageNumber: pageIndex,
+//                 PageSize: pageSize,
+//                 KeyWord: searchValue
+//             }
+//         });
+
+//         console.log(response);
+//         console.log(1);
+
+//         console.log();
+//         dispatch({ type: storeConstants.STORE_GETALL_SUCCESS, payload: { datas: response.data, ...JSON.parse(response.headers.pagination), searchValue } });
+//     } catch (error) {
+//         console.log(error);
+//         dispatch({ type: storeConstants.STORE_GETALL_FAILURE, payload: { error: "ERROR" } });
+//     }
+// }
+
+// export const getStoreInfo = (id) => async dispatch => {
+//     const skills = await loadSkills();
+//     const stores = await loadStores();
+//     const init_data = {};
+//     try {
+//         const response = await sts.get(`/stores/${id}`, { headers: authHeader(), });
+
+//         dispatch({ type: storeConstants.STORE_GETBYID_SUCCESS, payload: { skills, stores, data: response.data } });
+//     } catch (e) {
+//         console.log(e);
+//     }
+
+// }
+
+// export const deleteStore = (id) => async dispatch => {
+//     //TODO fix
+//     try {
+//         const api = `/stores/${id}`;
+//         const response = await sts.delete(api, { headers: authHeader() });
+//         dispatch({ type: storeConstants.STORE_DELETE_SUCCESS, payload: id });
+//     } catch (error) {
+//         console.log(error);
+//     }
+// }
+
+// const loadSkills = async () => {
+//     try {
+//         const response = await sts.get("/brands/skills/all", { headers: authHeader(), });
+//         return response.data;
+//     } catch (e) {
+//         console.log('Load Skill Fail');
+//         console.log(e);
+//     }
+// }
+
+// const loadStores = async () => {
+//     try {
+//         const response = await sts.get("/brands/stores/all", { headers: authHeader(), });
+//         return response.data;
+//     } catch (e) {
+//         console.log('Load Stores Fail');
+//         console.log(e);
+//     }
+// }
+
