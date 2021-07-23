@@ -49,7 +49,7 @@ class StoreForm extends React.Component {
             generalInfo: {
                 username: formValues.username,
                 firstName: formValues.firstName,
-                password:  formValues.password,
+                // password:  formValues.password,
                 lastName: formValues.lastName,
                 dob: formValues.dob,
                 gender: formValues.gender,
@@ -88,12 +88,12 @@ class StoreForm extends React.Component {
                                     </Grid>
 
                                     <Grid container item spacing={2}>
-                                        <Grid item xs={3}>
+                                        <Grid item xs={6}>
                                             <Field name="username"  component={this.renderInput} label="Username" />
                                         </Grid>
-                                        <Grid item xs={3}>
+                                        {/* <Grid item xs={3}>
                                             <Field name="password" type="password" component={this.renderInput} label="Password" />
-                                        </Grid>
+                                        </Grid> */}
                                         <Grid item xs={6}>
                                             <Field name="workAt" component={this.renderSelect} label="Wort at">
                                                 {this.props.stores ?
