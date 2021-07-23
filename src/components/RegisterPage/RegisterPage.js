@@ -5,7 +5,7 @@ import { Box, Button, Card, createStyles, Divider, Grid, TextField, Typography, 
 import { brandActions, userActions } from '../../_actions';
 import './register.css'
 import Person from '@material-ui/icons/Person';
-import { DateRange, Email, Label, LocationCity, LocationOn, Lock, PeopleAltOutlined, Phone, Store } from '@material-ui/icons';
+import { DateRange, Email, FileCopy, Label, LocationCity, LocationOn, Lock, PeopleAltOutlined, Phone, Store } from '@material-ui/icons';
 import Dropdown from 'react-dropdown';
 import 'react-dropdown/style.css';
 import { Male, Female } from "react-gender";
@@ -195,6 +195,11 @@ class RegisterPage extends React.Component {
                             <div style={{ color: 'red', }} className="help-block">Brand Name is required</div>
                         }
                         <br />
+                        <div className="input-group form-group">
+                            <FileCopy color="primary" />
+                            <TextField style={{ height: '7px', width: '380px' }} type="file" onChange={this.handleChange} />
+                        </div>
+                        <br/>
                         <div className="input-group form-group">
                             <LocationOn color="primary" />
                             <TextField style={{ height: '7px', width: '380px' }} type="hotline" name="hotline" placeholder="Hotline" value={user.brand.hotline} onChange={this.handleChange} />

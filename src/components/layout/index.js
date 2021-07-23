@@ -160,13 +160,14 @@ if (user === null) {
       type: 'item',
       icon: <CalendarTodayOutlined />
     },
-    {
-      id: 'profile',
-      title: 'Profile',
-      type: 'item',
-      url: "/profile",
-      icon: <ProfileIcon />
-    })
+    // {
+    //   id: 'profile',
+    //   title: 'Profile',
+    //   type: 'item',
+    //   url: "/profile",
+    //   icon: <ProfileIcon />
+    // }
+    )
 } else {
   if (user.role === "brand manager") webName = "STS Brand Manager"
   if (user.role === "brand manager") INIT_DATA.items.push(
@@ -205,13 +206,14 @@ if (user === null) {
       type: 'item',
       icon: <Settings />
     },
-    {
-      id: 'profile',
-      title: 'Profile',
-      type: 'item',
-      url: "/profile",
-      icon: <ProfileIcon />
-    })
+    // {
+    //   id: 'profile',
+    //   title: 'Profile',
+    //   type: 'item',
+    //   url: "/profile",
+    //   icon: <ProfileIcon />
+    // }
+    )
   else if (user.role === "store manager") INIT_DATA.items.push(
     {
       id: 'home',
@@ -411,7 +413,7 @@ export default function MainLayout(props) {
 
 
         <Divider />
-        <Button component={Link} to="/login">Logout</Button>
+        {/* <Button component={Link} to="/login">Logout</Button> */}
       </Drawer>
       <main
         className={clsx(classes.content, {

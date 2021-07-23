@@ -126,6 +126,8 @@ class Stores extends React.Component {
                 {/* <SearchOutlinedIcon style={{marginLeft: '-350px', color: '#50A625'}} /> */}
                 <Button style={{ marginLeft: '-350px', color: '#009966' }}> <SearchTwoTone fontSize='small' /></Button>
                 <Button variant="outlined" className={this.props.classes.searchButton} component={Link}
+                    to="/storemanager/new"> <AddIcon />ADD STORE MANAGER</Button>
+                <Button variant="outlined" className={this.props.classes.searchButton} component={Link}
                     to="/stores/new"> <AddIcon />Add Store</Button>
             </div>
         );

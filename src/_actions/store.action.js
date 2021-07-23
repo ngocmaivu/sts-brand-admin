@@ -44,8 +44,8 @@ function createStoreManager(store) {
             .then(
                 store => {
                     dispatch(success());
-                    history.push('/stores');
-                    dispatch(alertActions.success('Create Store successful'));
+                    // history.push('/stores');
+                    // dispatch(alertActions.success('Create Store successful'));
                 },
                 error => {
                     dispatch(failure(error.toString()));

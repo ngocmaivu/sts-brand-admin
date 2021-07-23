@@ -33,6 +33,7 @@ import EditStore from './EditStore/EditStore';
 import StoreTimekeeping from './Timekeeping/StoreTimekeeping';
 import AttendancesPage from './Timekeeping/AttendancesPage';
 import WeekPlan from './view/weekSchedulePlan/WeekPlan';
+import StoreManagerNew from './view/store/StoreManagerNew';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -85,6 +86,7 @@ class App extends React.Component {
                   <Route path="/editbrand" exact>
                     <EditBrand />
                   </Route>
+                  <Route exact path="/storemanager/new" component={StoreManagerNew} />
                   <Route path="/editStore/:id" render={(props) => <EditStore {...props} />} />
                   {/* <EditStore />
                   </Route> */}

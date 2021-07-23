@@ -15,6 +15,18 @@ export const createStaff = (data) => async dispatch => {
     }
 }
 
+export const createStoreManager = (data) => async dispatch => {
+    try {
+        const response = await sts.post("/manager/users/store-manager", { ...data }, { headers: authHeader() });
+        dispatch({ type: staffConstants.STAFF_CREATE_SUCCESS });
+    } catch (e) {
+        console.log(e);
+        dispatch({ type: staffConstants.STAFF_CREATE_FAILURE });
+        // TODO excepction
+
+    }
+}
+
 export const getStaffs = (pageIndex, pageSize, searchValue) => async dispatch => {
     try {
         //TODO Phân quyền brand/store ở đây

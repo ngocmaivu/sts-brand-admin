@@ -6,6 +6,8 @@ import { DataGrid } from "@material-ui/data-grid";
 import { Link } from 'react-router-dom';
 import { connect } from "react-redux";
 import { skillActions, storeActions } from "../../_actions";
+import Dropdown from 'react-dropdown';
+import 'react-dropdown/style.css';
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -29,6 +31,10 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+const options = [
+    'Choose store manager',
+];
+var defaultOption = options[0];
 var tmp = 1;
 class EditStore extends React.Component {
     constructor(props) {
@@ -38,6 +44,7 @@ class EditStore extends React.Component {
                 name: '',
                 address: '',
                 phone: '',
+                storeManager: '',
                 id: props.match.params.id
             },
             submitted: false,
@@ -145,6 +152,12 @@ class EditStore extends React.Component {
                                     <FormControl margin="normal" fullWidth>
                                         <FormLabel >Store name</FormLabel>
                                         <TextField name="name" size="small" variant="outlined" defaultValue={stores.items.name} onChange={this.handleChange} />
+                                    </FormControl>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <FormControl margin="normal" fullWidth>
+                                        <FormLabel >Store Manager</FormLabel>
+                                        <TextField name="storeManager" size="small" variant="outlined" defaultValue={''} onChange={this.handleChange} />
                                     </FormControl>
                                 </Grid>
                             </Grid>
