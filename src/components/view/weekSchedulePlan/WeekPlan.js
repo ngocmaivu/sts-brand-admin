@@ -4,11 +4,19 @@ import { createStyles, withStyles } from '@material-ui/core/styles';
 
 import Paper from '@material-ui/core/Paper';
 import { Button, CardContent, CardHeader, Chip, Divider, FormControl, FormLabel, Grid, IconButton, Tab, Tabs, Typography } from '@material-ui/core';
-import { fetchWeekSchedule } from "../../../_actions/";
+import { fetchWeekSchedule, fetchSkillSrc } from "../../../_actions/";
 import { format, isSameDay, startOfWeek, } from 'date-fns';
 import { Skeleton } from '@material-ui/lab';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { getWeekScheduleConstraint, postConstraint, updateConstraint } from '../../../_services';
+import SettingConstraintsForm from '../schedule/SettingConstraintsForm';
+import { getConstraintDefault } from "../../../ultis/scheduleDefault";
+import Demand from '../demand';
+import Schedule from "../schedule";
+
+import _ from "lodash";
+
 const styles = (Theme) => createStyles({
     container: {
         height: '100%',
@@ -26,18 +34,20 @@ function TabPanel(props) {
     return (
         <div
             role="tabpanel"
-            hidden={value !== index}
+
             id={`simple-tabpanel-${index}`}
             aria-labelledby={`simple-tab-${index}`}
             {...other}
-            style={{ width: '100%', height: "85%" }}
+            style={{
+                width: '100%', height: "85%", display: value !== index ? "none" : null
+            }}
         >
-            {value === index && (
+           
                 <React.Fragment>
                     {children}
                 </React.Fragment>
-            )}
-        </div>
+          
+        </div >
     );
 }
 
@@ -53,19 +63,77 @@ class WeekPlan extends React.Component {
         super(props);
 
         this.state = {
-            dateStart: startOfWeek(new Date(), {
-                weekStartsOn: 1
-            }),
-            weekScheduleId: null,
             tabIndex: 0,
-
+            methodSubmitConstraint: null
         };
     }
 
     componentDidMount = () => {
-        let id = this.props.match.params.id;
-        this.props.fetchWeekSchedule(id);
+        this.fetchData();
+        this.props.fetchSkillSrc();
     }
+
+    componentDidUpdate = () => {
+
+        if (!this.props.currentSchedule) {
+            this.fetchData();
+        }
+    }
+
+    fetchData = async () => {
+
+        let id = this.props.match.params.id;
+        if (id) {
+            this.props.fetchWeekSchedule(id);
+
+            this.renderConstraintData(id);
+        }
+    }
+
+    renderConstraintData = async (weekScheduleId) => {
+        const storeScheduleDetails = await getWeekScheduleConstraint(weekScheduleId);
+        console.log(storeScheduleDetails);
+
+        if (_.isEmpty(storeScheduleDetails)) {
+            let constraints = getConstraintDefault();
+            let id = this.props.match.params.id;
+            constraints[0].weekScheduleId = id;
+            constraints[1].weekScheduleId = id;
+            await postConstraint(constraints);
+            this.renderConstraintData(weekScheduleId);
+        } else {
+            var constraintData = {};
+            storeScheduleDetails.forEach(constraint => {
+                var prefix = constraint.staffType == 0 ? "ft" : "pt"
+
+                Object.keys(constraint).forEach(key => {
+                    constraintData = {
+                        ...constraintData, [`${prefix}${key}`]: constraint[key] ? constraint[key] : 0
+                    }
+                })
+
+            });
+            console.log(constraintData);
+            this.setState({ constraintData: constraintData });
+        }
+
+
+    }
+    onSubmitConstraints = async (constraintValues) => {
+        console.log(constraintValues);
+        console.log(this.state.constraintData);
+        let id = this.props.match.params.id;
+
+        constraintValues[0].weekScheduleId = id;
+        constraintValues[0].minHoursPerDay = 0;
+        constraintValues[1].minHoursPerDay = 0;
+        constraintValues[1].weekScheduleId = id;
+
+        await updateConstraint(constraintValues[0]);
+        await updateConstraint(constraintValues[1]);
+
+    }
+
     handleWeekChange = async (date) => {
         if (isSameDay(startOfWeek(date, {
             weekStartsOn: 1
@@ -77,6 +145,7 @@ class WeekPlan extends React.Component {
             })
         });
     }
+
     handleChange = (event, newValue) => {
         console.log(event);
         this.setState({ tabIndex: newValue });
@@ -99,8 +168,6 @@ class WeekPlan extends React.Component {
                     indicatorColor="primary"
                     textColor="primary"
                     onChange={this.handleChange}
-                    aria-label="disabled tabs example"
-
                 >
                     <Tab label="Constraints " value={0} />
                     <Tab label="Demands" value={1} />
@@ -108,28 +175,44 @@ class WeekPlan extends React.Component {
                 </Tabs>
                 <Divider />
                 <TabPanel value={this.state.tabIndex} index={0}>
-
+                    {
+                        this.state.constraintData ? (
+                            <SettingConstraintsForm initialValues={this.state.constraintData} onSubmit={this.onSubmitConstraints} />
+                        ) : "...Loading"
+                    }
                 </TabPanel>
 
                 <TabPanel value={this.state.tabIndex} index={1}>
+                    {
+                        this.props.currentSchedule ? (
+                            <Demand dateStart={this.props.currentSchedule.dateStart} weekScheduleId={this.props.currentSchedule.id} />
+                        ) : "...Loading"
+                    }
 
                 </TabPanel>
                 <TabPanel value={this.state.tabIndex} index={2}>
-
+                    {
+                        this.props.currentSchedule ? (
+                            <Schedule dateStart={this.props.currentSchedule.dateStart} weekScheduleId={this.props.currentSchedule.id} />
+                        ) : "...Loading"
+                    }
                 </TabPanel>
             </Paper>
         </div >
         );
     }
 }
+
 const mapStateToProps = (state) => {
     return {
-        currentSchedule: state.schedule.currentSchedule
+        currentSchedule: state.schedule.currentSchedule,
+        skillSrc: state.schedule.skillSrc
     }
 }
 export default connect(
     mapStateToProps,
     {
-        fetchWeekSchedule
+        fetchWeekSchedule,
+        fetchSkillSrc
     }
 )(withRouter(withStyles(styles)(WeekPlan)));

@@ -5,7 +5,8 @@ const INIT = {
     template: null,
     weekSchedules: null,
     status: null,
-    currentSchedule: null
+    currentSchedule: null,
+    skillSrc:null
 }
 
 export function scheduleReducer(state = INIT, action) {
@@ -18,6 +19,9 @@ export function scheduleReducer(state = INIT, action) {
             return { ...state, status: action.payload?.status, weekSchedules: action.payload?.data };
         case scheduleConstants.FETCH_WEEK_SCHEDULE:
             return { ...state, currentSchedule: action.payload };
+        case scheduleConstants.FETCH_SKILL_SRC: {
+            return { ...state, skillSrc: action.payload };
+        }
         default:
             return state;
     }

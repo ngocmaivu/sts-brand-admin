@@ -112,11 +112,20 @@ export const checkCompute = async (shiftScheduleResultId) => {
 };
 
 
-export const commitConstraint = async (constraint) => {
+export const updateConstraint = async (constraint) => {
     try {
-
         const response = await sts.put(`/store-schedule-details/${constraint.id}`, { ...constraint }, { headers: authHeader() });
+        return response.data;
 
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+};
+export const postConstraint = async (constraint) => {
+    try {
+        console.log(constraint);
+        const response = await sts.post(`/store-schedule-details/`, [...constraint], { headers: authHeader() });
         return response.data;
 
     } catch (error) {

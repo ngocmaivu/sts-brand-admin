@@ -3,7 +3,7 @@ import './schedule.css';
 import { loadSkills, getStaffs, getWeekSchedule, triggerCompute, checkCompute } from "../../../_services";
 import {
     ScheduleComponent, Inject, Day, Week,
-    TimelineViews, TimelineMonth, ViewsDirective, ViewDirective, Resize, DragAndDrop, ResourcesDirective, ResourceDirective
+    TimelineViews, TimelineMonth, ViewsDirective, ViewDirective, Resize, DragAndDrop, ResourcesDirective, ResourceDirective, addDays
 
 } from "@syncfusion/ej2-react-schedule";
 import { extend, isNullOrUndefined, L10n } from '@syncfusion/ej2-base';
@@ -48,18 +48,10 @@ class ScheduleMain extends React.Component {
     constructor() {
         super(...arguments);
         this.state = {
-            skillDataSrc: null,
             employeeData: null,
             openWaitingComputeModal: false,
         }
-        // this.employeeData = [
-        //     { Name: 'Alice', Id: 1, GroupId: 1, Color: '#bbdc00',},
-        //     { Name: 'Nancy', Id: 2, GroupId: 2, Color: '#9e5fff', },
-        //     { Name: 'Robert', Id: 3, GroupId: 1, Color: '#bb0c00',  },
-        //     { Name: 'Robson', Id: 4, GroupId: 2, Color: '#9e5fff',  },
-        //     { Name: 'Laura', Id: 5, GroupId: 1, Color: '#bbdc00', },
-        //     { Name: 'Margaret', Id: 6, GroupId: 2, Color: '#9e5fff', }
-        // ];
+
 
         this.rootRef = React.createRef(null);
 
@@ -101,7 +93,8 @@ class ScheduleMain extends React.Component {
                 startDate.setHours(0, 0, 0);
                 console.log("NEW SCHEDULE");
                 ref.doc(`${this.BrandId}-${this.StoreId}`).collection("schedules").add({
-                    StartDate: startDate
+                    StartDate: startDate,
+                    Id: this.props.weekScheduleId
                 }).then((docRef) => {
                     console.log("Document successfully written!");
                     this.refScheduleCurrentCollection = docRef.collection("shifts");
@@ -125,20 +118,16 @@ class ScheduleMain extends React.Component {
         if (this.updateResourceHeaderTemplate) {
             this.scheduleObj.resourceHeaderTemplate = this.resourceHeaderTemplate;
         }
+
+        if (!this.state.employeeData) {
+            this.loadData();
+        }
+
     }
 
 
 
     loadData = async () => {
-
-
-        var skills = await loadSkills();
-        if (skills != null) {
-            this.setState({
-                skillDataSrc: skills
-            })
-            console.log(skills);
-        }
 
         var staffs = await getStaffs();
         console.log(staffs);
@@ -156,7 +145,7 @@ class ScheduleMain extends React.Component {
     componentDidMount = async () => {
 
         await this.loadData();
-        if (this.state.skillDataSrc && this.state.employeeData) {
+        if (this.props.skillSrc && this.state.employeeData) {
             this.getDataSource();
         }
     }
@@ -174,9 +163,11 @@ class ScheduleMain extends React.Component {
         await ref.doc(`${this.BrandId}-${this.StoreId}`).collection("schedules").get().then((snapshot) => {
             let isExistWeekSchedule = false;
             snapshot.forEach((doc) => {
+
                 let schedule = doc.data();
                 console.log("UPdate");
-                if (isSameDay(schedule.StartDate.toDate(), getFirstDayOfWeek(this.currentDate))) {
+
+                if (schedule.Id == this.props.weekScheduleId) {
                     isExistWeekSchedule = true;
                     //get
                     console.log("UPdate");
@@ -204,26 +195,21 @@ class ScheduleMain extends React.Component {
                                 return obj;
                             });
 
-
-                            //this.dataSource = src;
-                            // let schObj = document.querySelector('.e-schedule').ej2_instances[0];
                             if (this.scheduleObj) {
                                 this.scheduleObj.eventSettings.dataSource = src;
                                 this.getTotalHoursPerWeek();
                             }
 
-                            //schObj.eventSettings.dataSource = src;
-
                         });
-                    //  console.log(doc.collection("shifts"));
                 }
             });
 
             if (!isExistWeekSchedule) {
-                let startDate = getFirstDayOfWeek(this.currentDate);
+                let startDate = new Date(this.props.dateStart);
                 startDate.setHours(0, 0, 0);
                 ref.doc(`${this.BrandId}-${this.StoreId}`).collection("schedules").add({
-                    StartDate: startDate
+                    StartDate: startDate,
+                    Id: this.props.weekScheduleId
                 }).then((docRef) => {
                     this.refScheduleCurrentCollection = docRef.collection("shifts");
                     this.unSub = docRef.collection("shifts")
@@ -234,14 +220,9 @@ class ScheduleMain extends React.Component {
                                 return obj;
                             });
 
-                            //this.dataSource = src;
-                            // let schObj = document.querySelector('.e-schedule').ej2_instances[0];
-                            // schObj.eventSettings.dataSource = src;
                             this.scheduleObj.eventSettings.dataSource = src;
                         });
                 });
-
-                // this.refScheduleCurrentCollection = tmpRef.collection("shifts");
 
             }
         });
@@ -280,7 +261,7 @@ class ScheduleMain extends React.Component {
                 setEndTime={this.setEndTime}
                 setStaffId={this.setStaffId}
                 setDescription={this.setDescription}
-                skillDataSrc={this.state.skillDataSrc}
+                skillSrc={this.props.skillSrc}
             /> : <div></div>);
     }
 
@@ -300,7 +281,7 @@ class ScheduleMain extends React.Component {
             let skillElement = args.element.querySelector('#Skill');
             if (skillElement) {
                 (args.data).SkillId = skillElement.value;
-                (args.data).Skill = this.state.skillDataSrc.find(e => e.id == skillElement.value).name;
+                (args.data).Skill = this.props.skillSrc.find(e => e.id == skillElement.value)?.name;
 
             }
             // console.log(this.scheduleObj.eventSettings.dataSource);
@@ -341,23 +322,23 @@ class ScheduleMain extends React.Component {
     }
 
 
-    navigatingEvent = (args) => {
-        console.log(args);
-        if (args.action === "view") return;
+    // navigatingEvent = (args) => {
+    //     console.log(args);
+    //     if (args.action === "view") return;
 
-        if (!isSameDay(getFirstDayOfWeek(this.currentDate), getFirstDayOfWeek(args.currentDate))) {
-            this.currentDate = args.currentDate;
-            console.log('Change Week');
-            this.unSub();
-            this.getDataSource();
+    //     if (!isSameDay(getFirstDayOfWeek(this.currentDate), getFirstDayOfWeek(args.currentDate))) {
+    //         this.currentDate = args.currentDate;
+    //         console.log('Change Week');
+    //         this.unSub();
+    //         this.getDataSource();
 
 
-        } else {
-            //Update Ref Schedule
-            this.currentDate = args.currentDate;
-        }
+    //     } else {
+    //         //Update Ref Schedule
+    //         this.currentDate = args.currentDate;
+    //     }
 
-    }
+    // }
 
     onActionBegin = async (args) => {
         //console.log(args);
@@ -410,7 +391,7 @@ class ScheduleMain extends React.Component {
                     result.shiftAssignments.forEach(e => {
 
                         let Data = {
-                            Skill: this.state.skillDataSrc.find(skill => skill.id == e.skillId).name,
+                            Skill: this.props.skillSrc.find(skill => skill.id == e.skillId).name,
                             SkillId: e.skillId,
                             EndTime: new Date(e.timeEnd),
                             StartTime: new Date(e.timeStart),
@@ -516,7 +497,7 @@ class ScheduleMain extends React.Component {
                         </Grid>
                     </Grid>
                 } />
-                {this.state.skillDataSrc && this.state.employeeData ?
+                {this.props.skillSrc && this.state.employeeData ?
                     (<ScheduleComponent currentView="TimelineWeek" selectedDate={this.currentDate}
                         eventSettings={{
                             fields: {
@@ -530,9 +511,11 @@ class ScheduleMain extends React.Component {
                         showQuickInfo={false}
                         editorTemplate={this.editorTemplate}
                         popupClose={this.popupClose}
-                        navigating={this.navigatingEvent}
+                        // navigating={this.navigatingEvent}
                         actionBegin={this.onActionBegin}
                         resourceHeaderTemplate={this.resourceHeaderTemplate}
+                        minDate={new Date(this.props.dateStart)}
+                        maxDate={addDays((new Date(this.props.dateStart)), 6)}
                     >
 
                         <ResourcesDirective>
@@ -583,11 +566,14 @@ class ScheduleMain extends React.Component {
 }
 
 const mapStateToProps = (state) => {
-
+    return {
+        currentSchedule: state.schedule.currentSchedule,
+        skillSrc: state.schedule.skillSrc
+    }
 }
 
 export default connect(
-    null,
+    mapStateToProps,
     {
         getScheduleDataInput
     }
