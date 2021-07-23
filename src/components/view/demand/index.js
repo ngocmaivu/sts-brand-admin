@@ -219,7 +219,6 @@ class DemandPage extends React.Component {
                             currentView="Week" selectedDate={this.currentDate}
                             cssClass="schedule-custom"
                             eventSettings={{
-                                dataSource: this.dataSource,
                                 fields: {
                                     id: 'id',
                                     subject: { name: "quantity" },
@@ -259,7 +258,7 @@ class DemandPage extends React.Component {
                                 <ViewDirective option='Week' />
 
                             </ViewsDirective>
-                            <Inject services={[Day, Week, DragAndDrop]} />
+                            <Inject services={[Day, Week, DragAndDrop, Resize]} />
                             {/* <Inject services={[Day, Week, WorkWeek, Month, TimelineViews, TimelineMonth]} /> */}
                         </ScheduleComponent>) : "...Loading"
                 }

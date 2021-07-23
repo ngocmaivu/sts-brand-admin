@@ -182,8 +182,8 @@ class StaffForm extends React.Component {
                                         </Grid>
                                         <Grid item xs={6}>
                                             <Field name="type" component={this.renderSelect} label="Type">
-                                                <MenuItem value={1}>Fulltime</MenuItem>
-                                                <MenuItem value={0}>Parttime</MenuItem>
+                                                <MenuItem value={0}>Full time</MenuItem>
+                                                <MenuItem value={1}>Part time</MenuItem>
                                             </Field>
                                         </Grid>
                                     </Grid>
@@ -229,10 +229,7 @@ const validate = (formValues) => {
     if (!formValues.username) {
         error.username = "You must enter a username";
     }
-
-    if (!formValues.type) {
-        error.type = "You must enter a type staff";
-    }
+    
 
     if (!formValues.workAt) {
         error.type = "You must choose a store";
