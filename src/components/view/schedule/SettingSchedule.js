@@ -17,7 +17,7 @@ import { Field, reduxForm, formValueSelector } from 'redux-form';
 import PropTypes from 'prop-types';
 import Demand from '../demand';
 import SettingConstraintsForm from './SettingConstraintsForm';
-import { getWeekScheduleConstraint, getWeekSchedule, commitConstraint } from "../../../_services";
+import { getWeekScheduleConstraint, getWeekSchedule, updateConstraint } from "../../../_services";
 
 import { getFirstDayOfWeek } from "../../../ultis/scheduleHandle";
 import WeekPicker from "../../WeekPicker";
@@ -135,8 +135,8 @@ class SettingSchedule extends React.Component {
         //     constraint.id = this.state.constraintData.find(constraintState => constraintState.staffType == constraint.staffType).id;
         // });
         console.log(constraintValues);
-        commitConstraint(constraintValues[0]);
-        commitConstraint(constraintValues[1]);
+        updateConstraint(constraintValues[0]);
+        updateConstraint(constraintValues[1]);
 
     }
 
@@ -180,7 +180,6 @@ class SettingSchedule extends React.Component {
             this.setState({ constraintData: constraintData });
 
         }
-
     }
 
     render() {
@@ -206,7 +205,6 @@ class SettingSchedule extends React.Component {
                     textColor="primary"
                     onChange={this.handleChange}
                     aria-label="disabled tabs example"
-
                 >
                     <Tab label="Constraints " value={0} />
                     <Tab label="Demands" value={1} />
@@ -228,7 +226,5 @@ class SettingSchedule extends React.Component {
         );
     }
 }
-
-
 
 export default withStyles(styles, { withTheme: true })(SettingSchedule);

@@ -106,6 +106,10 @@ class SettingConstraintsForm extends React.Component {
     )
 
     renderInputNumber = ({ label, key, input, type = "number", meta: { touched, invalid, error }, InputProps, min, max }) => {
+        if (!input.value) {
+            input.value = 1;
+        }
+
         return (
             <SectionSetting label={label} key={key} >
                 <TextField classes={{
@@ -121,8 +125,13 @@ class SettingConstraintsForm extends React.Component {
 
         const { onChange } = input;
         const getSelectedOption = () => {
-            //console.log(timeSlotsCustom);
-            return timeSlotsCustom.find(o => o.value === input.value);
+
+            if (input.value) {
+                return timeSlotsCustom.find(o => o.value === input.value);
+            } else {
+                return timeSlotsCustom[0];
+            }
+
         };
 
         return (
@@ -175,7 +184,7 @@ class SettingConstraintsForm extends React.Component {
         Object.keys(formValues).forEach(field => {
 
         });
-        
+
 
         var ftconstraints = { staffType: 0 };
         var ptconstraints = { staffType: 1 };
@@ -184,16 +193,16 @@ class SettingConstraintsForm extends React.Component {
         this.constraintSpecific.forEach(field => {
             ftconstraints = {
                 ...ftconstraints,
-                [field.name]: formValues[`${prefixFT}${field.name}`]
+                [field.name]: formValues[`${prefixFT}${field.name}`] ? formValues[`${prefixFT}${field.name}`] : 0
             }
             ptconstraints = {
                 ...ptconstraints,
-                [field.name]: formValues[`${prefixPT}${field.name}`]
+                [field.name]: formValues[`${prefixPT}${field.name}`] ? formValues[`${prefixPT}${field.name}`] : 0
             }
         });
         ftconstraints.id = this.props.initialValues.ftid;
         ptconstraints.id = this.props.initialValues.ptid;
-       
+
         var listConstraitns = [ftconstraints, ptconstraints];
 
         this.props.onSubmit(listConstraitns);
@@ -205,7 +214,7 @@ class SettingConstraintsForm extends React.Component {
             <CardContent>
                 <form onSubmit={this.props.handleSubmit(this.onSubmit)}>
                     <Grid container spacing={5} >
-                        <Grid item xs={12}>
+                        {/* <Grid item xs={12}>
                             <CardCustom header='General'>
                                 <Grid container direction="column" spacing={1} style={{ paddingLeft: 20 }} >
                                     <SectionSetting label="Operating Hour" >
@@ -249,7 +258,7 @@ class SettingConstraintsForm extends React.Component {
                                     </SectionSetting>
                                 </Grid>
                             </CardCustom>
-                        </Grid>
+                        </Grid> */}
                         <Grid item container direction="row" spacing={5}>
                             <Grid item xs={6}>
                                 <CardCustom header='For fulltime'>
@@ -272,7 +281,7 @@ class SettingConstraintsForm extends React.Component {
                                 <Button variant="contained" color="primary" type="submit">Save change</Button>
                             </Grid>
                             <Grid item>
-                                <Button variant="outlined" color="primary">Cancel </Button>
+                                <Button variant="outlined" color="primary">Reset</Button>
                             </Grid>
                         </Grid>
                     </Grid>

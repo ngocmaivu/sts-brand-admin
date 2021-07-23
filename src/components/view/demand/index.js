@@ -13,6 +13,7 @@ import {
 import { extend, isNullOrUndefined, L10n } from '@syncfusion/ej2-base';
 import { DemandEditor } from './DemandEditor';
 import "./demand.css";
+import { connect } from 'react-redux';
 
 const styles = (theme) => createStyles({
 
@@ -97,13 +98,6 @@ class DemandPage extends React.Component {
         ];
     }
 
-    initData = async () => {
-        var skills = await loadSkills();
-
-        this.setState({
-            skillSrc: skills,
-        });
-    }
 
     loadDemandDatas = async () => {
         if (this.scheduleObj) {
@@ -114,12 +108,12 @@ class DemandPage extends React.Component {
     }
 
     componentDidMount = async () => {
-        await this.initData();
         await this.loadDemandDatas();
         // console.log(this.scheduleObj?.eventSettings);
     }
+
     componentDidUpdate = async (prevProps, prevState, snapshot) => {
-        if (prevProps.weekScheduleId != this.props.weekScheduleId && this.state.skillSrc) {
+        if (prevProps.weekScheduleId != this.props.weekScheduleId && this.props.skillSrc) {
             await this.loadDemandDatas();
         }
     }
@@ -209,22 +203,9 @@ class DemandPage extends React.Component {
 
     onEventRendered = (args) => {
         //this.applyCategoryColor(args);
-
         let levelColor = levels.find(e => e.value == args.data.level).color;
         args.element.style.backgroundColor = levelColor;
-        console.log(levelColor);
-        console.log(args);
     }
-
-    applyLevelColor = (args) => {
-        let levelColor = levels.find(e => e.value == args.data.level).color;
-        console.log(levelColor);
-        if (args.element) {
-            args.element.style.backgroundColor = levelColor;
-        }
-    }
-
-
 
     render() {
 
@@ -233,12 +214,11 @@ class DemandPage extends React.Component {
         return (
             <div className={classes.root} >
                 {
-                    this.state.skillSrc ? (
+                    this.props.skillSrc ? (
                         <ScheduleComponent
                             currentView="Week" selectedDate={this.currentDate}
                             cssClass="schedule-custom"
                             eventSettings={{
-                                dataSource: this.dataSource,
                                 fields: {
                                     id: 'id',
                                     subject: { name: "quantity" },
@@ -255,7 +235,8 @@ class DemandPage extends React.Component {
                             firstDayOfWeek={1}
                             group={{ byDate: false, resources: ['Skill'] }}
                             showQuickInfo={false}
-
+                            minDate={new Date(this.props.dateStart)}
+                            maxDate={addDays((new Date(this.props.dateStart)), 6)}
                         >
 
                             <ResourcesDirective>
@@ -266,7 +247,7 @@ class DemandPage extends React.Component {
                                     allowMultiple={true}
                                     idField="id"
                                     textField="name"
-                                    dataSource={this.state.skillSrc}
+                                    dataSource={this.props.skillSrc}
 
 
                                 >
@@ -277,7 +258,7 @@ class DemandPage extends React.Component {
                                 <ViewDirective option='Week' />
 
                             </ViewsDirective>
-                            <Inject services={[Day, Week, DragAndDrop]} />
+                            <Inject services={[Day, Week, DragAndDrop, Resize]} />
                             {/* <Inject services={[Day, Week, WorkWeek, Month, TimelineViews, TimelineMonth]} /> */}
                         </ScheduleComponent>) : "...Loading"
                 }
@@ -287,8 +268,17 @@ class DemandPage extends React.Component {
 
 
 }
+const mapStateToProps = (state) => {
+    return {
+        skillSrc: state.schedule.skillSrc
+    }
+}
 
-export default withStyles(styles, { withTheme: true })(DemandPage);
+export default connect(
+    mapStateToProps, {
+
+}
+)(withStyles(styles, { withTheme: true })(DemandPage));
 
 
 

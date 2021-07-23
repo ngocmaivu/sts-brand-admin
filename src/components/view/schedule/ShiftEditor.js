@@ -8,7 +8,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-export function ShiftEditor({ parentProps, setStartTime, setEndTime, setStaffId, skillDataSrc }) {
+export function ShiftEditor({ parentProps, setStartTime, setEndTime, setStaffId, skillSrc }) {
 
     const classes = useStyles();
     const [start, setStart] = useState("");
@@ -73,7 +73,7 @@ export function ShiftEditor({ parentProps, setStartTime, setEndTime, setStaffId,
                                 required
                             >
                                 {
-                                    skillDataSrc.map(e => (
+                                    skillSrc.map(e => (
                                         (<MenuItem key={e.id} value={e.id}>{e.name}</MenuItem>)
                                     ))
                                 }
