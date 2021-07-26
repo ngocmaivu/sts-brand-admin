@@ -27,6 +27,7 @@ import { connect } from 'react-redux';
 import { weekScheduleStatus } from './status';
 import { addDays } from '@syncfusion/ej2-react-schedule';
 import history from '../../../history';
+import AddWeekSchedulePlanDialog from './AddWeekSchedulePlanDialog';
 const styles = (Theme) => createStyles({
     container: {
         height: '100%',
@@ -53,7 +54,7 @@ class WeekPlanManage extends React.Component {
             }),
             weekScheduleId: null,
             tabIndex: 0,
-
+            openAddDialog: false
         };
     }
 
@@ -193,7 +194,9 @@ class WeekPlanManage extends React.Component {
                 <CardHeader title={this.getTitleHeader()} titleTypographyProps={{ variant: "h3" }} style={{ paddingTop: 10 }}
                     action={
                         this.props.match.params.status == "unpublished" ?
-                            (<IconButton color="primary"  >
+                            (<IconButton color="primary" onClick={() => {
+                                this.setState({ openAddDialog: true });
+                            }} >
                                 <AddRoundedIcon />
                             </IconButton>) : null
                     } />
@@ -227,6 +230,9 @@ class WeekPlanManage extends React.Component {
 
                         </Table>
                     </TableContainer>
+                    <AddWeekSchedulePlanDialog open={this.state.openAddDialog} handleClose={() => {
+                        this.setState({ openAddDialog: false });
+                    }} />
                 </CardContent>
             </Paper>
         </div >

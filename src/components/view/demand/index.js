@@ -1,4 +1,4 @@
-import { createStyles, Tab, Tabs, withStyles, Grid, CardHeader, CardContent, Card, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Select, MenuItem, FormControl, FormLabel, TextField, FormHelperText } from '@material-ui/core';
+import { createStyles, Tab, Tabs, withStyles, Grid, CardHeader, CardContent, Card, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Select, MenuItem, FormControl, FormLabel, TextField, FormHelperText, Paper, FormControlLabel } from '@material-ui/core';
 import React from 'react';
 
 import { loadSkills, getWeekScheduleDemand, updateDemand, deleteDemand, createDemand } from "../../../_services";
@@ -14,6 +14,7 @@ import { extend, isNullOrUndefined, L10n } from '@syncfusion/ej2-base';
 import { DemandEditor } from './DemandEditor';
 import "./demand.css";
 import { connect } from 'react-redux';
+import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 
 const styles = (theme) => createStyles({
 
@@ -62,7 +63,7 @@ class DemandPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-
+            byDate: false
         }
 
         this.rootRef = React.createRef(null);
@@ -74,42 +75,24 @@ class DemandPage extends React.Component {
             level: null,
             skillId: null,
         };
-
-        this.dataSource = [
-            {
-                id: 33,
-                weekScheduleId: 2,
-                weekSchedule: null,
-                skillId: 20,
-                skill: null,
-                level: 1,
-                quantity: 2,
-                workStart: "2021-07-15T06:29:00",
-                workEnd: "2021-07-15T12:00:00",
-                status: 1
-            },
-            // {
-            //     Id: 33,
-            //     skillId: 20,
-            //     WorkStart: new Date("2021-07-15T06:29:00"),
-            //     WorkEnd: new Date("2021-07-15T12:00:00"),
-
-            // },
-        ];
     }
 
 
     loadDemandDatas = async () => {
-        if (this.scheduleObj) {
-            var demandDatas = await getWeekScheduleDemand(this.props.weekScheduleId);
-            console.log(demandDatas);
+
+        var demandDatas = await getWeekScheduleDemand(this.props.weekScheduleId);
+        if (this.scheduleObj != null) {
+
+
+            // 
+            // this.setState({ dataSource: demandDatas });
             this.scheduleObj.eventSettings.dataSource = demandDatas;
         }
     }
 
     componentDidMount = async () => {
         await this.loadDemandDatas();
-        // console.log(this.scheduleObj?.eventSettings);
+        // 
     }
 
     componentDidUpdate = async (prevProps, prevState, snapshot) => {
@@ -117,6 +100,7 @@ class DemandPage extends React.Component {
             await this.loadDemandDatas();
         }
     }
+
     //----------------
     setWorkStart = (workStart) => {
         this.PreInsertObj.workStart = workStart;
@@ -133,6 +117,7 @@ class DemandPage extends React.Component {
     setLevel = (level) => {
         this.PreInsertObj.level = level;
     }
+
     //-----------------------
     editorTemplate = (props) => {
         return ((props !== undefined) ?
@@ -157,19 +142,19 @@ class DemandPage extends React.Component {
             if (levelElement) {
                 (args.data).level = levelElement.value ? levelElement.value : "";
             }
-            let quantityElement = args.element.querySelector('#input-level');
+            let quantityElement = args.element.querySelector('#input-quantity');
             if (quantityElement) {
                 (args.data).quantity = quantityElement.value ? quantityElement.value : "";
             }
-            console.log(args.data);
 
-            // console.log(this.scheduleObj.eventSettings.dataSource);
+
+            // 
 
         }
     }
 
     onActionBegin = async (args) => {
-        console.log(args);
+
 
 
         if (args.requestType == "eventChange") {
@@ -177,17 +162,19 @@ class DemandPage extends React.Component {
             updateDemand(updateObj);
         } else if (args.requestType === 'eventCreate' && args.data.length > 0) {
             let newObj = convertDemandData(args.data[0]);
-            //  console.log(dateDest);
-            createDemand(
+            //  
+            let responseData = await createDemand(
                 newObj, this.props.weekScheduleId
             );
+            console.log(responseData);
+            args.data[0].id = responseData[0].id;
 
             if (!args.cancel) {
                 // const newShiftRef = this.refScheduleCurrentCollection.doc();
                 // args.data[0].Id = newShiftRef.id;
-                // console.log('new shift Id:' + newShiftRef.id);
+                // 
                 // const data = convertShiftToFireBaseObj(args.data[0]);
-                // console.log(data);
+                // 
                 // newShiftRef.set(data);
             }
 
@@ -195,14 +182,13 @@ class DemandPage extends React.Component {
         } else if (args.requestType == "eventRemove") {
             // this.refScheduleCurrentCollection.doc(args.deletedRecords[0].Id).delete();
             deleteDemand(args.deletedRecords[0].id);
-            console.log(args.deletedRecords[0]);
+
         }
 
         // this.updateTotalHoursPersWeek();
     }
 
     onEventRendered = (args) => {
-        //this.applyCategoryColor(args);
         let levelColor = levels.find(e => e.value == args.data.level).color;
         args.element.style.backgroundColor = levelColor;
     }
@@ -215,52 +201,81 @@ class DemandPage extends React.Component {
             <div className={classes.root} >
                 {
                     this.props.skillSrc ? (
-                        <ScheduleComponent
-                            currentView="Week" selectedDate={this.currentDate}
-                            cssClass="schedule-custom"
-                            eventSettings={{
-                                fields: {
-                                    id: 'id',
-                                    subject: { name: "quantity" },
-                                    startTime: { name: 'workStart' },
-                                    endTime: { name: 'workEnd' },
-                                }
-                            }}
-                            timeScale={{ enable: true, interval: 120, slotCount: 2 }}
-                            eventRendered={this.onEventRendered}
-                            ref={schedule => this.scheduleObj = schedule}
-                            editorTemplate={this.editorTemplate}
-                            actionBegin={this.onActionBegin}
-                            popupClose={this.popupClose}
-                            firstDayOfWeek={1}
-                            group={{ byDate: false, resources: ['Skill'] }}
-                            showQuickInfo={false}
-                            minDate={new Date(this.props.dateStart)}
-                            maxDate={addDays((new Date(this.props.dateStart)), 6)}
-                        >
+                        <Paper>
+                            <CardHeader title="Demand" action={
+                                <Grid container justify="flex-end" spacing={1} direction="row">
+                                    <Grid item>
 
-                            <ResourcesDirective>
-                                <ResourceDirective
-                                    field="skillId"
-                                    title="Skill"
-                                    name="Skill"
-                                    allowMultiple={true}
-                                    idField="id"
-                                    textField="name"
-                                    dataSource={this.props.skillSrc}
+                                        <ToggleButtonGroup
+                                            value={this.state.byDate}
+                                            exclusive
+                                            size="small"
+                                            color="primary"
+                                            onChange={
+                                                (event, newValue) => {
+                                                    this.setState({ byDate: newValue });
+                                                }
+                                            }
+                                            aria-label="text alignment"
+                                        >
+                                            <ToggleButton value={true} aria-label="left aligned">
+                                                Date
+                                            </ToggleButton>
+                                            <ToggleButton value={false} aria-label="centered">
+                                                Skill
+                                            </ToggleButton>
+                                        </ToggleButtonGroup>
+                                    </Grid>
+                                </Grid>
+                            } />
+
+                            <ScheduleComponent
+                                currentView="Week" selectedDate={this.currentDate}
+                                cssClass="schedule-custom"
+                                eventSettings={{
+                                    fields: {
+                                        id: 'id',
+                                        subject: { name: "quantity" },
+                                        startTime: { name: 'workStart' },
+                                        endTime: { name: 'workEnd' },
+                                    }
+                                }}
+                                timeScale={{ enable: true, interval: 120, slotCount: 2 }}
+                                eventRendered={this.onEventRendered}
+                                ref={schedule => this.scheduleObj = schedule}
+                                editorTemplate={this.editorTemplate}
+                                actionBegin={this.onActionBegin}
+                                popupClose={this.popupClose}
+                                firstDayOfWeek={1}
+                                group={{ byDate: this.state.byDate, resources: ['Skill'] }}
+                                showQuickInfo={false}
+                                minDate={new Date(this.props.dateStart)}
+                                maxDate={addDays((new Date(this.props.dateStart)), 6)}
+                            >
+
+                                <ResourcesDirective>
+                                    <ResourceDirective
+                                        field="skillId"
+                                        title="Skill"
+                                        name="Skill"
+                                        allowMultiple={true}
+                                        idField="id"
+                                        textField="name"
+                                        dataSource={this.props.skillSrc}
 
 
-                                >
-                                </ResourceDirective>
-                            </ResourcesDirective>
-                            <ViewsDirective>
-                                <ViewDirective option='Day' />
-                                <ViewDirective option='Week' />
+                                    >
+                                    </ResourceDirective>
+                                </ResourcesDirective>
+                                <ViewsDirective>
+                                    <ViewDirective option='Day' />
+                                    <ViewDirective option='Week' />
 
-                            </ViewsDirective>
-                            <Inject services={[Day, Week, DragAndDrop, Resize]} />
-                            {/* <Inject services={[Day, Week, WorkWeek, Month, TimelineViews, TimelineMonth]} /> */}
-                        </ScheduleComponent>) : "...Loading"
+                                </ViewsDirective>
+                                <Inject services={[Day, Week, DragAndDrop, Resize]} />
+                                {/* <Inject services={[Day, Week, WorkWeek, Month, TimelineViews, TimelineMonth]} /> */}
+                            </ScheduleComponent>
+                        </Paper>) : "...Loading"
                 }
             </div >
         );

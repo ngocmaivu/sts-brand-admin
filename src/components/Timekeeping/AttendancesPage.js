@@ -5,7 +5,7 @@ import { Button, createStyles, Dialog, DialogContent, TableCell, DialogContentTe
 
 import MuiAlert from '@material-ui/lab/Alert';
 import { Delete, Edit, ImageSearch, ImageSearchTwoTone, SearchTwoTone, ViewAgenda, ViewStreamOutlined, VisibilityOutlined } from '@material-ui/icons';
-import { Skeleton } from '@material-ui/lab';
+import { Pagination, Skeleton } from '@material-ui/lab';
 import { DateRangePicker, DateRangePickerComponent } from '@syncfusion/ej2-react-calendars';
 import { TimeKeepingRow } from './TimeKeepingRow';
 import { loadSkills } from "../../_services";
@@ -207,7 +207,7 @@ const dataSrc = [
 class AttendancesPage extends React.Component {
 
     state = {
-        searchValue: '', openDeleteDialog: false, deleteUserId: null, openAttendanceDialog: false,
+        searchValue: '', openAttendanceDialog: false,
         pageSize: 10, rowCount: 0, pageIndex: 1, open: true, setOpen: false,
         selectedDate: '2014-08-18T21:11:54', selectedUser: null,
     };
@@ -286,7 +286,7 @@ class AttendancesPage extends React.Component {
         return (
             <React.Fragment>
                 <Card style={{ padding: '10px', marginBottom: '15px' }} elevation={0}>
-                    <div> <h1>Timekeeping</h1> {this.renderToolbar()}</div>
+                    <div> <h1>Timekeeping</h1></div>
                     <FormControl>
                         <FormLabel>Select Date</FormLabel>
                         <DateRangePickerComponent />
@@ -295,7 +295,6 @@ class AttendancesPage extends React.Component {
                 <Paper className={this.props.classes.container} elevation={0}>
                     <div style={{ height: 480, width: '100%' }}>
                         {false ? (
-
                             <Grid container spacing={2} direction="column" style={{ padding: 20 }}>
                                 <Grid item xs>
                                     <Skeleton animation="wave" variant="rect" height="175" />
@@ -313,7 +312,6 @@ class AttendancesPage extends React.Component {
                                     <Skeleton animation="wave" variant="rect" height="20px" />
                                 </Grid>
                             </Grid>
-
                         ) :
                             <TableContainer>
                                 <Table aria-label="simple table" >
@@ -338,24 +336,23 @@ class AttendancesPage extends React.Component {
                                         </TableRow>
                                     </TableHead>
                                     {
-
                                         <TableBody>
                                             {
                                                 this.renderRows()
                                             }
                                         </TableBody>
-
                                     }
 
                                 </Table>
-                            </TableContainer>}
 
+                            </TableContainer>
+                        }
+                        <Pagination count={10} />
                     </div>
-
+                    <Pagination count={10} />
                     {this.renderAttandanceDialog()}
                 </Paper>
             </React.Fragment>
-
 
         );
 
