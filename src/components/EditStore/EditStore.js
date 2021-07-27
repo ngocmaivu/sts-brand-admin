@@ -61,19 +61,19 @@ class EditStore extends React.Component {
     handleChange(event) {
         const { name, value } = event.target;
         var { store } = this.state;
-        const { stores } = this.props;
-        console.log("stores trước khi change nè ")
-        console.log(stores)
+        // const { stores } = this.props;
+        // console.log("stores trước khi change nè ")
+        // console.log(stores)
         // if (store.name === '' && store.address === '' && store.phone === '') {
         //     store = stores;
         // }
         // else
-            this.setState({
-                store: {
-                    ...store,
-                    [name]: value
-                }
-            });
+        this.setState({
+            store: {
+                ...store,
+                [name]: value
+            }
+        });
         console.log("store sau khi change nè ")
         console.log(store)
     }
@@ -115,10 +115,14 @@ class EditStore extends React.Component {
     //             },
     //         })
     // }
-    
+
 
     render() {
-        const { store, stores, type } = this.props;
+
+        const { stores, type } = this.props;
+        const { store } = this.state;
+        console.log("stores trước khi change nè ")
+        console.log(stores)
         // this.loadData()
         console.log("render ne")
         console.log(this.props)
@@ -126,17 +130,16 @@ class EditStore extends React.Component {
             return <p>...Loading</p>;
         }
         console.log(stores.items);
-        if(tmp === 2) this.setState({
-            store: {
-                name: stores.items.name,
-                address: stores.items.address,
-                phone: stores.items.phone,
-                id: this.props.match.params.id
-            },
-        })
+        if (tmp === 2) {
+            store.name = stores.items.name;
+            store.address = stores.items.address;
+            store.phone = stores.items.phone;
+        }
+
         tmp++;
         console.log("store ne")
-        console.log(this.state.store.name)
+        console.log(this.state.store)
+        console.log('tmp nè');
         console.log(tmp)
         // this.loadData(stores)
         return (
@@ -154,12 +157,7 @@ class EditStore extends React.Component {
                                         <TextField name="name" size="small" variant="outlined" defaultValue={stores.items.name} onChange={this.handleChange} />
                                     </FormControl>
                                 </Grid>
-                                <Grid item xs={6}>
-                                    <FormControl margin="normal" fullWidth>
-                                        <FormLabel >Store Manager</FormLabel>
-                                        <TextField name="storeManager" size="small" variant="outlined" defaultValue={''} onChange={this.handleChange} />
-                                    </FormControl>
-                                </Grid>
+
                             </Grid>
                             <Grid item xs={12}>
                                 <FormControl margin="normal" fullWidth>

@@ -12,7 +12,8 @@ export const storeActions = {
     delete: _delete
 };
 
-
+const user = JSON.parse(localStorage.getItem('jwt_decode'));
+var urlStoreInfo = '/configure/store-info/' + user.storeId;
 function create(store) {
     return dispatch => {
         dispatch(request(store));
@@ -105,7 +106,8 @@ function update(store) {
             .then(
                 store => {
                     dispatch(success(store));
-                    history.push('/stores');
+                    if(user.role === "brand manager") history.push('/stores');
+                    else history.push(urlStoreInfo);
                     dispatch(alertActions.success('Update store successful'));
                 },
                 error => dispatch(failure(error.toString()))

@@ -130,6 +130,7 @@ const INIT_DATA = {
   items: [
   ]
 };
+var urlStoreInfo = '/configure/store-info/' + user.storeId;
 if (user === null) {
   INIT_DATA.items.push(
     {
@@ -331,7 +332,7 @@ if (user === null) {
           type: 'item',
           id: 'store-info',
           title: 'Store Info',
-          url: '/configure/store-info',
+          url: urlStoreInfo,
           icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
         },
         {

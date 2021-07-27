@@ -74,7 +74,7 @@ function register(user) {
         body: JSON.stringify(user)
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/manager/users/brand-manager`, requestOptions).then(handleResponse);
+    return fetch(`https://sts-project.azurewebsites.net/api/auth/register`, requestOptions).then(handleResponse);
 }
 
 function update(user) {

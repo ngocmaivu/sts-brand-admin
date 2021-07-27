@@ -89,6 +89,7 @@ class App extends React.Component {
                   </Route>
                   <Route exact path="/storemanager/new" component={StoreManagerNew} />
                   <Route path="/editStore/:id" render={(props) => <EditStore {...props} />} />
+                  <Route path="/configure/store-info/:id" render={(props) => <EditStore {...props} />} />
                   {/* <EditStore />
                   </Route> */}
                   <Route path="/stores/new" >
