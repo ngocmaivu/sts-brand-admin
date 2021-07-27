@@ -220,7 +220,7 @@ export const fetchWeekSchedule = async (dateStart, status) => {
 
 export const deleteWeekSchedule = async (id) => {
     try {
-        const response = await sts.delete(`/week-schedules/{id}`, {
+        const response = await sts.delete(`/week-schedules/${id}`, {
             headers: authHeader(),
         });
         return response.data;

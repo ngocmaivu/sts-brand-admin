@@ -51,7 +51,7 @@ export function AttendanceDetailTable(props) {
                             }}>Area</TableCell>
                             <TableCell classes={{
                                 "root": classes.cellTh
-                            }}>Check out Time</TableCell>
+                            }}>Check in Time</TableCell>
                             <TableCell classes={{
                                 "root": classes.cellTh
                             }}>Check out Time</TableCell>

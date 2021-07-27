@@ -195,7 +195,7 @@ class AttendancesPage extends React.Component {
         return (
             <React.Fragment>
                 <Card style={{ padding: '10px', marginBottom: '15px' }} elevation={0}>
-                    <div> <h1>Timekeeping</h1></div>
+                    <div> <h1>Attendance</h1></div>
                     <FormControl>
                         <FormLabel>Select Date</FormLabel>
                         <DateRangePickerComponent

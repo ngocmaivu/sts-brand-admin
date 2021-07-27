@@ -28,7 +28,8 @@ import { weekScheduleStatus } from './status';
 import { addDays } from '@syncfusion/ej2-react-schedule';
 import history from '../../../history';
 import AddWeekSchedulePlanDialog from './AddWeekSchedulePlanDialog';
-import { identity } from 'lodash';
+import _, { identity } from 'lodash';
+
 const styles = (Theme) => createStyles({
     container: {
         height: '100%',
@@ -97,7 +98,7 @@ class WeekPlanManage extends React.Component {
         let status = this.props.match.params.status;
         if (status) {
             if (status == "published") return "Published Schedule";
-            if (status == "unpublished") return "Unublish Schedule";
+            if (status == "unpublished") return "Unpublish Schedule";
         }
     }
 
@@ -112,8 +113,19 @@ class WeekPlanManage extends React.Component {
     }
     renderWeekScheduleRows = () => {
         const dateFormat = "dd/MM/yyyy";
-        return this.props.weekSchedules.map(weekSchedule => {
 
+
+        if (_.isEmpty(this.props.weekSchedules)) {
+            let emptyRender = "No Schedule";
+            if ( this.props.match.params.status == "published") emptyRender = "No published schedule yet";
+            return (
+                <TableRow >
+                    <TableCell align="center" colSpan="8">{emptyRender}</TableCell>
+                </TableRow>
+            );
+        }
+
+        return this.props.weekSchedules.map(weekSchedule => {
 
             return (
                 <TableRow key={weekSchedule.id} hover className={this.props.classes.weekScheduleRow} onClick={
@@ -198,8 +210,10 @@ class WeekPlanManage extends React.Component {
 
 
     handleDeleteWeekSchedule = async () => {
+        console.log(this.state.deleteId);
         await deleteWeekSchedule(this.state.deleteId);
         this.setState({ deleteId: null });
+        this.fetchData();
     }
     renderDeleteDialog = () => {
 
@@ -235,7 +249,7 @@ class WeekPlanManage extends React.Component {
             </Dialog>
         );
     }
-    
+
     render() {
         return (<div>
             <Paper style={{ padding: 16, marginBottom: 32 }} elevation={0}>  <Typography variant="h2">
