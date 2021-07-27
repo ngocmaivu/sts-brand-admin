@@ -7,11 +7,11 @@ import MuiAlert from '@material-ui/lab/Alert';
 import { Delete, Edit, ImageSearch, ImageSearchTwoTone, SearchTwoTone, ViewAgenda, ViewStreamOutlined, VisibilityOutlined } from '@material-ui/icons';
 import { Pagination, Skeleton } from '@material-ui/lab';
 import { DateRangePicker, DateRangePickerComponent } from '@syncfusion/ej2-react-calendars';
-import { TimeKeepingRow } from './TimeKeepingRow';
-import { loadSkills } from "../../_services";
+import { getFirstDayOfWeek } from "../../ultis/scheduleHandle";
+import { loadSkills, fetchTimeKeeping } from "../../_services";
 import { ShiftUserTable } from './ShiftUserTable';
 import { AttendanceRow } from './AttendanceRow';
-
+import addDays from 'date-fns/addDays';
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -76,155 +76,63 @@ const styles = (Theme) => createStyles({
     }
 });
 
-const dataSrc = [
-    {
-        username: "lycuong99",
-        firstName: "Ly",
-        lastName: "Cuong",
-        attendances: [
-            {
-                shiftAssignmentId: 1,
-                timeCheckIn: "2021-07-13T08:04:34",
-                timeCheckOut: "2021-07-13T17:04:34",
-                shiftAssignment: {
-                    id: 1,
-                    timeStart: "2021-07-13T08:00:34",
-                    timeEnd: "2021-07-13T17:00:34",
-                    skillId: 18,
-                }
-            },
-            {
-                shiftAssignmentId: 2,
-                timeCheckIn: "2021-07-14T08:00:34",
-                timeCheckOut: "2021-07-14T16:59:34",
-                shiftAssignment: {
-                    id: 2,
-                    timeStart: "2021-07-14T08:00:34",
-                    timeEnd: "2021-07-13T17:00:34",
-                    skillId: 18,
-                }
-            },
-            {
-                shiftAssignmentId: 3,
-                timeCheckIn: "2021-07-15T08:00:34",
-                timeCheckOut: "2021-07-15T17:10:34",
-                shiftAssignment: {
-                    id: 3,
-                    timeStart: "2021-07-15T08:00:34",
-                    timeEnd: "2021-07-15T17:00:34",
-                    skillId: 18,
-                }
-            },
-            {
-                shiftAssignmentId: 4,
-                timeCheckIn: null,
-                timeCheckOut: null,
-                shiftAssignment: {
-                    id: 5,
-                    timeStart: "2021-07-15T08:00:34",
-                    timeEnd: "2021-07-15T17:00:34",
-                    skillId: 18,
-                }
-            },
-            {
-                shiftAssignmentId: 5,
-                timeCheckIn: "2021-07-16T08:00:34",
-                timeCheckOut: "2021-07-16T16:59:34",
-                shiftAssignment: {
-                    id: 5,
-                    timeStart: "2021-07-16T08:00:34",
-                    timeEnd: "2021-07-16T17:00:34",
-                    skillId: 18,
-                }
-            }
-        ]
-    },
-    {
-        username: "dpDao",
-        firstName: "Pham",
-        lastName: "Dao",
-        attendances: [
-            {
-                shiftAssignmentId: 1,
-                timeCheckIn: "2021-07-13T08:04:34",
-                timeCheckOut: "2021-07-13T17:04:34",
-                shiftAssignment: {
-                    id: 1,
-                    timeStart: "2021-07-13T08:00:34",
-                    timeEnd: "2021-07-13T17:00:34",
-                    skillId: 18,
-                }
-            },
-            {
-                shiftAssignmentId: 2,
-                timeCheckIn: "2021-07-14T08:00:34",
-                timeCheckOut: "2021-07-14T16:59:34",
-                shiftAssignment: {
-                    id: 2,
-                    timeStart: "2021-07-14T08:00:34",
-                    timeEnd: "2021-07-13T17:00:34",
-                    skillId: 18,
-                }
-            },
-            {
-                shiftAssignmentId: 3,
-                timeCheckIn: "2021-07-15T08:00:34",
-                timeCheckOut: "2021-07-15T17:10:34",
-                shiftAssignment: {
-                    id: 3,
-                    timeStart: "2021-07-15T08:00:34",
-                    timeEnd: "2021-07-15T17:00:34",
-                    skillId: 18,
-                }
-            },
-            {
-                shiftAssignmentId: 4,
-                timeCheckIn: null,
-                timeCheckOut: null,
-                shiftAssignment: {
-                    id: 4,
-                    timeStart: "2021-07-15T08:00:34",
-                    timeEnd: "2021-07-15T17:00:34",
-                    skillId: 18,
-                }
-            },
-            {
-                shiftAssignmentId: 5,
-                timeCheckIn: "2021-07-16T17:00:34",
-                timeCheckOut: "2021-07-16T22:59:34",
-                shiftAssignment: {
-                    id: 5,
-                    timeStart: "2021-07-16T08:00:34",
-                    timeEnd: "2021-07-16T17:00:34",
-                    skillId: 18,
-                }
-            }
-        ]
-    }
-]
 
 
 class AttendancesPage extends React.Component {
 
-    state = {
-        searchValue: '', openAttendanceDialog: false,
-        pageSize: 10, rowCount: 0, pageIndex: 1, open: true, setOpen: false,
-        selectedDate: '2014-08-18T21:11:54', selectedUser: null,
-    };
+
     constructor(props) {
         super(props);
-        this.dataSrc = dataSrc;
+
+        let fromDate = getFirstDayOfWeek(new Date());
+        let toDate = new Date();
+
+        this.init = {
+            fromDate, toDate
+        };
+
+        this.state = {
+            searchValue: '', openDeleteDialog: false, deleteUserId: null, openAttendanceDialog: false,
+            pageSize: 10, rowCount: 0, pageIndex: 1, open: true, setOpen: false,
+            selectedDate: '2014-08-18T21:11:54', selectedUser: null,
+            fromDate: fromDate,
+            toDate: toDate,
+            dataSrc: null,
+            updateData: false
+        };
+
     }
+
     initData = async () => {
         var skills = await loadSkills();
 
+        let data = await fetchTimeKeeping(this.init.fromDate, this.init.toDate);
         this.setState({
             skillSrc: skills,
+            dataSrc: data
         });
     }
+
+    fetch = async (fromDate, toDate) => {
+        let data = await fetchTimeKeeping(fromDate, toDate);
+        this.setState({
+            dataSrc: data,
+            updateData: false
+        });
+    }
+
     componentDidMount = async () => {
         await this.initData();
     }
+
+    componentDidUpdate = async (preState) => {
+
+        if (this.state.updateData) {
+            await this.fetch(this.state.fromDate, this.state.toDate);
+        }
+    }
+
+
     renderToolbar = () => {
         return (
             <div className={this.props.classes.toolbar}>
@@ -238,7 +146,7 @@ class AttendancesPage extends React.Component {
         );
     }
     renderRows = () => {
-        return this.dataSrc.map((user, index) => {
+        return this.state.dataSrc.map((user, index) => {
 
             return (
                 <AttendanceRow user={user} skillSrc={this.state.skillSrc} index={index} onRowClick={() => {
@@ -289,11 +197,26 @@ class AttendancesPage extends React.Component {
                     <div> <h1>Timekeeping</h1></div>
                     <FormControl>
                         <FormLabel>Select Date</FormLabel>
-                        <DateRangePickerComponent />
+                        <DateRangePickerComponent
+                            change={(props) => {
+                                console.log(props);
+                                if (props.startDate && props.endDate && (props.startDate != this.state.fromDate ||
+                                    props.endDate != this.state.toDate)) {
+                                    this.setState({
+                                        fromDate: props.startDate,
+                                        toDate: props.endDate,
+                                        updateData: true
+                                    });
+                                }
+                            }}
+
+                            startDate={this.init.fromDate}
+                            endDate={this.init.toDate}
+                        />
                     </FormControl>
                 </Card>
                 <Paper className={this.props.classes.container} elevation={0}>
-                    <div style={{ height: 480, width: '100%' }}>
+                    <div style={{ width: '100%' }}>
                         {false ? (
                             <Grid container spacing={2} direction="column" style={{ padding: 20 }}>
                                 <Grid item xs>
@@ -338,7 +261,7 @@ class AttendancesPage extends React.Component {
                                     {
                                         <TableBody>
                                             {
-                                                this.renderRows()
+                                                this.state.dataSrc ? this.renderRows() : "loading..."
                                             }
                                         </TableBody>
                                     }
@@ -347,9 +270,9 @@ class AttendancesPage extends React.Component {
 
                             </TableContainer>
                         }
-                        <Pagination count={10} />
+                     
                     </div>
-                    <Pagination count={10} />
+                  
                     {this.renderAttandanceDialog()}
                 </Paper>
             </React.Fragment>

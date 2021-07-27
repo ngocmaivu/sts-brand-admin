@@ -54,10 +54,10 @@ const OperatingHourPerDay = (props) => {
         <SectionSetting label={title}
             checkboxComponent={
                 <Checkbox checked={isWorking} color="primary"
-                onChange={(event) => {
-                    handleChangeIsWorking(event.target.checked)
-                }
-                } />
+                    onChange={(event) => {
+                        handleChangeIsWorking(event.target.checked)
+                    }
+                    } />
             }>
             <Grid container spacing={2} alignItems="center" >
                 <Grid item style={{ width: 180 }}>
@@ -138,128 +138,85 @@ class OperatingHoursConfig extends React.Component {
         ];
 
         this.state = {
-            datas: [
-                {
-                    day: 0,
-                    isWorking: true,
-                    from: 0,
-                    to: 25
-                },
-                {
-                    day: 1,
-                    isWorking: true,
-                    from: 0,
-                    to: 25
-                },
-                {
-                    day: 2,
-                    isWorking: true,
-                    from: 0,
-                    to: 25
-                },
-                {
-                    day: 3,
-                    isWorking: true,
-                    from: 0,
-                    to: 25
-                },
-                {
-                    day: 4,
-                    isWorking: true,
-                    from: 0,
-                    to: 25
-                },
-                {
-                    day: 5,
-                    isWorking: true,
-                    from: 0,
-                    to: 25
-                },
-                {
-                    day: 6,
-                    isWorking: true,
-                    from: 0,
-                    to: 25
-                },
-            ]
+            datas: props.initialValues
         };
+    }
+    handleSubmit = () => {
+        this.props.onSubmit(this.state.datas);
     }
 
     render() {
         const classes = this.props.classes;
         return (
             <div >
-              
 
 
-                    <CardContent>
-                        <Grid container spacing={5}>
 
-                            <Grid item xs={12}>
-                                <CardCustom header="Set Operating Time for store">
-                                    <Grid container direction="column" spacing={1} style={{ paddingLeft: 20 }} >
-                                        {
-                                            this.dayOfWeeks.map(day => {
-                                                return (
-                                                    <OperatingHourPerDay title={day.title} key={day.value}
-                                                        isWorking={this.state.datas.find(
-                                                            e => e.day == day.value
-                                                        ).isWorking}
-                                                        from={this.state.datas.find(
-                                                            e => e.day == day.value
-                                                        ).from}
-                                                        to={this.state.datas.find(
-                                                            e => e.day == day.value
-                                                        ).to}
-                                                        handleChangeIsWorking={(newValue) => {
-                                                            this.setState(
-                                                                (preState) => {
-                                                                    preState.datas.find(e => e.day == day.value).isWorking = newValue;
+                <CardContent>
+                    <Grid container spacing={5}>
 
-                                                                    return { datas: preState.datas };
-                                                                }
-                                                            );
-                                                        }}
+                        <Grid item xs={12}>
+                            <CardCustom header="Set Operating Time for store">
+                                <Grid container direction="column" spacing={1} style={{ paddingLeft: 20 }} >
+                                    {
+                                        this.dayOfWeeks.map(day => {
+                                            return (
+                                                <OperatingHourPerDay title={day.title} key={day.value}
+                                                    isWorking={this.state.datas.find(
+                                                        e => e.day == day.value
+                                                    ).isWorking}
+                                                    from={this.state.datas.find(
+                                                        e => e.day == day.value
+                                                    ).from}
+                                                    to={this.state.datas.find(
+                                                        e => e.day == day.value
+                                                    ).to}
+                                                    handleChangeIsWorking={(newValue) => {
+                                                        this.setState(
+                                                            (preState) => {
+                                                                preState.datas.find(e => e.day == day.value).isWorking = newValue;
 
-                                                        handleChangeFrom={(newValue) => {
-                                                            this.setState(
-                                                                (preState) => {
-                                                                    preState.datas.find(e => e.day == day.value).from = newValue;
+                                                                return { datas: preState.datas };
+                                                            }
+                                                        );
+                                                    }}
 
-                                                                    return { datas: preState.datas };
-                                                                }
-                                                            );
-                                                        }}
+                                                    handleChangeFrom={(newValue) => {
+                                                        this.setState(
+                                                            (preState) => {
+                                                                preState.datas.find(e => e.day == day.value).from = newValue;
 
-                                                        handleChangeTo={(newValue) => {
-                                                            this.setState(
-                                                                (preState) => {
-                                                                    preState.datas.find(e => e.day == day.value).to = newValue;
-                                                                    return { datas: preState.datas };
-                                                                }
-                                                            );
-                                                        }}
-                                                    />
-                                                );
-                                            })
-                                        }
-                                    </Grid>
-                                </CardCustom>
-                            </Grid>
+                                                                return { datas: preState.datas };
+                                                            }
+                                                        );
+                                                    }}
 
-                            <Grid item container xs={12} justify="flex-end" spacing={1} direction="row">
-                                <Grid item >
-                                    <Button variant="contained" color="primary" type="submit">Save change</Button>
+                                                    handleChangeTo={(newValue) => {
+                                                        this.setState(
+                                                            (preState) => {
+                                                                preState.datas.find(e => e.day == day.value).to = newValue;
+                                                                return { datas: preState.datas };
+                                                            }
+                                                        );
+                                                    }}
+                                                />
+                                            );
+                                        })
+                                    }
                                 </Grid>
-                                {/* <Grid item>
-                                <Button variant="outlined" color="primary">Reset</Button>
-                            </Grid> */}
-                            </Grid>
-
+                            </CardCustom>
                         </Grid>
-                    </CardContent>
 
-               
+                        <Grid item container xs={12} justify="flex-end" spacing={1} direction="row">
+                            <Grid item >
+                                <Button variant="contained" color="primary" onClick={() => { this.handleSubmit(); }}>Save change</Button>
+                            </Grid>
+                        </Grid>
+
+                    </Grid>
+                </CardContent>
+
+
             </div>
         );
     }

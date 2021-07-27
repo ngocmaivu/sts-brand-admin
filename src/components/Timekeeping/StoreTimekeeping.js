@@ -8,9 +8,11 @@ import { Delete, Edit, ImageSearch, ImageSearchTwoTone, SearchTwoTone, ViewAgend
 import { Skeleton } from '@material-ui/lab';
 import { DateRangePicker, DateRangePickerComponent } from '@syncfusion/ej2-react-calendars';
 import { TimeKeepingRow } from './TimeKeepingRow';
-import { loadSkills } from "../../_services";
+import { loadSkills, fetchTimeKeeping } from "../../_services";
 import { ShiftUserTable } from './ShiftUserTable';
-
+import addDays from 'date-fns/addDays';
+import { getFirstDayOfWeek } from "../../ultis/scheduleHandle";
+import { toDate } from 'date-fns';
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -205,25 +207,68 @@ const dataSrc = [
 class StoreTimekeeping extends React.Component {
 
 
-    state = {
-        searchValue: '', openDeleteDialog: false, deleteUserId: null, openAttendanceDialog: false,
-        pageSize: 10, rowCount: 0, pageIndex: 1, open: true, setOpen: false,
-        selectedDate: '2014-08-18T21:11:54', selectedUser: null,
-    };
+
     constructor(props) {
         super(props);
-        this.dataSrc = dataSrc;
+
+        let fromDate = getFirstDayOfWeek(new Date());
+        let toDate = new Date();
+
+        this.init = {
+            fromDate, toDate
+        };
+
+        this.state = {
+            searchValue: '', openDeleteDialog: false, deleteUserId: null, openAttendanceDialog: false,
+            pageSize: 10, rowCount: 0, pageIndex: 1, open: true, setOpen: false,
+            selectedDate: '2014-08-18T21:11:54', selectedUser: null,
+            fromDate: fromDate,
+            toDate: toDate,
+            dataSrc: null,
+            updateData: false
+        };
     }
+
     initData = async () => {
         var skills = await loadSkills();
 
+        let data = await fetchTimeKeeping(this.init.fromDate, this.init.toDate);
         this.setState({
             skillSrc: skills,
+            dataSrc: data
         });
     }
+
+    fetch = async (fromDate, toDate) => {
+        let data = await fetchTimeKeeping(fromDate, toDate);
+        this.setState({
+            dataSrc: data,
+            updateData: false
+        });
+    }
+
     componentDidMount = async () => {
         await this.initData();
     }
+
+    // shouldComponentUpdate(nextProps, nextState) {
+    //     console.log("ALOOO");
+    //     console.log(nextProps, nextState);
+    //     console.log(this.props, this.state);
+    //     if (this.state.fromDate == nextState.fromDate && this.state.toDate == nextState.toDate) {
+    //         return false;
+    //     }
+
+    //     return true;
+    // }
+
+    componentDidUpdate = async (preState) => {
+
+        if (this.state.updateData) {
+            await this.fetch(this.state.fromDate, this.state.toDate);
+        }
+    }
+
     renderToolbar = () => {
         return (
             <div className={this.props.classes.toolbar}>
@@ -237,10 +282,11 @@ class StoreTimekeeping extends React.Component {
         );
     }
     renderRows = () => {
-        return this.dataSrc.map((user, index) => {
 
+
+        return this.state.dataSrc.map((user, index) => {
             return (
-                <TimeKeepingRow user={user} skillSrc={this.state.skillSrc} index={index} onRowClick={() => {
+                <TimeKeepingRow key={index} user={user} skillSrc={this.state.skillSrc} index={index} onRowClick={() => {
                     this.handleRowClick(user);
                 }} />);
         });
@@ -285,14 +331,29 @@ class StoreTimekeeping extends React.Component {
         return (
             <React.Fragment>
                 <Card style={{ padding: '10px', marginBottom: '15px' }} elevation={0}>
-                    <div> <h1>Timekeeping</h1> {this.renderToolbar()}</div>
+                    <div> <h1>Timekeeping</h1></div>
                     <FormControl>
                         <FormLabel>Select Date</FormLabel>
-                        <DateRangePickerComponent />
+                        <DateRangePickerComponent
+                            change={(props) => {
+                                console.log(props);
+                                if (props.startDate && props.endDate && (props.startDate != this.state.fromDate ||
+                                    props.endDate != this.state.toDate)) {
+                                    this.setState({
+                                        fromDate: props.startDate,
+                                        toDate: props.endDate,
+                                        updateData: true
+                                    });
+                                }
+                            }}
+
+                            startDate={this.init.fromDate}
+                            endDate={this.init.toDate}
+                        />
                     </FormControl>
                 </Card>
                 <Paper className={this.props.classes.container} elevation={0}>
-                    <div style={{ height: 480, width: '100%' }}>
+                    <div style={{ width: '100%' }}>
                         {false ? (
 
                             <Grid container spacing={2} direction="column" style={{ padding: 20 }}>
@@ -339,7 +400,7 @@ class StoreTimekeeping extends React.Component {
 
                                         <TableBody>
                                             {
-                                                this.renderRows()
+                                                this.state.dataSrc ? this.renderRows() : "loading..."
                                             }
                                         </TableBody>
 

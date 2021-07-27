@@ -1,6 +1,6 @@
 import React from 'react';
 import firebase from "../../../firebase";
-import { getConstraintDefault } from '../../../ultis/scheduleDefault';
+import { getConstraintDefault, getOperatingTimesDefault } from '../../../ultis/scheduleDefault';
 import { Card, CardHeader, Grid, Paper, Button, withStyles, Modal, createStyles, Divider, CardContent, LinearProgress, Typography, Checkbox, Tabs, Tab } from '@material-ui/core';
 import SettingConstraintsForm from '../schedule/SettingConstraintsForm';
 import { pickBy } from 'lodash';
@@ -55,7 +55,8 @@ class ScheduleConfig extends React.Component {
                     BrandId: this.BrandId,
                     StoreId: this.StoreId,
                     DefaultScheduleConfig: {
-                        constraints: getConstraintDefault()
+                        constraints: getConstraintDefault(),
+                        operatingTimes: getOperatingTimesDefault()
                     }
                 };
 
@@ -63,7 +64,7 @@ class ScheduleConfig extends React.Component {
                     .set(data)
                     .then(() => {
                         console.log("Document successfully written!");
-                        this.setState({ constraints: getConstraintDefault() });
+                        this.setState({ constraints: getConstraintDefault(), operatingTimes: getOperatingTimesDefault() });
                     })
                     .catch((error) => {
                         console.error("Error writing document: ", error);
@@ -72,13 +73,17 @@ class ScheduleConfig extends React.Component {
                 if (!doc.data().DefaultScheduleConfig) {
                     ref.doc(`${this.BrandId}-${this.StoreId}`).update({
                         DefaultScheduleConfig: {
-                            constraints: getConstraintDefault()
+                            constraints: getConstraintDefault(),
+                            operatingTimes: getOperatingTimesDefault()
                         }
                     });
-                    this.setState({ constraints: getConstraintDefault() });
+                    this.setState({ constraints: getConstraintDefault(), operatingTimes: getOperatingTimesDefault() });
                 } else {
                     console.log(doc.data().DefaultScheduleConfig.constraints)
-                    this.setState({ constraints: doc.data().DefaultScheduleConfig.constraints });
+                    this.setState({
+                        constraints: doc.data().DefaultScheduleConfig.constraints,
+                        operatingTimes: doc.data().DefaultScheduleConfig.operatingTimes
+                    });
                 }
 
 
@@ -117,24 +122,29 @@ class ScheduleConfig extends React.Component {
     }
 
     onSubmitConstraints = (constraintValues) => {
-        // const cleanedObject = pickBy(originalObject, v => v !== undefined)
-        // constraintValues.forEach(c => {
-        //     c = pickBy(c, v => v !== undefined);
-        //     console.
-        // });
         constraintValues[0] = pickBy(constraintValues[0], v => v !== undefined);
         constraintValues[1] = pickBy(constraintValues[1], v => v !== undefined);
         console.log(constraintValues);
         const ref = firebase.firestore().collection("brands");
         ref.doc(`${this.BrandId}-${this.StoreId}`).update({
             DefaultScheduleConfig: {
-                constraints: constraintValues
+                constraints: constraintValues,
+                operatingTimes: this.state.operatingTimes
             }
         });
     }
 
     handleChange = (event, newValue) => {
         this.setState({ tabIndex: newValue });
+    }
+    onSubmitOperatingTimes = (operatingTimesNew) => {
+        const ref = firebase.firestore().collection("brands");
+        ref.doc(`${this.BrandId}-${this.StoreId}`).update({
+            DefaultScheduleConfig: {
+                constraints: this.state.constraints,
+                operatingTimes: operatingTimesNew
+            }
+        });
     }
 
 
@@ -152,7 +162,7 @@ class ScheduleConfig extends React.Component {
             </Tabs>
 
             <TabPanel value={this.state.tabIndex} index={1}>
-                <OperatingHoursConfig />
+                <OperatingHoursConfig initialValues={this.state.operatingTimes} onSubmit={this.onSubmitOperatingTimes} />
             </TabPanel>
             <TabPanel value={this.state.tabIndex} index={0}>
                 {

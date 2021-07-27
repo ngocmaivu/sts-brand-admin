@@ -8,10 +8,10 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { Button, CardContent, CardHeader, Chip, Divider, FormControl, FormLabel, Grid, IconButton, Tab, Tabs, Tooltip, Typography } from '@material-ui/core';
+import { Button, CardContent, CardHeader, Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, FormControl, FormLabel, Grid, IconButton, Tab, Tabs, Tooltip, Typography } from '@material-ui/core';
 import WeekPicker from '../../WeekPicker';
 import { format, isSameDay, startOfWeek, } from 'date-fns';
-import { getStaffs, getShiftRegisterDatas, getWeekSchedule, } from '../../../_services';
+import { getStaffs, getShiftRegisterDatas, getWeekSchedule, deleteWeekSchedule, } from '../../../_services';
 import { getTotalHoursPerWeek } from '../../../ultis/scheduleHandle';
 import { Skeleton } from '@material-ui/lab';
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
@@ -54,7 +54,8 @@ class WeekPlanManage extends React.Component {
             }),
             weekScheduleId: null,
             tabIndex: 0,
-            openAddDialog: false
+            openAddDialog: false,
+            openDeleteDialog: false
         };
     }
 
@@ -121,7 +122,7 @@ class WeekPlanManage extends React.Component {
                     <TableCell align="center">{format(new Date(weekSchedule.dateCreated), dateFormat)}</TableCell>
                     <TableCell align="center">Create By</TableCell>
                     <TableCell align="center">Last result</TableCell>
-                    <TableCell align="center">
+                    <TableCell align="center" onClick={(e) => { e.stopPropagation(); }}>
                         {
                             this.renderActionButtons(weekSchedule.status, weekSchedule.id)
                         }
@@ -141,9 +142,11 @@ class WeekPlanManage extends React.Component {
                             </IconButton>
                         </Tooltip>
                         <Tooltip title="Delete" >
-                            <IconButton>
+
+                            <IconButton onClick={(e) => { this.setState({ deleteId: id, openDeleteDialog: true }); }}>
                                 <DeleteOutlineOutlinedIcon />
                             </IconButton>
+
                         </Tooltip>
 
                         <Tooltip title="Unpublish">
@@ -162,7 +165,7 @@ class WeekPlanManage extends React.Component {
                             </IconButton>
                         </Tooltip>
                         <Tooltip title="Delete">
-                            <IconButton>
+                            <IconButton onClick={(e) => { this.setState({ deleteId: id, openDeleteDialog: true }); }}>
                                 <DeleteOutlineOutlinedIcon />
                             </IconButton>
                         </Tooltip>
@@ -178,7 +181,44 @@ class WeekPlanManage extends React.Component {
         }
     }
 
+    handleDeleteWeekSchedule = async () => {
+        await deleteWeekSchedule(this.state.deleteId);
+        this.setState({ deleteId: null });
+    }
+    renderDeleteDialog = () => {
 
+        const handleClose = () => {
+            this.setState({ openDeleteDialog: false });
+        }
+
+        return (
+            <Dialog
+                open={this.state.openDeleteDialog}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">{"Delete Dialog?"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        {`Do you want to delete this week plan:${this.state.deleteId} `}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={() => {
+                        this.handleDeleteWeekSchedule();
+                        handleClose();
+                    }} color="primary" autoFocus>
+                        Confirm
+                    </Button>
+
+                </DialogActions>
+            </Dialog>
+        );
+    }
     render() {
         return (<div>
             <Paper style={{ padding: 16, marginBottom: 32 }} elevation={0}>  <Typography variant="h2">
@@ -219,7 +259,7 @@ class WeekPlanManage extends React.Component {
                                     <TableCell align="center">Actions</TableCell>
                                 </TableRow>
                             </TableHead>
-                            <TableBody style={{ width: "100%", height: "700px" }}>
+                            <TableBody >
                                 {
                                     this.props.weekSchedules ?
                                         (
@@ -227,12 +267,15 @@ class WeekPlanManage extends React.Component {
                                         ) : "...Loading"
                                 }
                             </TableBody>
-
                         </Table>
                     </TableContainer>
                     <AddWeekSchedulePlanDialog open={this.state.openAddDialog} handleClose={() => {
                         this.setState({ openAddDialog: false });
                     }} />
+
+                    {
+                        this.renderDeleteDialog()
+                    }
                 </CardContent>
             </Paper>
         </div >
