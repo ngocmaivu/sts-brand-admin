@@ -1,4 +1,5 @@
 import { getDay, addDays, intervalToDuration } from 'date-fns';
+import firebase from "../firebase";
 
 const MONDAY = 1;
 
@@ -147,5 +148,54 @@ export function getHourDuration(start, end) {
         end: new Date(end)
     });
     let result = duration.hours * 60 + duration.minutes;
-    return (result/60).toFixed(1);
+    return (result / 60).toFixed(1);
+}
+
+
+export const getSchedulesDataFromFirebase = (weekScheduleId, storeId, brandId, getScheduleCallback) => {
+    const ref = firebase.firestore().collection("brands");
+    try {
+        ref.doc(`${brandId}-${storeId}`).get().then((doc) => {
+            if (!doc.exists) {
+                getScheduleCallback(null);
+            }
+
+            ref.doc(`${brandId}-${storeId}`).collection("schedules").get().then(
+                (snapshot) => {
+                    let isExistWeekSchedule = false;
+                    snapshot.forEach((doc) => {
+                        let schedule = doc.data();
+                        if (schedule.Id == weekScheduleId) {
+                            console.log("SEE " + schedule.Id);
+                            isExistWeekSchedule = true;
+                            ref.doc(`${brandId}-${storeId}`)
+                                .collection("schedules")
+                                .doc(doc.id)
+                                .collection("shifts").get().then(
+                                    (snapshot) => {
+                                        console.log(snapshot);
+                                        let src = snapshot.docs.map(shift => {
+                                            return {
+                                                username: shift.data().StaffId,
+                                                timeEnd: convertToJSONDateWithoutChangeValue(shift.data().EndTime.toDate()),
+                                                timeStart: convertToJSONDateWithoutChangeValue(shift.data().StartTime.toDate()),
+                                                skillId: shift.data().SkillId,
+                                                storeId: storeId,
+                                            }
+                                        });
+                                        getScheduleCallback(src);
+                                    }
+                                );
+
+                        }
+                    });
+                    getScheduleCallback(null);
+                }
+            )
+        });
+    } catch (e) {
+        console.log(e);
+        getScheduleCallback(null);
+    }
+
 }

@@ -11,8 +11,8 @@ import Paper from '@material-ui/core/Paper';
 import { Button, CardContent, CardHeader, Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, FormControl, FormLabel, Grid, IconButton, Tab, Tabs, Tooltip, Typography } from '@material-ui/core';
 import WeekPicker from '../../WeekPicker';
 import { format, isSameDay, startOfWeek, } from 'date-fns';
-import { getStaffs, getShiftRegisterDatas, getWeekSchedule, deleteWeekSchedule, } from '../../../_services';
-import { getTotalHoursPerWeek } from '../../../ultis/scheduleHandle';
+import { cloneSchedule, deleteWeekSchedule, } from '../../../_services';
+import { getSchedulesDataFromFirebase, getTotalHoursPerWeek } from '../../../ultis/scheduleHandle';
 import { Skeleton } from '@material-ui/lab';
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import { fetchWeekSchedules } from "../../../_actions/";
@@ -28,6 +28,7 @@ import { weekScheduleStatus } from './status';
 import { addDays } from '@syncfusion/ej2-react-schedule';
 import history from '../../../history';
 import AddWeekSchedulePlanDialog from './AddWeekSchedulePlanDialog';
+import { identity } from 'lodash';
 const styles = (Theme) => createStyles({
     container: {
         height: '100%',
@@ -57,6 +58,9 @@ class WeekPlanManage extends React.Component {
             openAddDialog: false,
             openDeleteDialog: false
         };
+        const user = JSON.parse(localStorage.getItem("jwt_decode"));
+        this.BrandId = user.brandId;
+        this.StoreId = user.storeId;
     }
 
     handleWeekChange = async (date) => {
@@ -137,7 +141,7 @@ class WeekPlanManage extends React.Component {
                 return (
                     <React.Fragment>
                         <Tooltip title="Duplicate">
-                            <IconButton>
+                            <IconButton onClick={(e) => { this.cloneSchedule(id) }}>
                                 <FileCopyOutlinedIcon />
                             </IconButton>
                         </Tooltip>
@@ -160,7 +164,7 @@ class WeekPlanManage extends React.Component {
                 return (
                     <React.Fragment>
                         <Tooltip title="Duplicate">
-                            <IconButton>
+                            <IconButton onClick={(e) => { this.cloneSchedule(id) }}>
                                 <FileCopyOutlinedIcon />
                             </IconButton>
                         </Tooltip>
@@ -180,6 +184,18 @@ class WeekPlanManage extends React.Component {
             default:
         }
     }
+
+    cloneSchedule(weekScheduleId) {
+        const getScheduleCallback = (shiftAssignments) => {
+            shiftAssignments = shiftAssignments == null ? [] : shiftAssignments;
+            console.log(shiftAssignments);
+            cloneSchedule(weekScheduleId, shiftAssignments);
+        }
+
+        getSchedulesDataFromFirebase(weekScheduleId, this.StoreId, this.BrandId, getScheduleCallback);
+    }
+
+
 
     handleDeleteWeekSchedule = async () => {
         await deleteWeekSchedule(this.state.deleteId);
@@ -219,6 +235,7 @@ class WeekPlanManage extends React.Component {
             </Dialog>
         );
     }
+    
     render() {
         return (<div>
             <Paper style={{ padding: 16, marginBottom: 32 }} elevation={0}>  <Typography variant="h2">

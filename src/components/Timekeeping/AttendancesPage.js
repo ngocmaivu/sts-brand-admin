@@ -12,6 +12,7 @@ import { loadSkills, fetchTimeKeeping } from "../../_services";
 import { ShiftUserTable } from './ShiftUserTable';
 import { AttendanceRow } from './AttendanceRow';
 import addDays from 'date-fns/addDays';
+import { AttendanceDetailTable } from './AttendanceDetailTable';
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -175,7 +176,7 @@ class AttendancesPage extends React.Component {
                 <DialogContent dividers>
                     {
                         this.state.selectedUser ? (
-                            <ShiftUserTable user={this.state.selectedUser} skillSrc={this.state.skillSrc} />
+                            <AttendanceDetailTable user={this.state.selectedUser} skillSrc={this.state.skillSrc} />
                         ) : "No Content"
                     }
 
@@ -270,9 +271,9 @@ class AttendancesPage extends React.Component {
 
                             </TableContainer>
                         }
-                     
+
                     </div>
-                  
+
                     {this.renderAttandanceDialog()}
                 </Paper>
             </React.Fragment>

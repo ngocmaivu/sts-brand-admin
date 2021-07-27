@@ -1,14 +1,13 @@
 import {
-    CardHeader, Paper, Divider, Typography,
     createStyles, withStyles, CardContent, Grid,
-    FormControl, MenuItem, FormLabel, Select, TextField, Button, Tabs, Box, Table, TableRow, TableHead, TableCell, TableBody, AccordionDetails, AccordionSummary, Accordion
+    TextField, Button,
 } from '@material-ui/core';
 
 import React from 'react';
 import { CardCustom } from '../../CardCustom';
 import './schedule.css';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { Field, reduxForm, formValueSelector } from 'redux-form';
+import { Field, reduxForm, } from 'redux-form';
 import PropTypes from 'prop-types';
 const styles = (Theme) => createStyles({
     inputAutoComplete: {

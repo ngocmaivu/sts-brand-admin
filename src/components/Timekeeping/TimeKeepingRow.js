@@ -29,10 +29,10 @@ function getTotalHours(timeWorks, timeStartKey, timeEndKey) {
     let totalMinutesPerWeek = 0;
 
     timeWorks.forEach(timeWork => {
-        if (timeWork.shiftAssignment[timeStartKey] && timeWork.shiftAssignment[timeEndKey]) {
+        if (timeWork[timeStartKey] && timeWork[timeEndKey]) {
             let duration = intervalToDuration({
-                start: new Date(timeWork.shiftAssignment[timeStartKey]),
-                end: new Date(timeWork.shiftAssignment[timeEndKey])
+                start: new Date(timeWork[timeStartKey]),
+                end: new Date(timeWork[timeEndKey])
             });
 
             totalMinutesPerWeek += duration.hours * 60 + duration.minutes;
@@ -43,14 +43,28 @@ function getTotalHours(timeWorks, timeStartKey, timeEndKey) {
     return totalMinutesPerWeek / 60;
 }
 
+// "username": "luffy007",
+// "firstName": "Monkey D",
+// "lastName": "Luffy",
+// "assignments": [
+//     {
+//         "id": 6,
+//         "username": "luffy007",
+//         "storeId": 55,
+//         "skillId": 20,
+//         "timeStart": "2021-07-31T07:00:55.6",
+//         "timeEnd": "2021-07-31T12:00:55.6",
+//         "shiftAttendance": null,
+//         "referenceId": 0
+//     },
 export function TimeKeepingRow(props) {
 
     const { user, onRowClick, index } = props;
     const classes = useRowStyles();
-    const totalHours = getTotalHours(user.attendances, 'timeStart', "timeEnd").toFixed(2);
-    const totalShifts = getTotalShift(user.attendances);
-    const count_Attendances = countAttendances(user.attendances);
-    const { comeLately, leaveEarly } = getCountEarlyAndLately(user.attendances);
+    const totalHours = getTotalHours(user.assignments, 'timeStart', "timeEnd").toFixed(2);
+    const totalShifts = user.assignments.length;
+    const count_Attendances = countAttendances(user.assignments);
+
 
     return (
 
