@@ -34,6 +34,7 @@ import StoreTimekeeping from './Timekeeping/StoreTimekeeping';
 import AttendancesPage from './Timekeeping/AttendancesPage';
 import WeekPlan from './view/weekSchedulePlan/WeekPlan';
 import StoreManagerNew from './view/store/StoreManagerNew';
+import ScheduleConfig from './view/configure/ScheduleConfig';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -120,11 +121,15 @@ class App extends React.Component {
                   <Route path="/schedule/plans/detail/:id" exact>
                     <WeekPlan />
                   </Route>
+
                   <Route path="/schedule/setting">
                     <SettingSchedule />
                   </Route>
                   <Route path="/schedule/available">
                     <AvailablePage />
+                  </Route>
+                  <Route path="/configure/schedule">
+                    <ScheduleConfig />
                   </Route>
                   <Route path="/brandhome">
                     <BrandHome />

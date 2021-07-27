@@ -51,7 +51,9 @@ class ScheduleMain extends React.Component {
             employeeData: null,
             openWaitingComputeModal: false,
         }
-
+        this.SkillColors = [
+            "#8027f5", "#babe15", "#be1565", "#15d429"
+        ];
 
         this.rootRef = React.createRef(null);
 
@@ -130,10 +132,10 @@ class ScheduleMain extends React.Component {
     loadData = async () => {
 
         var staffs = await getStaffs();
-        console.log(staffs);
+
 
         staffs = staffs.map(staff => ({ Name: `${staff.firstName} ${staff.lastName}`, Id: staff.username }));
-        console.log(staffs);
+
 
         this.setState({
             employeeData: staffs
@@ -153,6 +155,10 @@ class ScheduleMain extends React.Component {
     componentWillUnmount = () => {
         if (this.unSub)
             this.unSub();
+
+        if (this.checkResultInterval) {
+            clearInterval(this.checkComputeResult);
+        }
     }
 
     //----------------
@@ -197,7 +203,7 @@ class ScheduleMain extends React.Component {
 
                             if (this.scheduleObj) {
                                 this.scheduleObj.eventSettings.dataSource = src;
-                                this.getTotalHoursPerWeek();
+                                this.updateTotalHoursPersWeek();
                             }
 
                         });
@@ -253,6 +259,12 @@ class ScheduleMain extends React.Component {
     //-----------------------
 
 
+    onEventRendered = (args) => {
+        console.log(this.props.skillSrc);
+        let skillColor = this.SkillColors[this.props.skillSrc.findIndex(skill => skill.id == args.data.SkillId)];
+        console.log(skillColor);
+        args.element.style.backgroundColor = skillColor;
+    }
 
     editorTemplate = (props) => {
         return ((props !== undefined) ?
@@ -284,17 +296,14 @@ class ScheduleMain extends React.Component {
                 (args.data).Skill = this.props.skillSrc.find(e => e.id == skillElement.value)?.name;
 
             }
-            // console.log(this.scheduleObj.eventSettings.dataSource);
+
 
         }
     }
 
 
     triggerComputeSchedule = async () => {
-        const WeekSchedule = await getWeekSchedule(getFirstDayOfWeek(this.currentDate));
-        let wId = WeekSchedule.id;
-        console.log("ID:" + wId)
-        const data = await triggerCompute(wId);
+        const data = await triggerCompute(this.props.weekScheduleId);
         return data.id;
     }
 
@@ -341,11 +350,10 @@ class ScheduleMain extends React.Component {
     // }
 
     onActionBegin = async (args) => {
-        //console.log(args);
-
-
+        console.log(args);
         if (args.requestType == "eventChange") {
             this.refScheduleCurrentCollection.doc(args.changedRecords[0].Id).update(convertShiftToFireBaseObj(args.changedRecords[0]));
+            this.updateTotalHoursPersWeek();
         } else if (args.requestType === 'eventCreate' && args.data.length > 0) {
 
             //if a specific time slot already contains an shift, then no more shift can be added to that cell
@@ -355,23 +363,26 @@ class ScheduleMain extends React.Component {
             let endDate = eventData[eventField.endTime];
             args.cancel = !this.scheduleObj.isSlotAvailable(startDate, endDate);
 
-            console.log(args.cancel);
+
 
             if (!args.cancel) {
+                console.log(this.refScheduleCurrentCollection);
                 const newShiftRef = this.refScheduleCurrentCollection.doc();
                 args.data[0].Id = newShiftRef.id;
                 console.log('new shift Id:' + newShiftRef.id);
                 const data = convertShiftToFireBaseObj(args.data[0]);
-                console.log(data);
+
                 newShiftRef.set(data);
+                this.updateTotalHoursPersWeek();
             }
 
 
         } else if (args.requestType == "eventRemove") {
             this.refScheduleCurrentCollection.doc(args.deletedRecords[0].Id).delete();
+            this.updateTotalHoursPersWeek();
         }
 
-        // this.updateTotalHoursPersWeek();
+
     }
 
     computeSchedule = async () => {
@@ -379,39 +390,40 @@ class ScheduleMain extends React.Component {
         this.setState({ openWaitingComputeModal: true });
         let shiftScheduleResultId = await this.triggerComputeSchedule();
 
-        let checkResultInterval = setInterval(async () => {
+        this.checkResultInterval = setInterval(async () => {
             let result = await this.checkComputeResult(shiftScheduleResultId);
-            if (result.shiftAssignments) {
-                clearInterval(checkResultInterval);
-                this.setState({ openWaitingComputeModal: false });
-                if (result.shiftAssignments.length != 0) {
+            if (result)
+                if (result.shiftAssignments) {
+                    clearInterval(this.checkResultInterval);
+                    this.setState({ openWaitingComputeModal: false });
+                    if (result.shiftAssignments.length != 0) {
 
-                    console.log("Feasible");
+                        console.log("Feasible");
 
-                    result.shiftAssignments.forEach(e => {
+                        result.shiftAssignments.forEach(e => {
 
-                        let Data = {
-                            Skill: this.props.skillSrc.find(skill => skill.id == e.skillId).name,
-                            SkillId: e.skillId,
-                            EndTime: new Date(e.timeEnd),
-                            StartTime: new Date(e.timeStart),
-                            StaffId: e.username,
-                            Description: ""
-                        };
+                            let Data = {
+                                Skill: this.props.skillSrc.find(skill => skill.id == e.skillId).name,
+                                SkillId: e.skillId,
+                                EndTime: new Date(e.timeEnd),
+                                StartTime: new Date(e.timeStart),
+                                StaffId: e.username,
+                                Description: ""
+                            };
 
-                        const newShiftRef = this.refScheduleCurrentCollection.doc();
-                        Data.Id = newShiftRef.id;
-                        console.log('new shift Id:' + newShiftRef.id);
-                        const data = convertShiftToFireBaseObj(Data);
-                        console.log(data);
-                        newShiftRef.set(data);
-                        //this.scheduleObj.addEvent(Data);
-                    });
+                            const newShiftRef = this.refScheduleCurrentCollection.doc();
+                            Data.Id = newShiftRef.id;
+                            console.log('new shift Id:' + newShiftRef.id);
+                            const data = convertShiftToFireBaseObj(Data);
+                            console.log(data);
+                            newShiftRef.set(data);
+                            //this.scheduleObj.addEvent(Data);
+                        });
 
-                } else {
-                    console.log("Infeasible");
-                }
-            } {
+                    } else {
+                        console.log("Infeasible");
+                    }
+                } {
                 console.log("...Waiting");
             }
 
@@ -452,10 +464,6 @@ class ScheduleMain extends React.Component {
                     document.getElementById(`total-hours-${staff.Id}`).textContent = `${totalHours} hrs/week`;
                 }
             );
-            console.log(employeeDatas);
-
-            //this.updateResourceHeaderTemplate = true;
-            //this.setState({ employeeData: employeeDatas });
         } else {
             employeeDatas.forEach(
                 staff => {
@@ -464,21 +472,21 @@ class ScheduleMain extends React.Component {
 
             );
         }
+        // clearInterval(this.getTotalHoursPerWeekInterval);
     }
 
-    getTotalHoursPerWeek = (trigger) => {
+    publishSchedule()
+    {
+        //1
+        //get schedule from dataSrc
+        
+        //2 convert
 
-        this.getTotalHoursPerWeekInterval = setInterval(() => {
-            console.log("getTotalHoursPerWeek ");
+        //3 post it to api server
 
-            if (this.scheduleObj) {
-                this.updateTotalHoursPersWeek();
-                clearInterval(this.getTotalHoursPerWeekInterval);
-            }
-
-        }, 1000);
-
-
+        //clone
+        //get from firebase
+        //call api clone
     }
 
     render() {
@@ -510,6 +518,7 @@ class ScheduleMain extends React.Component {
                         group={{ resources: ['Staff'] }}
                         showQuickInfo={false}
                         editorTemplate={this.editorTemplate}
+                        eventRendered={this.onEventRendered}
                         popupClose={this.popupClose}
                         // navigating={this.navigatingEvent}
                         actionBegin={this.onActionBegin}

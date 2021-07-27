@@ -11,6 +11,7 @@ import { connect } from 'react-redux';
 import { getStaffInfo } from "../../../_actions/staff.action";
 import { Link, useParams } from 'react-router-dom';
 import { Skeleton } from '@material-ui/lab';
+import StaffType from "../../../ultis/StaffType";
 const useStyles = makeStyles((theme) => ({
     container: {
 
@@ -95,12 +96,12 @@ const Staff = (props) => {
         if (props.staffInfo && props.stores) {
 
             tmp.generalInfo = props.staffInfo.generalInfo;
-            tmp.generalInfo.fullname = tmp.generalInfo.firstName + " " + tmp.generalInfo.lastName;
+            tmp.generalInfo.fullname = tmp.generalInfo?.firstName + " " + tmp.generalInfo?.lastName;
             tmp.generalInfo.gender = props.staffInfo.generalInfo.gender == 1 ? "Male" : "Female";
 
             if (props.staffInfo.jobInformations[0]) {
                 tmp.jobInformations = props.staffInfo.jobInformations[0];
-                tmp.jobInformations.type = props.staffInfo.generalInfo.type == 1 ? "Full time" : "Part time";
+                tmp.jobInformations.type = StaffType.find(type => type.value == props.staffInfo.generalInfo.type)?.title;
                 console.log(props.stores);
                 console.log(tmp.jobInformations);
                 tmp.jobInformations.workAt = props.stores.find(e => e.id == tmp.jobInformations.storeId).name;
@@ -195,7 +196,7 @@ const Staff = (props) => {
                         </CardCustom>
                         <Grid item  >
                             <Button variant="contained" color="primary" component={Link} to="/staffs" onClick={
-                                ()=>{setIsLoad(true);}
+                                () => { setIsLoad(true); }
                             }>Back</Button>
                         </Grid>
                     </CardContent>

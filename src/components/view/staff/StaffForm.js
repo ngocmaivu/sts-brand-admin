@@ -229,7 +229,7 @@ const validate = (formValues) => {
     if (!formValues.username) {
         error.username = "You must enter a username";
     }
-    
+
 
     if (!formValues.workAt) {
         error.type = "You must choose a store";

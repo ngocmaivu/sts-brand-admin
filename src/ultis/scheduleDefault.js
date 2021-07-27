@@ -26,3 +26,48 @@ export const getConstraintDefault = () => [
         maxShiftPerDay: 1
     },
 ];
+
+export const getOperatingTimesDefault = () => [
+    {
+        day: 0,
+        isWorking: true,
+        from: 0,
+        to: 25
+    },
+    {
+        day: 1,
+        isWorking: true,
+        from: 0,
+        to: 25
+    },
+    {
+        day: 2,
+        isWorking: true,
+        from: 0,
+        to: 25
+    },
+    {
+        day: 3,
+        isWorking: true,
+        from: 0,
+        to: 25
+    },
+    {
+        day: 4,
+        isWorking: true,
+        from: 0,
+        to: 25
+    },
+    {
+        day: 5,
+        isWorking: true,
+        from: 0,
+        to: 25
+    },
+    {
+        day: 6,
+        isWorking: true,
+        from: 0,
+        to: 25
+    },
+];

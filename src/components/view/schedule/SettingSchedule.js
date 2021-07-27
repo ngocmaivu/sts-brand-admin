@@ -26,7 +26,6 @@ const styles = (theme) => createStyles({
         padding: 10,
         height: "100%"
     },
-
 })
 
 

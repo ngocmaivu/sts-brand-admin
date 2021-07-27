@@ -1,4 +1,4 @@
-import { FormControl, FormLabel, TextField } from "@material-ui/core";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormLabel, TextField, Typography } from "@material-ui/core";
 
 function AddWeekSchedulePlanDialog(props) {
 
@@ -10,27 +10,34 @@ function AddWeekSchedulePlanDialog(props) {
             onClose={handleClose}
             fullWidth={true}
             maxWidth="xs"
-            open={this.state.openAttendanceDialog}>
+            open={open}>
             <DialogTitle id="customized-dialog-title" onClose={handleClose}>
                 <Typography variant="h3">Add Plan</Typography>
             </DialogTitle>
-            <DialogContent dividers>
-                <FormControl>
-                    <FormLabel>Schedule plan name:</FormLabel>
-                    <TextField variant="outlined" />
-                </FormControl>
-                <FormControl>
+            <form onSubmit={(e) => {
+                e.preventDefault();
+            }}>
+                <DialogContent dividers>
+
+                    <FormControl fullWidth>
+                        <FormLabel>Schedule plan name:</FormLabel>
+                        <TextField required variant="outlined" size="small" />
+                    </FormControl>
+
+                    {/* <FormControl>
                     <FormLabel>Clone from</FormLabel>
                     <TextField variant="outlined" />
-                </FormControl>
-            </DialogContent>
-            <DialogActions>
-                <Button autoFocus onClick={handleClose} color="primary">
-                    Save
-                </Button>
-                <Button autoFocus onClick={handleClose} color="primary">
-                    Cancel
-                </Button>
-            </DialogActions>
+                </FormControl> */}
+                </DialogContent>
+                <DialogActions>
+                    <Button autoFocus type="submit" color="primary">
+                        Save
+                    </Button>
+                    <Button autoFocus onClick={handleClose} color="primary">
+                        Cancel
+                    </Button>
+                </DialogActions>
+            </form>
         </Dialog>);
 }
+export default AddWeekSchedulePlanDialog;

@@ -18,7 +18,7 @@ import ProfileIcon from "@material-ui/icons/Person";
 import jwt_decode from "jwt-decode";
 // import Logout from "../auth/Logout";
 import ProfileSection from "./ProfileSection";
-import { CalendarTodayOutlined, FiberDvr, FiberManualRecord, Home, NotificationsNoneOutlined, Settings, Store } from "@material-ui/icons";
+import { CalendarTodayOutlined, SettingsOutlined, FiberManualRecord, Home, NotificationsNoneOutlined, Settings, Store } from "@material-ui/icons";
 import NavItem from "./NavItem";
 import NavCollapse from "./NavCollapse";
 
@@ -222,7 +222,6 @@ if (user === null) {
       url: '/storehome',
       icon: <Home />
     },
-
     {
       id: 'schedule',
       title: 'Schedule',
@@ -319,6 +318,29 @@ if (user === null) {
           url: '/notify/activity',
           icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
         }
+      ]
+    },
+    {
+      id: 'configure',
+      title: 'Configure',
+      url: '/configure',
+      type: 'collapse',
+      icon: <SettingsOutlined />,
+      children: [
+        {
+          type: 'item',
+          id: 'store-info',
+          title: 'Store Info',
+          url: '/configure/store-info',
+          icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+        },
+        {
+          type: 'item',
+          id: 'work-hours',
+          title: 'Schedule config',
+          url: '/configure/schedule',
+          icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+        },
       ]
     },
     {

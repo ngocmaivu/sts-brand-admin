@@ -14,7 +14,9 @@ import { format, isSameDay, startOfWeek, } from 'date-fns';
 import { getStaffs, getShiftRegisterDatas, getWeekSchedule, } from '../../../_services';
 import { getTotalHoursPerWeek } from '../../../ultis/scheduleHandle';
 import { Skeleton } from '@material-ui/lab';
-
+import { fetchWeekSchedules } from "../../../_actions/";
+import { connect } from 'react-redux';
+import _ from 'lodash';
 
 const styles = (Theme) => createStyles({
     container: {
@@ -41,44 +43,22 @@ class AvailablePage extends React.Component {
     }
 
     loadData = async () => {
-        // ShiftRegisterData.find(shiftRegister.username == "").timeWorks.
-
         var staffs = await getStaffs();
-
 
         this.setState({
             staffs: staffs
         });
-
-
     }
 
-    updateWeekScheuleId = async () => {
-        const WeekSchedule = await getWeekSchedule(new Date(this.state.dateStart));
 
-        if (!WeekSchedule) {
-            console.log("GET WeekSchedule ERROR");
-            return;
-        }
-        console.log(WeekSchedule.id);
-        this.setState({ weekScheduleId: WeekSchedule.id });
-    }
 
     updateShiftRegisterDatas = async () => {
-        await this.updateWeekScheuleId();
-        const shiftRegisterDatas = await getShiftRegisterDatas(this.state.weekScheduleId);
-
-        // this.renderConstraintData(storeScheduleDetails);
+        console.log(this.props.weekSchedules[0]);
+        const shiftRegisterDatas = await getShiftRegisterDatas(this.props.weekSchedules[0].id);
         this.renderShiftRegisterDatas(shiftRegisterDatas);
     }
 
     renderShiftRegisterDatas = (shiftRegisterDatas) => {
-        // staffs = staffs.map(staff =>
-        // ({
-        //     Name: `${staff.firstName} ${staff.lastName}`,
-        //     Id: staff.username,
-        //     shiftRegisters: ShiftRegisterData.find(shiftRegister.username == staff.username)
-        // }));
 
         if (this.state.staffs) {
             if (shiftRegisterDatas)
@@ -105,7 +85,6 @@ class AvailablePage extends React.Component {
         return this.state.shiftRegisterDatas.map(
             shiftRegisterData => {
                 let totalHoursPerWeek = getTotalHoursPerWeek(shiftRegisterData.timeWorks, "timeStart", "timeEnd");
-                console.log(shiftRegisterData.username);
                 return (
                     <TableRow key={shiftRegisterData.username} style={{ height: 88 }}>
                         <TableCell align="left" variant="body" style={{ verticalAlign: 'top' }}>
@@ -150,16 +129,27 @@ class AvailablePage extends React.Component {
     }
 
     componentDidMount = async () => {
+        console.log(this.state.dateStart);
+        this.props.fetchWeekSchedules(this.state.dateStart);
         await this.loadData();
-        await this.updateShiftRegisterDatas();
+        if (this.props.weekSchedules) {
+            await this.updateShiftRegisterDatas();
+        }
+
     }
 
-    componentDidUpdate = (prevProps, prevState, snapshot) => {
+    componentDidUpdate = async (prevProps, prevState, snapshot) => {
         if (!isSameDay(prevState.dateStart, this.state.dateStart)) {
-            this.setState({ shiftRegisterDatas: null });
-            this.updateShiftRegisterDatas();
+            console.log(this.state.dateStart);
+            this.props.fetchWeekSchedules(this.state.dateStart);
+
             // console.log(prevState.dateStart, this.state.dateStart);
         }
+        if (prevProps.weekSchedules && this.props.weekSchedules)
+            if (prevProps.weekSchedules[0].id != this.props.weekSchedules[0].id) {
+                this.updateShiftRegisterDatas();
+            }
+
     }
 
     handleWeekChange = async (date) => {
@@ -230,4 +220,13 @@ class AvailablePage extends React.Component {
         );
     }
 }
-export default withStyles(styles)(AvailablePage);
+const mapStateToProps = (state) => {
+    return {
+        weekSchedules: state.schedule.weekSchedules,
+    }
+}
+export default connect(
+    mapStateToProps, {
+    fetchWeekSchedules
+}
+)(withStyles(styles)(AvailablePage));

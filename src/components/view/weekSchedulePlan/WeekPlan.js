@@ -34,19 +34,22 @@ function TabPanel(props) {
     return (
         <div
             role="tabpanel"
-
+            hidden={value !== index}
             id={`simple-tabpanel-${index}`}
             aria-labelledby={`simple-tab-${index}`}
             {...other}
             style={{
-                width: '100%', height: "85%", display: value !== index ? "none" : null
+                width: '100%', height: "85%",
+                // display: value !== index ? "none" : null
             }}
         >
-           
+
+            {value === index && (
                 <React.Fragment>
                     {children}
                 </React.Fragment>
-          
+            )}
+
         </div >
     );
 }
