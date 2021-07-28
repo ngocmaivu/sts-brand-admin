@@ -24,18 +24,21 @@ const useRowStyles = makeStyles(theme => ({
 }));
 
 
-function getTotalHours(timeWorks, timeStartKey, timeEndKey) {
+function getTotalHours(assignments, timeStartKey, timeEndKey) {
     let totalMinutesPerWeek = 0;
 
-    timeWorks.forEach(timeWork => {
-        if (timeWork[timeStartKey] && timeWork[timeEndKey]) {
-            let duration = intervalToDuration({
-                start: new Date(timeWork[timeStartKey]),
-                end: new Date(timeWork[timeEndKey])
-            });
+    assignments.forEach(timeWork => {
+        if (assignments.shiftAttendance) {
+            if (assignments.shiftAttendance[timeStartKey] && assignments.shiftAttendance[timeEndKey]) {
+                let duration = intervalToDuration({
+                    start: new Date(timeWork[timeStartKey]),
+                    end: new Date(timeWork[timeEndKey])
+                });
 
-            totalMinutesPerWeek += duration.hours * 60 + duration.minutes;
+                totalMinutesPerWeek += duration.hours * 60 + duration.minutes;
+            }
         }
+
 
     });
 
@@ -46,10 +49,10 @@ export function AttendanceRow(props) {
 
     const { user, onRowClick, index } = props;
     const classes = useRowStyles();
-    const totalHours = getTotalHours(user.attendances, 'timeCheckIn', "timeCheckOut").toFixed(2);
-    const totalShifts = getTotalShift(user.attendances);
-    const count_Attendances = countAttendances(user.attendances);
-    const { comeLately, leaveEarly } = getCountEarlyAndLately(user.attendances);
+    const totalHours = getTotalHours(user.assignments, 'timeCheckIn', "timeCheckOut").toFixed(2);
+    const totalShifts = getTotalShift(user.assignments);
+    const count_Attendances = countAttendances(user.assignments);
+    const { comeLately, leaveEarly } = getCountEarlyAndLately(user.assignments);
 
     return (
 

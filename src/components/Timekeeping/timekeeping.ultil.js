@@ -1,15 +1,21 @@
 
-import { getTotalHoursPerWeek } from '../../ultis/scheduleHandle';
+import _ from 'lodash';
+import { getTotalHoursPerWeek, isSameDay } from '../../ultis/scheduleHandle';
 
 export function getTotalHours(attendances, startKey, endKey) {
     return getTotalHoursPerWeek(attendances, startKey, endKey);
 }
 
 
-export function countAttendances(attendances) {
+export function countAttendances(assignments) {
     var count = 0;
-    attendances.forEach(attendance => {
-        if (attendance.timeCheckIn && attendance.timeCheckOut) count++;
+    assignments.forEach(assignment => {
+        if (!_.isEmpty(assignment.shiftAttendance)) {
+            if (isSameDay(new Date(assignment.timeStart), new Date(assignment.timeCheckIn))
+                && isSameDay(new Date(assignment.timeEnd), new Date(assignment.timeCheckOut))) {
+                count++;
+            }
+        }
     });
     return count;
 }
@@ -40,21 +46,23 @@ export const checkLeaveEarly = (timeCheckOut, timeEnd) => {
     return false;
 }
 
-export const getCountEarlyAndLately = (attendances) => {
+export const getCountEarlyAndLately = (assigments) => {
     var count_comeLately = 0;
     var count_leaveEarly = 0;
 
-    attendances.forEach(attendance => {
+    assigments.forEach(assigment => {
+        if (!_.isEmpty(assigment.shiftAttendance)) {
+            let attendance = assigment.shiftAttendance;
+            if (attendance.timeCheckIn && attendance.timeCheckOut) {
+                let timeCheckIn = new Date(attendance.timeCheckIn);
+                let timeCheckOut = new Date(attendance.timeCheckOut);
 
-        if (attendance.timeCheckIn && attendance.timeCheckOut) {
-            let timeCheckIn = new Date(attendance.timeCheckIn);
-            let timeCheckOut = new Date(attendance.timeCheckOut);
+                let timeStart = new Date(assigment.timeStart);
+                let timeEnd = new Date(assigment.timeEnd);
 
-            let timeStart = new Date(attendance.shiftAssignment.timeStart);
-            let timeEnd = new Date(attendance.shiftAssignment.timeEnd);
-
-            if (checkComeLateLy(timeCheckIn, timeStart)) count_comeLately++;
-            if (checkLeaveEarly(timeCheckOut, timeEnd)) count_leaveEarly++;
+                if (checkComeLateLy(timeCheckIn, timeStart)) count_comeLately++;
+                if (checkLeaveEarly(timeCheckOut, timeEnd)) count_leaveEarly++;
+            }
         }
     }
     );
@@ -65,6 +73,6 @@ export const getCountEarlyAndLately = (attendances) => {
 
 }
 
-export function getTotalShift(attendances) {
-    return attendances.length;
+export function getTotalShift(assignments) {
+    return assignments.length;
 }

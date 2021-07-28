@@ -25,7 +25,7 @@ const useRowStyles = makeStyles(theme => ({
 }));
 
 
-export function ShiftUserTable(props) {
+export function AttendanceDetailTable(props) {
 
     const { user, skillSrc } = props;
 
@@ -51,10 +51,10 @@ export function ShiftUserTable(props) {
                             }}>Area</TableCell>
                             <TableCell classes={{
                                 "root": classes.cellTh
-                            }}>Start Time</TableCell>
+                            }}>Check in Time</TableCell>
                             <TableCell classes={{
                                 "root": classes.cellTh
-                            }}>Finish Time</TableCell>
+                            }}>Check out Time</TableCell>
                             <TableCell classes={{
                                 "root": classes.cellTh
                             }}>Woking Time(hrs)</TableCell>
@@ -62,6 +62,14 @@ export function ShiftUserTable(props) {
                     </TableHead>
                     <TableBody>
                         {user.assignments.map((assignment) => {
+                            let checkInTimeRender = "--:--";
+                            let checkOutTimeRender = "--:--";
+                            let timeDurationRender = 0;
+                            if (assignment.shiftAttendance) {
+                                checkInTimeRender = format(new Date(assignment.shiftAttendance.timeCheckIn), "HH:mm a");
+                                checkOutTimeRender = format(new Date(assignment.shiftAttendance.timeCheckOut), "HH:mm a");
+                                timeDurationRender = getHourDuration(assignment.shiftAttendance.timeCheckIn, assignment.shiftAttendance.timeCheckOut);
+                            }
                             let timeStart = new Date(assignment.timeStart);
                             let dateRender = format(new Date(assignment.timeEnd), "dd/MM/yyyy");
                             let timeStartRender = format(new Date(assignment.timeStart), "HH:mm a");
@@ -91,7 +99,7 @@ export function ShiftUserTable(props) {
                                     <TableCell component="td" scope="row" classes={{
                                         "root": classes.cell
                                     }}>
-                                        <Typography> {timeStartRender}</Typography>
+                                        <Typography> {checkInTimeRender}</Typography>
 
 
 
@@ -99,11 +107,11 @@ export function ShiftUserTable(props) {
                                     <TableCell component="td" scope="row" classes={{
                                         "root": classes.cell
                                     }}>
-                                        {timeEndRender}
+                                        {checkOutTimeRender}
                                     </TableCell>
                                     <TableCell classes={{
                                         "root": classes.cell
-                                    }}> {getHourDuration(assignment.timeStart, assignment.timeEnd)}</TableCell>
+                                    }}> {timeDurationRender}</TableCell>
 
                                 </TableRow>
                             );

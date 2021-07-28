@@ -11,8 +11,8 @@ import Paper from '@material-ui/core/Paper';
 import { Button, CardContent, CardHeader, Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, FormControl, FormLabel, Grid, IconButton, Tab, Tabs, Tooltip, Typography } from '@material-ui/core';
 import WeekPicker from '../../WeekPicker';
 import { format, isSameDay, startOfWeek, } from 'date-fns';
-import { getStaffs, getShiftRegisterDatas, getWeekSchedule, deleteWeekSchedule, } from '../../../_services';
-import { getTotalHoursPerWeek } from '../../../ultis/scheduleHandle';
+import { cloneSchedule, deleteWeekSchedule, } from '../../../_services';
+import { getSchedulesDataFromFirebase, getTotalHoursPerWeek } from '../../../ultis/scheduleHandle';
 import { Skeleton } from '@material-ui/lab';
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import { fetchWeekSchedules } from "../../../_actions/";
@@ -28,6 +28,8 @@ import { weekScheduleStatus } from './status';
 import { addDays } from '@syncfusion/ej2-react-schedule';
 import history from '../../../history';
 import AddWeekSchedulePlanDialog from './AddWeekSchedulePlanDialog';
+import _, { identity } from 'lodash';
+
 const styles = (Theme) => createStyles({
     container: {
         height: '100%',
@@ -57,6 +59,9 @@ class WeekPlanManage extends React.Component {
             openAddDialog: false,
             openDeleteDialog: false
         };
+        const user = JSON.parse(localStorage.getItem("jwt_decode"));
+        this.BrandId = user.brandId;
+        this.StoreId = user.storeId;
     }
 
     handleWeekChange = async (date) => {
@@ -93,7 +98,7 @@ class WeekPlanManage extends React.Component {
         let status = this.props.match.params.status;
         if (status) {
             if (status == "published") return "Published Schedule";
-            if (status == "unpublished") return "Unublish Schedule";
+            if (status == "unpublished") return "Unpublish Schedule";
         }
     }
 
@@ -108,8 +113,19 @@ class WeekPlanManage extends React.Component {
     }
     renderWeekScheduleRows = () => {
         const dateFormat = "dd/MM/yyyy";
-        return this.props.weekSchedules.map(weekSchedule => {
 
+
+        if (_.isEmpty(this.props.weekSchedules)) {
+            let emptyRender = "No Schedule";
+            if ( this.props.match.params.status == "published") emptyRender = "No published schedule yet";
+            return (
+                <TableRow >
+                    <TableCell align="center" colSpan="8">{emptyRender}</TableCell>
+                </TableRow>
+            );
+        }
+
+        return this.props.weekSchedules.map(weekSchedule => {
 
             return (
                 <TableRow key={weekSchedule.id} hover className={this.props.classes.weekScheduleRow} onClick={
@@ -137,7 +153,7 @@ class WeekPlanManage extends React.Component {
                 return (
                     <React.Fragment>
                         <Tooltip title="Duplicate">
-                            <IconButton>
+                            <IconButton onClick={(e) => { this.cloneSchedule(id) }}>
                                 <FileCopyOutlinedIcon />
                             </IconButton>
                         </Tooltip>
@@ -160,7 +176,7 @@ class WeekPlanManage extends React.Component {
                 return (
                     <React.Fragment>
                         <Tooltip title="Duplicate">
-                            <IconButton>
+                            <IconButton onClick={(e) => { this.cloneSchedule(id) }}>
                                 <FileCopyOutlinedIcon />
                             </IconButton>
                         </Tooltip>
@@ -181,9 +197,23 @@ class WeekPlanManage extends React.Component {
         }
     }
 
+    cloneSchedule(weekScheduleId) {
+        const getScheduleCallback = (shiftAssignments) => {
+            shiftAssignments = shiftAssignments == null ? [] : shiftAssignments;
+            console.log(shiftAssignments);
+            cloneSchedule(weekScheduleId, shiftAssignments);
+        }
+
+        getSchedulesDataFromFirebase(weekScheduleId, this.StoreId, this.BrandId, getScheduleCallback);
+    }
+
+
+
     handleDeleteWeekSchedule = async () => {
+        console.log(this.state.deleteId);
         await deleteWeekSchedule(this.state.deleteId);
         this.setState({ deleteId: null });
+        this.fetchData();
     }
     renderDeleteDialog = () => {
 
@@ -219,6 +249,7 @@ class WeekPlanManage extends React.Component {
             </Dialog>
         );
     }
+
     render() {
         return (<div>
             <Paper style={{ padding: 16, marginBottom: 32 }} elevation={0}>  <Typography variant="h2">

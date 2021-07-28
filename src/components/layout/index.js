@@ -299,29 +299,29 @@ if (user === null) {
       url: '/staffs',
       icon: <GroupOutlinedIcon />
     },
-    {
-      type: 'collapse',
-      id: 'notify',
-      title: 'Notification',
-      url: '/notify/1',
-      icon: <NotificationsNoneOutlined />,
-      children: [
-        {
-          type: 'item',
-          id: 'request',
-          title: 'Request',
-          url: '/notify/request',
-          icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
-        },
-        {
-          type: 'item',
-          id: 'activity',
-          title: 'Activity',
-          url: '/notify/activity',
-          icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
-        }
-      ]
-    },
+    // {
+    //   type: 'collapse',
+    //   id: 'notify',
+    //   title: 'Notification',
+    //   url: '/notify/1',
+    //   icon: <NotificationsNoneOutlined />,
+    //   children: [
+    //     {
+    //       type: 'item',
+    //       id: 'request',
+    //       title: 'Request',
+    //       url: '/notify/request',
+    //       icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+    //     },
+    //     {
+    //       type: 'item',
+    //       id: 'activity',
+    //       title: 'Activity',
+    //       url: '/notify/activity',
+    //       icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+    //     }
+    //   ]
+    // },
     {
       id: 'configure',
       title: 'Configure',
@@ -345,13 +345,6 @@ if (user === null) {
         },
       ]
     },
-    {
-      id: 'profile',
-      title: 'Profile',
-      type: 'item',
-      url: "/profile",
-      icon: <ProfileIcon />
-    }
   )
 }
 
