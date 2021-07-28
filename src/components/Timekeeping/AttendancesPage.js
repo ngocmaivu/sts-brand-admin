@@ -1,18 +1,19 @@
 import React, { useState } from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import { connect } from 'react-redux';
-import { Button, createStyles, Dialog, DialogContent, TableCell, DialogContentText, DialogTitle, DialogActions, InputAdornment, TextField, withStyles, Paper, Card, Grid, TableContainer, Table, TableHead, TableRow, TableBody, IconButton, Collapse, Typography, FormControl, FormLabel } from '@material-ui/core';
+import { Button, createStyles, Dialog, DialogContent, TableCell, DialogContentText, DialogTitle, DialogActions, InputAdornment, TextField, withStyles, Paper, Card, Grid, TableContainer, Table, TableHead, TableRow, TableBody, IconButton, Collapse, Typography, FormControl, FormLabel, List, ListItem, ListItemText, CardHeader, FormControlLabel, Box, Chip, Divider, CardMedia, CardActionArea, CardContent } from '@material-ui/core';
 
 import MuiAlert from '@material-ui/lab/Alert';
 import { Delete, Edit, ImageSearch, ImageSearchTwoTone, SearchTwoTone, ViewAgenda, ViewStreamOutlined, VisibilityOutlined } from '@material-ui/icons';
 import { Pagination, Skeleton } from '@material-ui/lab';
 import { DateRangePicker, DateRangePickerComponent } from '@syncfusion/ej2-react-calendars';
 import { getFirstDayOfWeek } from "../../ultis/scheduleHandle";
-import { loadSkills, fetchTimeKeeping } from "../../_services";
-import { ShiftUserTable } from './ShiftUserTable';
-import { AttendanceRow } from './AttendanceRow';
+import { loadSkills, fetchTimeKeeping, getStaffs } from "../../_services";
+import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined';
 import addDays from 'date-fns/addDays';
 import { AttendanceDetailTable } from './AttendanceDetailTable';
+import clsx from 'clsx';
+import { DatePicker, TimePicker } from '@material-ui/pickers';
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -74,6 +75,13 @@ const styles = (Theme) => createStyles({
     },
     theadCell: {
         color: "#fff"
+    },
+    listItem: {
+        opacity: 0.7
+    },
+    selectedItem: {
+        opacity: 1,
+        color: Theme.palette.primary.main
     }
 });
 
@@ -99,67 +107,48 @@ class AttendancesPage extends React.Component {
             fromDate: fromDate,
             toDate: toDate,
             dataSrc: null,
-            updateData: false
+            updateData: false,
+            selectedIndexUser: -1
         };
 
     }
+    loadData = async () => {
+        var staffs = await getStaffs();
+
+        this.setState({
+            staffs: staffs
+        });
+    }
 
     initData = async () => {
-        var skills = await loadSkills();
-
-        let data = await fetchTimeKeeping(this.init.fromDate, this.init.toDate);
+        var staffs = await getStaffs();
+        console.log(staffs);
         this.setState({
-            skillSrc: skills,
-            dataSrc: data
+            staffs: staffs
         });
+
+        // var skills = await loadSkills();
+
+        // let data = await fetchTimeKeeping(this.init.fromDate, this.init.toDate);
+        // this.setState({
+        //     skillSrc: skills,
+        //     dataSrc: data
+        // });
     }
 
-    fetch = async (fromDate, toDate) => {
-        let data = await fetchTimeKeeping(fromDate, toDate);
-        this.setState({
-            dataSrc: data,
-            updateData: false
-        });
-    }
+
 
     componentDidMount = async () => {
-        await this.initData();
+        this.initData();
     }
 
     componentDidUpdate = async (preState) => {
-
-        if (this.state.updateData) {
-            await this.fetch(this.state.fromDate, this.state.toDate);
-        }
     }
 
 
-    renderToolbar = () => {
-        return (
-            <div className={this.props.classes.toolbar}>
-                <TextField style={{ height: '40px', width: '600px' }} placeholder="search" size='small' variant="outlined"
-                />
-                {/* <SearchOutlinedIcon style={{marginLeft: '-350px', color: '#50A625'}} /> */}
-                <Button style={{ marginLeft: '-350px', color: '#009966' }}> <SearchTwoTone fontSize='small' /></Button>
-                {/* <Button variant="outlined" className={this.props.classes.searchButton} component={Link}
-                    to="/StoreTimekeeping/new"> <AddIcon />Add Store</Button> */}
-            </div>
-        );
-    }
-    renderRows = () => {
-        return this.state.dataSrc.map((user, index) => {
 
-            return (
-                <AttendanceRow user={user} skillSrc={this.state.skillSrc} index={index} onRowClick={() => {
-                    this.handleRowClick(user);
-                }} />);
-        });
-    };
 
-    handleRowClick = (user) => {
-        this.setState({ selectedUser: user, openAttendanceDialog: true });
 
-    }
     renderAttandanceDialog = () => {
 
         const handleClose = () => { this.setState({ openAttendanceDialog: false }); };
@@ -168,114 +157,311 @@ class AttendancesPage extends React.Component {
             <Dialog
                 onClose={handleClose}
                 fullWidth={true}
-                maxWidth="lg"
+                maxWidth="sm"
                 open={this.state.openAttendanceDialog}>
                 <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-                    <Typography variant="h3">{`Scheduled Hours - ${this.state?.selectedUser?.firstName} ${this.state?.selectedUser?.lastName}`}</Typography>
+                    <Typography variant="h3">Add Attandance</Typography>
                 </DialogTitle>
                 <DialogContent dividers>
-                    {
-                        this.state.selectedUser ? (
-                            <AttendanceDetailTable user={this.state.selectedUser} skillSrc={this.state.skillSrc} />
-                        ) : "No Content"
-                    }
+                    <Grid container spacing={2}>
+                        <Grid item xs={6}>
+                            <FormControl fullWidth>
+                                <FormLabel>Staff Name</FormLabel>
+                                <TextField id="outlined-basic" variant="outlined" size="small" value="Ly Van Cuong"
+                                    inputProps={{ readonly: true }} />
 
+                            </FormControl>
+                        </Grid>
+                        <Grid container item direction="row" spacing={2} justify="space-between">
+                            <Grid item xs={6}>
+                                <FormControl fullWidth>
+                                    <FormLabel>Date</FormLabel>
+                                    <DatePicker inputVariant="outlined" size="small" />
+                                </FormControl>
+                            </Grid>
+                            <Grid item xs={6}>
+                                <FormControl fullWidth>
+                                    <FormLabel>Time check</FormLabel>
+                                    <TimePicker size="small" inputVariant="outlined" />
+                                </FormControl>
+                            </Grid>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <FormControl fullWidth>
+                                <FormLabel>Note:</FormLabel>
+                                <TextField id="outlined-basic" variant="outlined" size="small" multiline rows={5}
+                                    inputProps={{ readonly: true }} />
+
+                            </FormControl>
+                        </Grid>
+                    </Grid>
                 </DialogContent>
                 <DialogActions>
-                    <Button autoFocus onClick={handleClose} color="primary">
-                        Close
-                    </Button>
+                    <Button onClick={handleClose} color="primary"> Close</Button>
+                    <Button onClick={handleClose} color="primary"> Save</Button>
                 </DialogActions>
             </Dialog>);
     }
+
+
     render() {
 
         const { classes } = this.props;
 
         return (
             <React.Fragment>
-                <Card style={{ padding: '10px', marginBottom: '15px' }} elevation={0}>
-                    <div> <h1>Attendance</h1></div>
-                    <FormControl>
-                        <FormLabel>Select Date</FormLabel>
-                        <DateRangePickerComponent
-                            change={(props) => {
-                                console.log(props);
-                                if (props.startDate && props.endDate && (props.startDate != this.state.fromDate ||
-                                    props.endDate != this.state.toDate)) {
-                                    this.setState({
-                                        fromDate: props.startDate,
-                                        toDate: props.endDate,
-                                        updateData: true
-                                    });
-                                }
-                            }}
-
-                            startDate={this.init.fromDate}
-                            endDate={this.init.toDate}
-                        />
-                    </FormControl>
-                </Card>
-                <Paper className={this.props.classes.container} elevation={0}>
-                    <div style={{ width: '100%' }}>
-                        {false ? (
-                            <Grid container spacing={2} direction="column" style={{ padding: 20 }}>
-                                <Grid item xs>
-                                    <Skeleton animation="wave" variant="rect" height="175" />
-                                </Grid>
-                                <Grid item xs>
-                                    <Skeleton animation="wave" variant="rect" height="120" />
-                                </Grid>
-                                <Grid item xs>
-                                    <Skeleton animation="wave" variant="rect" height="70px" />
-                                </Grid>
-                                <Grid item xs>
-                                    <Skeleton animation="wave" variant="rect" height="40px" />
-                                </Grid>
-                                <Grid item xs>
-                                    <Skeleton animation="wave" variant="rect" height="20px" />
-                                </Grid>
+                <Card style={{ padding: '12px', paddingLeft: 18, marginBottom: '16px' }} elevation={0}>
+                    <Typography variant="h3">Attandance</Typography>
+                    <Box height={16}></Box>
+                    <Grid container direction="row" justify="space-between" alignItems="center">
+                        <Grid item container direction="row" justify="flex-start" alignItems="center" spacing={4} xs={7}>
+                            <Grid item >
+                                <Typography variant="subtitle1">Time Period</Typography>
                             </Grid>
-                        ) :
+                            <Grid item xs={8}>
+                                <DateRangePickerComponent />
+                            </Grid>
+                        </Grid>
+                        <Grid item>
+                            <Button color="primary" variant="outlined" onClick={() => {
+                                this.setState({ openAttendanceDialog: true })
+                            }}>Add manually</Button>
+                        </Grid>
+                    </Grid>
+
+                </Card>
+
+                <Grid container direction="row" spacing={2}>
+                    <Grid item xs={2}>
+                        <Paper className={this.props.classes.container} style={{ minHeight: "70vh", padding: "16px 12px" }} elevation={0}>
+                            <List>
+                                {
+                                    this.state.staffs ?
+                                        (
+                                            this.state.staffs.map(
+                                                (staff, index) => {
+                                                    return (
+                                                        <ListItem button key={staff.username}
+                                                            onClick={() => { this.setState({ selectedIndexUser: index }) }}
+                                                            selected={this.state.selectedIndexUser === index}
+                                                            className={clsx(classes.listItem, {
+                                                                [classes.selectedItem]: this.state.selectedIndexUser === index,
+                                                            })}>
+                                                            <ListItemText >
+                                                                <Typography variant="subtitle1">{staff.firstName + " " + staff.lastName}</Typography>
+                                                            </ListItemText>
+                                                        </ListItem>
+                                                    )
+                                                }
+                                            )
+                                        ) : ".. loading"
+                                }
+                            </List>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={7}>
+                        <Paper className={this.props.classes.container} style={{ minHeight: "70vh" }} elevation={0}>
                             <TableContainer>
                                 <Table aria-label="simple table" >
-                                    <TableHead style={{ backgroundColor: "#111936" }}>
+                                    <TableHead >
                                         <TableRow>
-                                            <TableCell align="left" variant="head"  >
-                                                <Typography variant="h4" className={classes.theadCell}>#</Typography>
-                                            </TableCell>
-                                            <TableCell align="left" variant="head" style={{ color: "#fff" }} >
-                                                <Typography variant="h4" className={classes.theadCell}>Username</Typography>
-                                            </TableCell>
-                                            <TableCell align="left" variant="head" style={{ color: "#fff" }}>
-                                                <Typography variant="h4" className={classes.theadCell}>
-                                                    Fullname</Typography></TableCell>
-                                            <TableCell align="center"><Typography variant="h4" className={classes.theadCell}>
-                                                Total Hours</Typography></TableCell>
-                                            <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Total Shift</Typography></TableCell>
-                                            <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Attendance</Typography></TableCell>
-                                            <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Come Lately</Typography></TableCell>
-                                            <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Leave Early</Typography></TableCell>
 
+                                            <TableCell align="left" variant="head" >
+                                                <Typography variant="h4">Date</Typography>
+                                            </TableCell>
+                                            <TableCell align="left" variant="head">
+                                                <Typography variant="h4" >
+                                                    Time Check</Typography></TableCell>
+                                            <TableCell align="center"><Typography variant="h4">
+                                                Check Type</Typography></TableCell>
+                                            <TableCell align="center"><Typography variant="h4">Device Code</Typography></TableCell>
+                                            <TableCell align="center"><Typography variant="h4">Create by</Typography></TableCell>
+                                            <TableCell align="center"><Typography variant="h4">Actions</Typography></TableCell>
                                         </TableRow>
                                     </TableHead>
                                     {
+
                                         <TableBody>
-                                            {
-                                                this.state.dataSrc ? this.renderRows() : "loading..."
-                                            }
+                                            <TableRow selected>
+                                                <TableCell >
+                                                    <Typography variant="subtitle1">26/07/2021</Typography>
+                                                </TableCell>
+                                                <TableCell align="left" variant="head">
+                                                    <Typography variant="subtitle1" >
+                                                        7:02 AM</Typography></TableCell>
+                                                <TableCell align="center"><Chip label="Camera" color="primary" variant="outlined" />
+                                                </TableCell>
+                                                <TableCell align="center"><Typography variant="subtitle1">A1</Typography></TableCell>
+                                                <TableCell align="center"><Typography variant="subtitle1">Cuong Ly</Typography></TableCell>
+                                                <TableCell align="center">
+                                                    <IconButton>
+                                                        <DeleteOutlineOutlinedIcon />
+                                                    </IconButton>
+                                                </TableCell>
+                                            </TableRow>
+                                            <TableRow>
+                                                <TableCell >
+                                                    <Typography variant="subtitle1">26/07/2021</Typography>
+                                                </TableCell>
+                                                <TableCell align="left" variant="head">
+                                                    <Typography variant="subtitle1" >
+                                                        12:02 PM</Typography></TableCell>
+                                                <TableCell align="center"><Chip label="Camera" color="primary" variant="outlined" />
+                                                </TableCell>
+                                                <TableCell align="center"><Typography variant="subtitle1">A1</Typography></TableCell>
+                                                <TableCell align="center"><Typography variant="subtitle1">Cuong Ly</Typography></TableCell>
+                                                <TableCell align="center">
+                                                    <IconButton>
+                                                        <DeleteOutlineOutlinedIcon />
+                                                    </IconButton>
+                                                </TableCell> </TableRow>
+                                            <TableRow>
+                                                <TableCell >
+                                                    <Typography variant="subtitle1">27/07/2021</Typography>
+                                                </TableCell>
+                                                <TableCell align="left" variant="head">
+                                                    <Typography variant="subtitle1" >
+                                                        7:01 AM</Typography></TableCell>
+                                                <TableCell align="center"><Chip label="Camera" color="primary" variant="outlined" />
+                                                </TableCell>
+                                                <TableCell align="center"><Typography variant="subtitle1">A1</Typography></TableCell>
+                                                <TableCell align="center"><Typography variant="subtitle1">Cuong Ly</Typography></TableCell>
+                                                <TableCell align="center">
+                                                    <IconButton>
+                                                        <DeleteOutlineOutlinedIcon />
+                                                    </IconButton>
+                                                </TableCell></TableRow>
+                                            <TableRow>
+                                                <TableCell >
+                                                    <Typography variant="subtitle1">27/07/2021</Typography>
+                                                </TableCell>
+                                                <TableCell align="left" variant="head">
+                                                    <Typography variant="subtitle1" >
+                                                        12:02 PM</Typography></TableCell>
+                                                <TableCell align="center"><Chip label="Camera" color="primary" variant="outlined" />
+                                                </TableCell>
+                                                <TableCell align="center"><Typography variant="subtitle1">A1</Typography></TableCell>
+                                                <TableCell align="center"><Typography variant="subtitle1">Cuong Ly</Typography></TableCell>
+                                                <TableCell align="center">
+                                                    <IconButton>
+                                                        <DeleteOutlineOutlinedIcon />
+                                                    </IconButton>
+                                                </TableCell></TableRow>
+                                            <TableRow>
+                                                <TableCell >
+                                                    <Typography variant="subtitle1">28/07/2021</Typography>
+                                                </TableCell>
+                                                <TableCell align="left" variant="head">
+                                                    <Typography variant="subtitle1" >
+                                                        6:59 AM</Typography></TableCell>
+                                                <TableCell align="center"><Chip label="Camera" color="primary" variant="outlined" />
+                                                </TableCell>
+                                                <TableCell align="center"><Typography variant="subtitle1">A1</Typography></TableCell>
+                                                <TableCell align="center"><Typography variant="subtitle1">Cuong Ly</Typography></TableCell>
+                                                <TableCell align="center">
+                                                    <IconButton>
+                                                        <DeleteOutlineOutlinedIcon />
+                                                    </IconButton>
+                                                </TableCell></TableRow>
+                                            <TableRow>
+                                                <TableCell >
+                                                    <Typography variant="subtitle1">28/07/2021</Typography>
+                                                </TableCell>
+                                                <TableCell align="left" variant="head">
+                                                    <Typography variant="subtitle1" >
+                                                        12:02 PM</Typography></TableCell>
+                                                <TableCell align="center"><Chip label="Camera" color="primary" variant="outlined" />
+                                                </TableCell>
+                                                <TableCell align="center"><Typography variant="subtitle1">A1</Typography></TableCell>
+                                                <TableCell align="center"><Typography variant="subtitle1">Cuong Ly</Typography></TableCell>
+                                                <TableCell align="center">
+                                                    <IconButton>
+                                                        <DeleteOutlineOutlinedIcon />
+                                                    </IconButton>
+                                                </TableCell></TableRow>
                                         </TableBody>
+
                                     }
 
                                 </Table>
-
                             </TableContainer>
-                        }
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={3}>
+                        <Paper elevation={0}>
+                            <Grid container justify="space-between" direction="column" className={this.props.classes.container} style={{ minHeight: "70vh" }}>
 
-                    </div>
+                                <Grid item>
+                                    <Typography variant="h4">Detail</Typography>
+                                    <Box height={8} />
+                                    <Divider />
 
-                    {this.renderAttandanceDialog()}
-                </Paper>
+                                    <Card style={{ padding: 8, border: "none" }} elevation={0} >
+                                        <Typography variant="h5" color="textPrimary">
+                                            Time Check in: 27/07/2021 - 7:00 AM
+                                        </Typography>
+                                        <Typography variant="h5" color="textPrimary">
+                                            Check By: Camera
+                                        </Typography>
+                                        <Typography variant="h5" color="textPrimary">
+                                            Device Code: A1
+                                        </Typography>
+                                        <Typography variant="h5" color="textPrimary">
+                                            Create By: Cuong Ly
+                                        </Typography>
+                                        <Typography variant="h5" color="textPrimary">
+                                            Image:
+                                        </Typography>
+                                        <CardMedia
+                                            style={{
+                                                height: 300,
+
+                                            }}
+                                            image="https://www.facebeautyscience.com/wp-content/uploads/2020/04/face-beauty-skin-face2-proc.jpg"
+                                            title="Contemplative Reptile"
+                                        />
+                                        <CardContent>
+                                            <Grid container direction="row" alignItems="center" spacing={1}>
+                                                <Grid item>
+                                                    <Typography variant="subtitle1" color="textSecondary">
+                                                        Recognize Percentage:
+                                                    </Typography></Grid>
+                                                <Grid item>
+                                                    <Typography variant="h3" color="textPrimary">
+                                                        96%
+                                                    </Typography>
+                                                </Grid>
+                                            </Grid>
+                                        </CardContent>
+                                        <CardContent>
+                                            <Grid container direction="column" spacing={1}>
+                                                <Grid item>
+                                                    <Typography variant="subtitle1" color="textSecondary">
+                                                        Note:
+                                                    </Typography></Grid>
+                                                <Grid item>
+                                                    <Typography variant="h3" color="textPrimary">
+
+                                                    </Typography>
+                                                </Grid>
+                                            </Grid>
+                                        </CardContent>
+                                    </Card>
+
+                                </Grid>
+                                <Grid item>
+
+                                    <Button style={{ backgroundColor: "#ea3529", color: "#fff", padding: "10px 20px", width: "100%" }}>
+                                        Reject
+                                    </Button>
+
+                                </Grid>
+                            </Grid>
+
+                        </Paper>
+                    </Grid>
+                </Grid>
+                {this.renderAttandanceDialog()}
             </React.Fragment>
 
         );
@@ -284,7 +470,7 @@ class AttendancesPage extends React.Component {
     }
 }
 function mapState(state) {
-    // const { StoreTimekeeping, deleting } = state;
+    // const {StoreTimekeeping, deleting} = state;
     return {};
 }
 

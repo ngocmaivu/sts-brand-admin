@@ -12,7 +12,7 @@ import { Button, CardContent, CardHeader, Chip, Dialog, DialogActions, DialogCon
 import WeekPicker from '../../WeekPicker';
 import { format, isSameDay, startOfWeek, } from 'date-fns';
 import { cloneSchedule, deleteWeekSchedule, } from '../../../_services';
-import { getSchedulesDataFromFirebase, getTotalHoursPerWeek } from '../../../ultis/scheduleHandle';
+import { cloneSchedulesDataFromFirebase, getSchedulesDataFromFirebase, getTotalHoursPerWeek } from '../../../ultis/scheduleHandle';
 import { Skeleton } from '@material-ui/lab';
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import { fetchWeekSchedules } from "../../../_actions/";
@@ -57,7 +57,9 @@ class WeekPlanManage extends React.Component {
             weekScheduleId: null,
             tabIndex: 0,
             openAddDialog: false,
-            openDeleteDialog: false
+            openDeleteDialog: false,
+            disabledCloneButton: false,
+            cloneScheduleId: null
         };
         const user = JSON.parse(localStorage.getItem("jwt_decode"));
         this.BrandId = user.brandId;
@@ -117,7 +119,7 @@ class WeekPlanManage extends React.Component {
 
         if (_.isEmpty(this.props.weekSchedules)) {
             let emptyRender = "No Schedule";
-            if ( this.props.match.params.status == "published") emptyRender = "No published schedule yet";
+            if (this.props.match.params.status == "published") emptyRender = "No published schedule yet";
             return (
                 <TableRow >
                     <TableCell align="center" colSpan="8">{emptyRender}</TableCell>
@@ -153,7 +155,7 @@ class WeekPlanManage extends React.Component {
                 return (
                     <React.Fragment>
                         <Tooltip title="Duplicate">
-                            <IconButton onClick={(e) => { this.cloneSchedule(id) }}>
+                            <IconButton onClick={(e) => { this.cloneSchedule(id) }} disabled={this.state.cloneScheduleId == id && this.state.disabledCloneButton}>
                                 <FileCopyOutlinedIcon />
                             </IconButton>
                         </Tooltip>
@@ -176,7 +178,7 @@ class WeekPlanManage extends React.Component {
                 return (
                     <React.Fragment>
                         <Tooltip title="Duplicate">
-                            <IconButton onClick={(e) => { this.cloneSchedule(id) }}>
+                            <IconButton onClick={(e) => { this.cloneSchedule(id) }} disabled={this.state.cloneScheduleId == id && this.state.disabledCloneButton}>
                                 <FileCopyOutlinedIcon />
                             </IconButton>
                         </Tooltip>
@@ -197,17 +199,16 @@ class WeekPlanManage extends React.Component {
         }
     }
 
-    cloneSchedule(weekScheduleId) {
-        const getScheduleCallback = (shiftAssignments) => {
-            shiftAssignments = shiftAssignments == null ? [] : shiftAssignments;
-            console.log(shiftAssignments);
-            cloneSchedule(weekScheduleId, shiftAssignments);
-        }
+    cloneSchedule = async (weekScheduleId) => {
+        this.setState({ disabledCloneButton: true, cloneScheduleId: weekScheduleId });
 
-        getSchedulesDataFromFirebase(weekScheduleId, this.StoreId, this.BrandId, getScheduleCallback);
+
+        let result = await cloneSchedule(weekScheduleId);
+        this.setState({ disabledCloneButton: false, cloneScheduleId: -1 });
+        this.fetchData();
+        cloneSchedulesDataFromFirebase(weekScheduleId, result.id, this.StoreId, this.BrandId);
+        // getSchedulesDataFromFirebase(weekScheduleId, this.StoreId, this.BrandId, getScheduleCallback);
     }
-
-
 
     handleDeleteWeekSchedule = async () => {
         console.log(this.state.deleteId);

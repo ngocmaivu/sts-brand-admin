@@ -1,4 +1,5 @@
 import { getDay, addDays, intervalToDuration } from 'date-fns';
+import { forEach } from 'lodash';
 import firebase from "../firebase";
 
 const MONDAY = 1;
@@ -196,6 +197,57 @@ export const getSchedulesDataFromFirebase = (weekScheduleId, storeId, brandId, g
     } catch (e) {
         console.log(e);
         getScheduleCallback(null);
+    }
+
+}
+
+export const cloneSchedulesDataFromFirebase = (weekScheduleIdSrc, weekScheduleIdDest, storeId, brandId) => {
+    const ref = firebase.firestore().collection("brands");
+
+    try {
+        ref.doc(`${brandId}-${storeId}`).get().then((doc) => {
+            if (!doc.exists) {
+                return;
+            }
+
+            ref.doc(`${brandId}-${storeId}`).collection("schedules").get().then(
+                (snapshot) => {
+                    let isExistWeekSchedule = false;
+                    snapshot.forEach((doc) => {
+                        let schedule = doc.data();
+                        if (schedule.Id == weekScheduleIdSrc) {
+
+                            isExistWeekSchedule = true;
+                            ref.doc(`${brandId}-${storeId}`)
+                                .collection("schedules")
+                                .doc(doc.id)
+                                .collection("shifts").get().then(
+                                    (snapshot) => {
+                                        console.log(snapshot);
+
+                                        ref.doc(`${brandId}-${storeId}`).collection("schedules").add({
+                                            StartDate: schedule.StartDate,
+                                            Id: weekScheduleIdDest
+                                        }).then((docRef) => {
+                                            snapshot.docs.forEach(
+                                                shift => {
+                                                    docRef.collection("shifts").add(shift.data());
+                                                }
+                                            )
+                                        }
+                                        );
+
+                                    }
+                                );
+
+                        }
+                    });
+                    return;
+                }
+            )
+        });
+    } catch (e) {
+        console.log(e);
     }
 
 }

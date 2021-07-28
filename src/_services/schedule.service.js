@@ -229,13 +229,12 @@ export const deleteWeekSchedule = async (id) => {
     }
 }
 
-export const cloneSchedule = async (weekScheduleId, shiftAssignments) => {
+export const cloneSchedule = async (weekScheduleId) => {
     try {
 
         const response = await sts.post("/week-schedules/clone",
             {
                 weekScheduleId: weekScheduleId,
-                shiftAssignments: shiftAssignments
             }, { headers: authHeader() });
         console.log(weekScheduleId);
         console.log(response.data);
