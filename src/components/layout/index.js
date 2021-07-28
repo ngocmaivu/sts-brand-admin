@@ -130,7 +130,7 @@ const INIT_DATA = {
   items: [
   ]
 };
-var urlStoreInfo = '/configure/store-info/' + user.storeId;
+
 if (user === null) {
   INIT_DATA.items.push(
     {
@@ -170,6 +170,7 @@ if (user === null) {
     // }
     )
 } else {
+  var urlStoreInfo = '/configure/store-info/' + user.storeId;
   if (user.role === "brand manager") webName = "STS Brand Manager"
   if (user.role === "brand manager") INIT_DATA.items.push(
     {
