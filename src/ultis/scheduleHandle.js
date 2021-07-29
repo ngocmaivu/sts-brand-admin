@@ -158,7 +158,7 @@ export const getSchedulesDataFromFirebase = (weekScheduleId, storeId, brandId, g
     try {
         ref.doc(`${brandId}-${storeId}`).get().then((doc) => {
             if (!doc.exists) {
-                getScheduleCallback(null);
+                getScheduleCallback([]);
             }
 
             ref.doc(`${brandId}-${storeId}`).collection("schedules").get().then(
@@ -190,13 +190,13 @@ export const getSchedulesDataFromFirebase = (weekScheduleId, storeId, brandId, g
 
                         }
                     });
-                    getScheduleCallback(null);
+                    getScheduleCallback([]);
                 }
             )
         });
     } catch (e) {
         console.log(e);
-        getScheduleCallback(null);
+        getScheduleCallback([]);
     }
 
 }

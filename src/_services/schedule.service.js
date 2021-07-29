@@ -245,3 +245,41 @@ export const cloneSchedule = async (weekScheduleId) => {
         return null;
     }
 };
+
+export const publishSchedule = async (weekScheduleId, shifts) => {
+    try {
+
+        const response = await sts.post("/manager/schedule/publish",
+            {
+                weekScheduleId: weekScheduleId,
+                shiftAssignments: shifts
+            }, { headers: authHeader() });
+
+        console.log(weekScheduleId);
+        console.log(response.data);
+        return response.data;
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+};
+
+export const unpublishSchedule = async (weekScheduleId) => {
+    try {
+
+        const response = await sts.post("/manager/schedule/unpublish",
+            {
+                weekScheduleId: weekScheduleId,
+                shiftAssignments: []
+            }, { headers: authHeader() });
+
+        console.log(weekScheduleId);
+        console.log(response.data);
+        return response.data;
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+};

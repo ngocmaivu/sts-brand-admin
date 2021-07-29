@@ -11,7 +11,7 @@ import Paper from '@material-ui/core/Paper';
 import { Button, CardContent, CardHeader, Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, FormControl, FormLabel, Grid, IconButton, Tab, Tabs, Tooltip, Typography } from '@material-ui/core';
 import WeekPicker from '../../WeekPicker';
 import { format, isSameDay, startOfWeek, } from 'date-fns';
-import { cloneSchedule, deleteWeekSchedule, } from '../../../_services';
+import { cloneSchedule, deleteWeekSchedule, publishSchedule, unpublishSchedule, } from '../../../_services';
 import { cloneSchedulesDataFromFirebase, getSchedulesDataFromFirebase, getTotalHoursPerWeek } from '../../../ultis/scheduleHandle';
 import { Skeleton } from '@material-ui/lab';
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
@@ -59,7 +59,11 @@ class WeekPlanManage extends React.Component {
             openAddDialog: false,
             openDeleteDialog: false,
             disabledCloneButton: false,
-            cloneScheduleId: null
+            disabledPublishButton: false,
+            disabledUnpublishButton: false,
+            publishScheduleId: null,
+            cloneScheduleId: null,
+            currentScheduleId: null
         };
         const user = JSON.parse(localStorage.getItem("jwt_decode"));
         this.BrandId = user.brandId;
@@ -168,7 +172,7 @@ class WeekPlanManage extends React.Component {
                         </Tooltip>
 
                         <Tooltip title="Unpublish">
-                            <IconButton>
+                            <IconButton onClick={(e) => { this.unpublishSchedule(id) }} disabled={this.state.currentScheduleId == id}>
                                 <GetAppRoundedIcon />
                             </IconButton>
                         </Tooltip>
@@ -178,7 +182,7 @@ class WeekPlanManage extends React.Component {
                 return (
                     <React.Fragment>
                         <Tooltip title="Duplicate">
-                            <IconButton onClick={(e) => { this.cloneSchedule(id) }} disabled={this.state.cloneScheduleId == id && this.state.disabledCloneButton}>
+                            <IconButton onClick={(e) => { this.cloneSchedule(id) }} disabled={this.state.currentScheduleId == id}>
                                 <FileCopyOutlinedIcon />
                             </IconButton>
                         </Tooltip>
@@ -187,7 +191,7 @@ class WeekPlanManage extends React.Component {
                                 <DeleteOutlineOutlinedIcon />
                             </IconButton>
                         </Tooltip>
-                        <Tooltip title="Publish">
+                        <Tooltip title="Publish" onClick={(e) => { this.publishSchedule(id) }} disabled={this.state.currentScheduleId == id}>
                             <IconButton>
                                 <PublishRoundedIcon />
                             </IconButton>
@@ -200,14 +204,31 @@ class WeekPlanManage extends React.Component {
     }
 
     cloneSchedule = async (weekScheduleId) => {
-        this.setState({ disabledCloneButton: true, cloneScheduleId: weekScheduleId });
-
+        this.setState({ disabledCloneButton: true, currentScheduleId: weekScheduleId });
 
         let result = await cloneSchedule(weekScheduleId);
-        this.setState({ disabledCloneButton: false, cloneScheduleId: -1 });
+        this.setState({ disabledCloneButton: false, currentScheduleId: -1 });
         this.fetchData();
         cloneSchedulesDataFromFirebase(weekScheduleId, result.id, this.StoreId, this.BrandId);
         // getSchedulesDataFromFirebase(weekScheduleId, this.StoreId, this.BrandId, getScheduleCallback);
+    }
+
+    publishSchedule = (weekScheduleId) => {
+        this.setState({ currentScheduleId: weekScheduleId });
+        const getScheduleCallback = async (shifts) => {
+            await publishSchedule(weekScheduleId, shifts);
+            this.setState({ currentScheduleId: -1 });
+            this.fetchData();
+        }
+
+        getSchedulesDataFromFirebase(weekScheduleId, this.StoreId, this.BrandId, getScheduleCallback);
+    }
+
+    unpublishSchedule = async (weekScheduleId) => {
+        this.setState({ currentScheduleId: weekScheduleId });
+        await unpublishSchedule(weekScheduleId);
+        this.setState({ currentScheduleId: -1 });
+        this.fetchData();
     }
 
     handleDeleteWeekSchedule = async () => {

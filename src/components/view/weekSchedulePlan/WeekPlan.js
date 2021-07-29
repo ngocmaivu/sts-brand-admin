@@ -196,7 +196,10 @@ class WeekPlan extends React.Component {
                 <TabPanel value={this.state.tabIndex} index={2}>
                     {
                         this.props.currentSchedule ? (
-                            <Schedule dateStart={this.props.currentSchedule.dateStart} weekScheduleId={this.props.currentSchedule.id} />
+                            <Schedule dateStart={this.props.currentSchedule.dateStart} weekScheduleId={this.props.currentSchedule.id}
+                                refreshSchedule={() => {
+                                    this.fetchData();
+                                }} />
                         ) : "...Loading"
                     }
                 </TabPanel>
