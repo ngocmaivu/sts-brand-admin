@@ -1,6 +1,7 @@
 import React from 'react';
 import './schedule.css';
-import { loadSkills, getStaffs, getWeekSchedule, triggerCompute, checkCompute } from "../../../_services";
+import { loadSkills, getStaffs, getWeekSchedule, triggerCompute, checkCompute, unpublishSchedule, publishSchedule } from "../../../_services";
+import { weekScheduleStatus } from "../weekSchedulePlan/status";
 import {
     ScheduleComponent, Inject, Day, Week,
     TimelineViews, TimelineMonth, ViewsDirective, ViewDirective, Resize, DragAndDrop, ResourcesDirective, ResourceDirective, addDays
@@ -11,7 +12,7 @@ import { extend, isNullOrUndefined, L10n } from '@syncfusion/ej2-base';
 import { Card, CardHeader, Grid, Paper, Button, withStyles, Modal, createStyles, Divider, CardContent, LinearProgress, Typography } from '@material-ui/core';
 import { ShiftEditor } from './ShiftEditor';
 import firebase from "../../../firebase";
-import { getFirstDayOfWeek, isSameDay, convertShift, convertShiftToFireBaseObj, getTotalHoursPerWeek } from "../../../ultis/scheduleHandle";
+import { getFirstDayOfWeek, isSameDay, convertShift, convertShiftToFireBaseObj, getTotalHoursPerWeek, getSchedulesDataFromFirebase } from "../../../ultis/scheduleHandle";
 import { getScheduleDataInput } from "../../../_actions";
 import { connect } from 'react-redux';
 
@@ -50,6 +51,9 @@ class ScheduleMain extends React.Component {
         this.state = {
             employeeData: null,
             openWaitingComputeModal: false,
+            disabledButton: false,
+            startHour: 0,
+            endHout: 46,
         }
         this.SkillColors = [
             "#8027f5", "#babe15", "#be1565", "#15d429"
@@ -132,14 +136,15 @@ class ScheduleMain extends React.Component {
     loadData = async () => {
 
         var staffs = await getStaffs();
-
-
+        console.log(staffs);
         staffs = staffs.map(staff => ({ Name: `${staff.firstName} ${staff.lastName}`, Id: staff.username }));
 
+        this.props.getScheduleDataInput(this.props.weekScheduleId);
 
         this.setState({
             employeeData: staffs
-        })
+        });
+
 
     }
 
@@ -475,20 +480,39 @@ class ScheduleMain extends React.Component {
         // clearInterval(this.getTotalHoursPerWeekInterval);
     }
 
-    publishSchedule()
-    {
-        //1
-        //get schedule from dataSrc
-        
-        //2 convert
+    publishSchedule = () => {
+        let weekScheduleId = this.props.currentSchedule.id;
+        this.setState({ disabledButton: true });
+        const getScheduleCallback = async (shifts) => {
+            await publishSchedule(weekScheduleId, shifts);
+            this.setState({ disabledButton: false });
+            this.props.refreshSchedule();
+        }
 
-        //3 post it to api server
-
-        //clone
-        //get from firebase
-        //call api clone
+        getSchedulesDataFromFirebase(weekScheduleId, this.StoreId, this.BrandId, getScheduleCallback);
     }
 
+    unpublishSchedule = async () => {
+        this.setState({ disabledButton: true });
+        await unpublishSchedule(this.props.currentSchedule.id);
+        this.setState({ disabledButton: false });
+        this.props.refreshSchedule();
+    }
+
+    renderPublishUnpublishButton = () => {
+        switch (this.props.currentSchedule?.status) {
+            case weekScheduleStatus.PUBLISHED:
+                return (
+                    <Button variant="outlined" color="primary" disabled={this.state.disabledButton}
+                        onClick={() => { this.unpublishSchedule() }}>unpublish</Button>
+                )
+            case weekScheduleStatus.UNPUBLISHED:
+                return (
+                    <Button variant="outlined" color="primary" onClick={() => { this.publishSchedule() }}
+                        disabled={this.state.disabledButton}>publish</Button>
+                );
+        }
+    }
     render() {
         return (
             <Paper style={{ minHeight: "80vh" }}>
@@ -497,11 +521,11 @@ class ScheduleMain extends React.Component {
                         <Grid item >
                             <Button variant="contained" color="primary" onClick={this.clearEvent}>Clear schedule</Button>
                         </Grid>
-                        <Grid item >
+                        <Grid item>
                             <Button variant="contained" color="primary" onClick={this.computeSchedule}>Compute schedule</Button>
                         </Grid>
                         <Grid item>
-                            <Button variant="outlined" color="primary">Pushlish</Button>
+                            {this.renderPublishUnpublishButton()}
                         </Grid>
                     </Grid>
                 } />
@@ -534,6 +558,7 @@ class ScheduleMain extends React.Component {
                                 allowMultiple={true}
                                 idField="Id"
                                 textField="Name"
+
                                 colorField="Color"
                                 dataSource={this.state.employeeData} >
                             </ResourceDirective>
@@ -541,7 +566,7 @@ class ScheduleMain extends React.Component {
                         <ViewsDirective>
                             <ViewDirective option='Day' />
                             <ViewDirective option='Week' />
-                            <ViewDirective option='TimelineDay' startHour="7" />
+                            <ViewDirective option='TimelineDay' startHour="07:00" />
                             <ViewDirective option='TimelineWeek' timeScale={{ enable: false }} />
                         </ViewsDirective>
                         <Inject services={[Day, TimelineViews, Week, TimelineMonth, DragAndDrop]} />
@@ -577,7 +602,8 @@ class ScheduleMain extends React.Component {
 const mapStateToProps = (state) => {
     return {
         currentSchedule: state.schedule.currentSchedule,
-        skillSrc: state.schedule.skillSrc
+        skillSrc: state.schedule.skillSrc,
+        defaultConfig: state.schedule.defaultConfig
     }
 }
 

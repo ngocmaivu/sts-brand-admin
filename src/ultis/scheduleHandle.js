@@ -1,5 +1,7 @@
 import { getDay, addDays, intervalToDuration } from 'date-fns';
+import { forEach } from 'lodash';
 import firebase from "../firebase";
+import { getConstraintDefault, getOperatingTimesDefault } from './scheduleDefault';
 
 const MONDAY = 1;
 
@@ -147,6 +149,7 @@ export function getHourDuration(start, end) {
         start: new Date(start),
         end: new Date(end)
     });
+
     let result = duration.hours * 60 + duration.minutes;
     return (result / 60).toFixed(1);
 }
@@ -157,7 +160,7 @@ export const getSchedulesDataFromFirebase = (weekScheduleId, storeId, brandId, g
     try {
         ref.doc(`${brandId}-${storeId}`).get().then((doc) => {
             if (!doc.exists) {
-                getScheduleCallback(null);
+                getScheduleCallback([]);
             }
 
             ref.doc(`${brandId}-${storeId}`).collection("schedules").get().then(
@@ -189,13 +192,114 @@ export const getSchedulesDataFromFirebase = (weekScheduleId, storeId, brandId, g
 
                         }
                     });
-                    getScheduleCallback(null);
+                    getScheduleCallback([]);
                 }
             )
         });
     } catch (e) {
         console.log(e);
-        getScheduleCallback(null);
+        getScheduleCallback([]);
     }
+
+}
+
+export const cloneSchedulesDataFromFirebase = (weekScheduleIdSrc, weekScheduleIdDest, storeId, brandId) => {
+    const ref = firebase.firestore().collection("brands");
+
+    try {
+        ref.doc(`${brandId}-${storeId}`).get().then((doc) => {
+            if (!doc.exists) {
+                return;
+            }
+
+            ref.doc(`${brandId}-${storeId}`).collection("schedules").get().then(
+                (snapshot) => {
+                    let isExistWeekSchedule = false;
+                    snapshot.forEach((doc) => {
+                        let schedule = doc.data();
+                        if (schedule.Id == weekScheduleIdSrc) {
+
+                            isExistWeekSchedule = true;
+                            ref.doc(`${brandId}-${storeId}`)
+                                .collection("schedules")
+                                .doc(doc.id)
+                                .collection("shifts").get().then(
+                                    (snapshot) => {
+                                        console.log(snapshot);
+
+                                        ref.doc(`${brandId}-${storeId}`).collection("schedules").add({
+                                            StartDate: schedule.StartDate,
+                                            Id: weekScheduleIdDest
+                                        }).then((docRef) => {
+                                            snapshot.docs.forEach(
+                                                shift => {
+                                                    docRef.collection("shifts").add(shift.data());
+                                                }
+                                            )
+                                        }
+                                        );
+
+                                    }
+                                );
+
+                        }
+                    });
+                    return;
+                }
+            )
+        });
+    } catch (e) {
+        console.log(e);
+    }
+
+}
+
+export const getConstraintDefaultFromFirebase = (storeId, brandId, callBack) => {
+    const ref = firebase.firestore().collection("brands");
+
+    //Check Brand-Store on firebase
+    ref.doc(`${brandId}-${storeId}`).get().then((doc) => {
+
+        if (!doc.exists) {
+            //Set doc
+            const data = {
+                BrandId: brandId,
+                StoreId: storeId,
+                DefaultScheduleConfig: {
+                    constraints: getConstraintDefault(),
+                    operatingTimes: getOperatingTimesDefault()
+                }
+            };
+
+            ref.doc(`${brandId}-${storeId}`)
+                .set(data)
+                .then(() => {
+                    console.log("Document successfully written!");
+                    callBack({ constraints: getConstraintDefault(), operatingTimes: getOperatingTimesDefault() });
+                })
+                .catch((error) => {
+                    console.error("Error writing document: ", error);
+                });
+        } else {
+            if (!doc.data().DefaultScheduleConfig) {
+                ref.doc(`${this.BrandId}-${this.StoreId}`).update({
+                    DefaultScheduleConfig: {
+                        constraints: getConstraintDefault(),
+                        operatingTimes: getOperatingTimesDefault()
+                    }
+                });
+                callBack({ constraints: getConstraintDefault(), operatingTimes: getOperatingTimesDefault() });
+            } else {
+                console.log(doc.data().DefaultScheduleConfig.constraints);
+
+                callBack({
+                    constraints: doc.data().DefaultScheduleConfig.constraints,
+                    operatingTimes: doc.data().DefaultScheduleConfig.operatingTimes
+                });
+            }
+        }
+    }).catch((error) => {
+        console.log("Error getting document:", error);
+    });
 
 }

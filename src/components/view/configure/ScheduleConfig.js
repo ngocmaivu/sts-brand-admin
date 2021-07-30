@@ -6,6 +6,7 @@ import SettingConstraintsForm from '../schedule/SettingConstraintsForm';
 import { pickBy } from 'lodash';
 import OperatingHoursConfig from './OperatingHour';
 import PropTypes from 'prop-types';
+import { getConstraintDefaultFromFirebase } from '../../../ultis/scheduleHandle';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -47,50 +48,14 @@ class ScheduleConfig extends React.Component {
             constraints: null,
             tabIndex: 0
         }
-        //Check Brand-Store on firebase
-        ref.doc(`${this.BrandId}-${this.StoreId}`).get().then((doc) => {
-            if (!doc.exists) {
-                //Set doc
-                const data = {
-                    BrandId: this.BrandId,
-                    StoreId: this.StoreId,
-                    DefaultScheduleConfig: {
-                        constraints: getConstraintDefault(),
-                        operatingTimes: getOperatingTimesDefault()
-                    }
-                };
 
-                ref.doc(`${this.BrandId}-${this.StoreId}`)
-                    .set(data)
-                    .then(() => {
-                        console.log("Document successfully written!");
-                        this.setState({ constraints: getConstraintDefault(), operatingTimes: getOperatingTimesDefault() });
-                    })
-                    .catch((error) => {
-                        console.error("Error writing document: ", error);
-                    });
-            } else {
-                if (!doc.data().DefaultScheduleConfig) {
-                    ref.doc(`${this.BrandId}-${this.StoreId}`).update({
-                        DefaultScheduleConfig: {
-                            constraints: getConstraintDefault(),
-                            operatingTimes: getOperatingTimesDefault()
-                        }
-                    });
-                    this.setState({ constraints: getConstraintDefault(), operatingTimes: getOperatingTimesDefault() });
-                } else {
-                    console.log(doc.data().DefaultScheduleConfig.constraints)
-                    this.setState({
-                        constraints: doc.data().DefaultScheduleConfig.constraints,
-                        operatingTimes: doc.data().DefaultScheduleConfig.operatingTimes
-                    });
-                }
-
-
-            }
-        }).catch((error) => {
-            console.log("Error getting document:", error);
-        });
+        const callBack = ({ constraints, operatingTimes }) => {
+            this.setState({
+                constraints: constraints,
+                operatingTimes: operatingTimes
+            });
+        }
+        getConstraintDefaultFromFirebase(this.StoreId, this.BrandId, callBack);
     }
 
     fetchData() {
@@ -132,6 +97,7 @@ class ScheduleConfig extends React.Component {
                 operatingTimes: this.state.operatingTimes
             }
         });
+        this.setState({  constraints: constraintValues,});
     }
 
     handleChange = (event, newValue) => {
@@ -145,6 +111,7 @@ class ScheduleConfig extends React.Component {
                 operatingTimes: operatingTimesNew
             }
         });
+        this.setState({ operatingTimes: operatingTimesNew});
     }
 
 

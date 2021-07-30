@@ -13,6 +13,8 @@ import { ShiftUserTable } from './ShiftUserTable';
 import addDays from 'date-fns/addDays';
 import { getFirstDayOfWeek } from "../../ultis/scheduleHandle";
 import { toDate } from 'date-fns';
+import { AttendanceDetailTable } from './AttendanceDetailTable';
+import { AttendanceRow } from './AttendanceRow';
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -73,7 +75,7 @@ const styles = (Theme) => createStyles({
         padding: 20
     },
     theadCell: {
-        color: "#fff"
+
     }
 });
 
@@ -206,8 +208,6 @@ const dataSrc = [
 
 class StoreTimekeeping extends React.Component {
 
-
-
     constructor(props) {
         super(props);
 
@@ -227,6 +227,7 @@ class StoreTimekeeping extends React.Component {
             dataSrc: null,
             updateData: false
         };
+
     }
 
     initData = async () => {
@@ -251,23 +252,13 @@ class StoreTimekeeping extends React.Component {
         await this.initData();
     }
 
-    // shouldComponentUpdate(nextProps, nextState) {
-    //     console.log("ALOOO");
-    //     console.log(nextProps, nextState);
-    //     console.log(this.props, this.state);
-    //     if (this.state.fromDate == nextState.fromDate && this.state.toDate == nextState.toDate) {
-    //         return false;
-    //     }
-
-    //     return true;
-    // }
-
     componentDidUpdate = async (preState) => {
 
         if (this.state.updateData) {
             await this.fetch(this.state.fromDate, this.state.toDate);
         }
     }
+
 
     renderToolbar = () => {
         return (
@@ -281,12 +272,12 @@ class StoreTimekeeping extends React.Component {
             </div>
         );
     }
+
     renderRows = () => {
-
-
         return this.state.dataSrc.map((user, index) => {
+
             return (
-                <TimeKeepingRow key={index} user={user} skillSrc={this.state.skillSrc} index={index} onRowClick={() => {
+                <AttendanceRow user={user} skillSrc={this.state.skillSrc} index={index} onRowClick={() => {
                     this.handleRowClick(user);
                 }} />);
         });
@@ -304,15 +295,18 @@ class StoreTimekeeping extends React.Component {
             <Dialog
                 onClose={handleClose}
                 fullWidth={true}
+
                 maxWidth="lg"
                 open={this.state.openAttendanceDialog}>
                 <DialogTitle id="customized-dialog-title" onClose={handleClose}>
                     <Typography variant="h3">{`Scheduled Hours - ${this.state?.selectedUser?.firstName} ${this.state?.selectedUser?.lastName}`}</Typography>
                 </DialogTitle>
-                <DialogContent dividers>
+                <DialogContent dividers style={{
+                    minHeight: "60vh"
+                }}>
                     {
                         this.state.selectedUser ? (
-                            <ShiftUserTable user={this.state.selectedUser} skillSrc={this.state.skillSrc} />
+                            <AttendanceDetailTable user={this.state.selectedUser} skillSrc={this.state.skillSrc} />
                         ) : "No Content"
                     }
 
@@ -352,10 +346,11 @@ class StoreTimekeeping extends React.Component {
                         />
                     </FormControl>
                 </Card>
-                <Paper className={this.props.classes.container} elevation={0}>
+                <Paper className={this.props.classes.container} style={{
+                    minHeight: "70vh"
+                }} elevation={0}>
                     <div style={{ width: '100%' }}>
                         {false ? (
-
                             <Grid container spacing={2} direction="column" style={{ padding: 20 }}>
                                 <Grid item xs>
                                     <Skeleton animation="wave" variant="rect" height="175" />
@@ -373,11 +368,10 @@ class StoreTimekeeping extends React.Component {
                                     <Skeleton animation="wave" variant="rect" height="20px" />
                                 </Grid>
                             </Grid>
-
                         ) :
                             <TableContainer>
-                                <Table aria-label="simple table" >
-                                    <TableHead style={{ backgroundColor: "#111936" }}>
+                                <Table aria-label="simple table"  >
+                                    <TableHead >
                                         <TableRow>
                                             <TableCell align="left" variant="head"  >
                                                 <Typography variant="h4" className={classes.theadCell}>#</Typography>
@@ -388,33 +382,38 @@ class StoreTimekeeping extends React.Component {
                                             <TableCell align="left" variant="head" style={{ color: "#fff" }}>
                                                 <Typography variant="h4" className={classes.theadCell}>
                                                     Fullname</Typography></TableCell>
+
+                                            <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Total Shift</Typography></TableCell>
                                             <TableCell align="center"><Typography variant="h4" className={classes.theadCell}>
                                                 Total Hours</Typography></TableCell>
-                                            <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Total Shift</Typography></TableCell>
-                                            <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Attendance</Typography></TableCell>
-
+                                            <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Absent</Typography></TableCell>
+                                            <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Late Check in</Typography></TableCell>
+                                            <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Early Check out</Typography></TableCell>
 
                                         </TableRow>
                                     </TableHead>
                                     {
-
                                         <TableBody>
                                             {
-                                                this.state.dataSrc ? this.renderRows() : "loading..."
+                                                this.state.dataSrc ? this.renderRows() : (
+                                                    <TableRow>
+                                                        <TableCell colSpan={8} align="center" >No Record</TableCell>
+                                                    </TableRow>
+                                                )
                                             }
                                         </TableBody>
-
                                     }
 
                                 </Table>
-                            </TableContainer>}
+
+                            </TableContainer>
+                        }
 
                     </div>
 
                     {this.renderAttandanceDialog()}
                 </Paper>
             </React.Fragment>
-
 
         );
 

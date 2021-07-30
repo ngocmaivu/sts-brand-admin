@@ -3,53 +3,34 @@ import { IconButton, makeStyles, TableCell, TableRow, Paper, Collapse, Box, Typo
 
 import { countAttendances, getCountEarlyAndLately, getTotalShift } from "./timekeeping.ultil";
 import { format, intervalToDuration } from 'date-fns';
-import { getHourDuration } from '../../ultis/scheduleHandle';
+import { getHourDuration, getTotalHoursPerWeek } from '../../ultis/scheduleHandle';
 import clsx from 'clsx';
 import CallReceivedIcon from '@material-ui/icons/CallReceived';
 const useRowStyles = makeStyles(theme => ({
     root: {
         '& > *': {
-            borderBottom: 'unset',
+
         },
+        "&:hover": {
+            cursor: "pointer"
+        }
     },
     cell: {
-        borderBottom: "none"
+
     },
     cellTh: {
         borderBottomColor: "#90caf975"
     },
-    rowCollapseForcus: {
-        border: "#90caf92e"
-    }
+
 }));
 
 
-function getTotalHours(assignments, timeStartKey, timeEndKey) {
-    let totalMinutesPerWeek = 0;
-
-    assignments.forEach(timeWork => {
-        if (assignments.shiftAttendance) {
-            if (assignments.shiftAttendance[timeStartKey] && assignments.shiftAttendance[timeEndKey]) {
-                let duration = intervalToDuration({
-                    start: new Date(timeWork[timeStartKey]),
-                    end: new Date(timeWork[timeEndKey])
-                });
-
-                totalMinutesPerWeek += duration.hours * 60 + duration.minutes;
-            }
-        }
-
-
-    });
-
-    return totalMinutesPerWeek / 60;
-}
 
 export function AttendanceRow(props) {
 
     const { user, onRowClick, index } = props;
     const classes = useRowStyles();
-    const totalHours = getTotalHours(user.assignments, 'timeCheckIn', "timeCheckOut").toFixed(2);
+    const totalHours = getTotalHoursPerWeek(user.assignments, 'timeCheckIn', "timeCheckOut").toFixed(2);
     const totalShifts = getTotalShift(user.assignments);
     const count_Attendances = countAttendances(user.assignments);
     const { comeLately, leaveEarly } = getCountEarlyAndLately(user.assignments);
@@ -60,11 +41,11 @@ export function AttendanceRow(props) {
             <TableCell align="left" variant="head" >{index + 1}</TableCell>
             <TableCell align="left" variant="head" >{user.username}</TableCell>
             <TableCell align="left" variant="head" >{`${user.firstName} ${user.lastName}`}</TableCell>
-            <TableCell align="center">{totalHours}</TableCell>
-            <TableCell align="center">{totalShifts}</TableCell>
-            <TableCell align="center">{count_Attendances}</TableCell>
-            <TableCell align="center">{comeLately}</TableCell>
-            <TableCell align="center">{leaveEarly}</TableCell>
+            <TableCell align="center" variant="head">{totalShifts}</TableCell>
+            <TableCell align="center" variant="head">{totalHours}</TableCell>
+            <TableCell align="center" variant="head">{totalShifts - count_Attendances}</TableCell>
+            <TableCell align="center" variant="head">{comeLately}</TableCell>
+            <TableCell align="center" variant="head">{leaveEarly}</TableCell>
         </TableRow>
     );
 

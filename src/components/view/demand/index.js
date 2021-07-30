@@ -11,7 +11,7 @@ import {
 
 } from "@syncfusion/ej2-react-schedule";
 import { extend, isNullOrUndefined, L10n } from '@syncfusion/ej2-base';
-import { DemandEditor } from './DemandEditor';
+import DemandEditor from './DemandEditor';
 import "./demand.css";
 import { connect } from 'react-redux';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';

@@ -11,8 +11,8 @@ import Paper from '@material-ui/core/Paper';
 import { Button, CardContent, CardHeader, Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, FormControl, FormLabel, Grid, IconButton, Tab, Tabs, Tooltip, Typography } from '@material-ui/core';
 import WeekPicker from '../../WeekPicker';
 import { format, isSameDay, startOfWeek, } from 'date-fns';
-import { cloneSchedule, deleteWeekSchedule, } from '../../../_services';
-import { getSchedulesDataFromFirebase, getTotalHoursPerWeek } from '../../../ultis/scheduleHandle';
+import { cloneSchedule, deleteWeekSchedule, publishSchedule, unpublishSchedule, } from '../../../_services';
+import { cloneSchedulesDataFromFirebase, getSchedulesDataFromFirebase, getTotalHoursPerWeek } from '../../../ultis/scheduleHandle';
 import { Skeleton } from '@material-ui/lab';
 import VisibilityOutlinedIcon from '@material-ui/icons/VisibilityOutlined';
 import { fetchWeekSchedules } from "../../../_actions/";
@@ -57,7 +57,13 @@ class WeekPlanManage extends React.Component {
             weekScheduleId: null,
             tabIndex: 0,
             openAddDialog: false,
-            openDeleteDialog: false
+            openDeleteDialog: false,
+            disabledCloneButton: false,
+            disabledPublishButton: false,
+            disabledUnpublishButton: false,
+            publishScheduleId: null,
+            cloneScheduleId: null,
+            currentScheduleId: null
         };
         const user = JSON.parse(localStorage.getItem("jwt_decode"));
         this.BrandId = user.brandId;
@@ -117,7 +123,7 @@ class WeekPlanManage extends React.Component {
 
         if (_.isEmpty(this.props.weekSchedules)) {
             let emptyRender = "No Schedule";
-            if ( this.props.match.params.status == "published") emptyRender = "No published schedule yet";
+            if (this.props.match.params.status == "published") emptyRender = "No published schedule yet";
             return (
                 <TableRow >
                     <TableCell align="center" colSpan="8">{emptyRender}</TableCell>
@@ -153,7 +159,7 @@ class WeekPlanManage extends React.Component {
                 return (
                     <React.Fragment>
                         <Tooltip title="Duplicate">
-                            <IconButton onClick={(e) => { this.cloneSchedule(id) }}>
+                            <IconButton onClick={(e) => { this.cloneSchedule(id) }} disabled={this.state.cloneScheduleId == id && this.state.disabledCloneButton}>
                                 <FileCopyOutlinedIcon />
                             </IconButton>
                         </Tooltip>
@@ -166,7 +172,7 @@ class WeekPlanManage extends React.Component {
                         </Tooltip>
 
                         <Tooltip title="Unpublish">
-                            <IconButton>
+                            <IconButton onClick={(e) => { this.unpublishSchedule(id) }} disabled={this.state.currentScheduleId == id}>
                                 <GetAppRoundedIcon />
                             </IconButton>
                         </Tooltip>
@@ -176,7 +182,7 @@ class WeekPlanManage extends React.Component {
                 return (
                     <React.Fragment>
                         <Tooltip title="Duplicate">
-                            <IconButton onClick={(e) => { this.cloneSchedule(id) }}>
+                            <IconButton onClick={(e) => { this.cloneSchedule(id) }} disabled={this.state.currentScheduleId == id}>
                                 <FileCopyOutlinedIcon />
                             </IconButton>
                         </Tooltip>
@@ -185,7 +191,7 @@ class WeekPlanManage extends React.Component {
                                 <DeleteOutlineOutlinedIcon />
                             </IconButton>
                         </Tooltip>
-                        <Tooltip title="Publish">
+                        <Tooltip title="Publish" onClick={(e) => { this.publishSchedule(id) }} disabled={this.state.currentScheduleId == id}>
                             <IconButton>
                                 <PublishRoundedIcon />
                             </IconButton>
@@ -197,17 +203,33 @@ class WeekPlanManage extends React.Component {
         }
     }
 
-    cloneSchedule(weekScheduleId) {
-        const getScheduleCallback = (shiftAssignments) => {
-            shiftAssignments = shiftAssignments == null ? [] : shiftAssignments;
-            console.log(shiftAssignments);
-            cloneSchedule(weekScheduleId, shiftAssignments);
+    cloneSchedule = async (weekScheduleId) => {
+        this.setState({ disabledCloneButton: true, currentScheduleId: weekScheduleId });
+
+        let result = await cloneSchedule(weekScheduleId);
+        this.setState({ disabledCloneButton: false, currentScheduleId: -1 });
+        this.fetchData();
+        cloneSchedulesDataFromFirebase(weekScheduleId, result.id, this.StoreId, this.BrandId);
+        // getSchedulesDataFromFirebase(weekScheduleId, this.StoreId, this.BrandId, getScheduleCallback);
+    }
+
+    publishSchedule = (weekScheduleId) => {
+        this.setState({ currentScheduleId: weekScheduleId });
+        const getScheduleCallback = async (shifts) => {
+            await publishSchedule(weekScheduleId, shifts);
+            this.setState({ currentScheduleId: -1 });
+            this.fetchData();
         }
 
         getSchedulesDataFromFirebase(weekScheduleId, this.StoreId, this.BrandId, getScheduleCallback);
     }
 
-
+    unpublishSchedule = async (weekScheduleId) => {
+        this.setState({ currentScheduleId: weekScheduleId });
+        await unpublishSchedule(weekScheduleId);
+        this.setState({ currentScheduleId: -1 });
+        this.fetchData();
+    }
 
     handleDeleteWeekSchedule = async () => {
         console.log(this.state.deleteId);
@@ -252,7 +274,7 @@ class WeekPlanManage extends React.Component {
 
     render() {
         return (<div>
-            <Paper style={{ padding: 16, marginBottom: 32 }} elevation={0}>  <Typography variant="h2">
+            <Paper style={{ padding: 16, marginBottom: 12 }} elevation={0}>  <Typography variant="h2">
                 Schedule Plan
             </Typography>
                 <FormControl margin="normal" variant="outlined" >

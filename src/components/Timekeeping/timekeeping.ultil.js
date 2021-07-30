@@ -10,7 +10,7 @@ export function getTotalHours(attendances, startKey, endKey) {
 export function countAttendances(assignments) {
     var count = 0;
     assignments.forEach(assignment => {
-        if (!_.isEmpty(assignment.shiftAttendance)) {
+        if (!_.isEmpty(assignment)) {
             if (isSameDay(new Date(assignment.timeStart), new Date(assignment.timeCheckIn))
                 && isSameDay(new Date(assignment.timeEnd), new Date(assignment.timeCheckOut))) {
                 count++;
@@ -51,11 +51,11 @@ export const getCountEarlyAndLately = (assigments) => {
     var count_leaveEarly = 0;
 
     assigments.forEach(assigment => {
-        if (!_.isEmpty(assigment.shiftAttendance)) {
-            let attendance = assigment.shiftAttendance;
-            if (attendance.timeCheckIn && attendance.timeCheckOut) {
-                let timeCheckIn = new Date(attendance.timeCheckIn);
-                let timeCheckOut = new Date(attendance.timeCheckOut);
+        if (!_.isEmpty(assigment)) {
+
+            if (assigment.timeCheckIn && assigment.timeCheckOut) {
+                let timeCheckIn = new Date(assigment.timeCheckIn);
+                let timeCheckOut = new Date(assigment.timeCheckOut);
 
                 let timeStart = new Date(assigment.timeStart);
                 let timeEnd = new Date(assigment.timeEnd);

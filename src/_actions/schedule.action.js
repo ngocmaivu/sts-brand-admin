@@ -2,7 +2,7 @@ import sts from '../apis/sts';
 import { scheduleConstants, staffConstants } from "../_constants"
 import { authHeader } from "../_helpers/auth-header";
 import { getScheduleDatas } from "../_services/schedule.service";
-import { convertToJSONDateWithoutChangeValue } from "../ultis/scheduleHandle";
+import { convertToJSONDateWithoutChangeValue, getConstraintDefaultFromFirebase } from "../ultis/scheduleHandle";
 export const getStaffs = (pageIndex, pageSize, searchValue) => async dispatch => {
     try {
         //TODO Phân quyền brand/store ở đây
@@ -78,5 +78,19 @@ export const fetchSkillSrc = () => async dispatch => {
         console.log('Load Skill Fail');
         console.log(e);
     }
+}
+
+export const fetchDefaultConfig = () => dispatch => {
+    const user = JSON.parse(localStorage.getItem("jwt_decode"));
+    const callBack = ({ constraints, operatingTimes }) => {
+
+        dispatch({
+            type: scheduleConstants.FETCH_DEFAULT_CONFIG, payload: {
+                constraints: constraints,
+                operatingTimes: operatingTimes
+            }
+        })
+    }
+    getConstraintDefaultFromFirebase(user.storeId, user.brandId, callBack);
 }
 
