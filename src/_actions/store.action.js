@@ -13,7 +13,7 @@ export const storeActions = {
 };
 
 const user = JSON.parse(localStorage.getItem('jwt_decode'));
-var urlStoreInfo = '/configure/store-info/' + user.storeId;
+
 function create(store) {
     return dispatch => {
         dispatch(request(store));
@@ -107,7 +107,7 @@ function update(store) {
                 store => {
                     dispatch(success(store));
                     if(user.role === "brand manager") history.push('/stores');
-                    else history.push(urlStoreInfo);
+                    else return;
                     dispatch(alertActions.success('Update store successful'));
                 },
                 error => dispatch(failure(error.toString()))

@@ -197,7 +197,7 @@ if (user === null) {
     {
       id: 'timekeeping',
       title: 'Timekeeping',
-      url: '/timekeeping',
+      url: '/storeTimekeeping/attandance',
       type: 'item',
       icon: <CalendarTodayOutlined />
     },
