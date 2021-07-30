@@ -2,28 +2,39 @@ import React, { useState } from 'react';
 import { IconButton, makeStyles, TableCell, TableRow, Paper, Collapse, Box, Typography, TableHead, TableBody, Table, TableContainer, Grid } from "@material-ui/core";
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
-import { countAttendances, getCountEarlyAndLately, getTotalHours, getTotalShift } from "./timekeeping.ultil";
-import { format } from 'date-fns';
+import { checkComeLateLy, checkLeaveEarly, countAttendances, getCountEarlyAndLately, getTotalHours, getTotalShift } from "./timekeeping.ultil";
+import { format, intervalToDuration } from 'date-fns';
 import { getHourDuration } from '../../ultis/scheduleHandle';
 import clsx from 'clsx';
 import CallReceivedIcon from '@material-ui/icons/CallReceived';
+import isSameDay from 'date-fns/isSameDay';
+
 const useRowStyles = makeStyles(theme => ({
     root: {
         '& > *': {
-            borderBottom: 'unset',
+
         },
     },
     cell: {
-        borderBottom: "none"
+       
     },
     cellTh: {
         borderBottomColor: "#90caf975"
     },
     rowCollapseForcus: {
         border: "#90caf92e"
+    },
+    okTypography: {
+        color: "#28d144"
+    },
+    notOkTypography: {
+        color: "#fc291d"
     }
 }));
 
+function format2Digit(number) {
+    return number.toLocaleString('en-US', { minimumIntegerDigits: 2 });
+}
 
 export function AttendanceDetailTable(props) {
 
@@ -31,16 +42,66 @@ export function AttendanceDetailTable(props) {
 
     const classes = useRowStyles();
 
-    // const totalHours = getTotalHours(user.attendances).toFixed(2);
-    // const totalShifts = getTotalShift(user.attendances);
-    // const count_Attendances = countAttendances(user.attendances);
-    // const { comeLately, leaveEarly } = getCountEarlyAndLately(user.attendances);
+    const renderWorkingHour = (checkInTime, checkOutTime, timeStart, timeEnd) => {
+        let durationReal = intervalToDuration({
+            start: checkInTime,
+            end: checkOutTime
+        });
+        let durationPlan = intervalToDuration({
+            start: timeStart,
+            end: timeEnd
+        });
+
+        let resultReal = durationReal.hours * 60 + durationReal.minutes;
+        let resultPlan = durationPlan.hours * 60 + durationPlan.minutes;
+        let text = `${format2Digit(durationReal.hours)}h${format2Digit(durationReal.minutes)}m / ${format2Digit(durationPlan.hours)}h${format2Digit(durationPlan.minutes)}m`;
+
+        if (resultReal >= resultPlan) {
+            return (<Typography className={classes.okTypography} variant="subtitle1">{text}</Typography>)
+        } else {
+            return (<Typography variant="subtitle1" className={classes.notOkTypography}>{text}</Typography>);
+        }
+    }
+
+    const renderReal = (checkInTime, checkOutTime, timeStart, timeEnd) => {
+
+        let durationReal = intervalToDuration({
+            start: checkInTime,
+            end: checkOutTime
+        });
+        let durationPlan = intervalToDuration({
+            start: timeStart,
+            end: timeEnd
+        });
+
+        let resultReal = durationReal.hours * 60 + durationReal.minutes;
+        let resultPlan = durationPlan.hours * 60 + durationPlan.minutes;
+        let text = `${format2Digit(durationReal.hours)}h${format2Digit(durationReal.minutes)}m`;
+
+        if (resultReal >= resultPlan) {
+            return (<Typography className={classes.okTypography} variant="subtitle1">{text}</Typography>)
+        } else {
+            return (<Typography variant="subtitle1" className={classes.notOkTypography}>{text}</Typography>);
+        }
+
+    }
+
+    const renderEstimate = (timeStart, timeEnd) => {
+
+        let durationPlan = intervalToDuration({
+            start: timeStart,
+            end: timeEnd
+        });
+
+        return (<Typography variant="subtitle1">{`${format2Digit(durationPlan.hours)}h${format2Digit(durationPlan.minutes)}m`}</Typography>)
+
+    }
 
     return (
         <React.Fragment>
 
             <TableContainer elevation={0}>
-                <Table size="small" aria-label="purchases" >
+                <Table aria-label="purchases" >
                     <TableHead >
                         <TableRow >
                             <TableCell classes={{
@@ -51,40 +112,79 @@ export function AttendanceDetailTable(props) {
                             }}>Area</TableCell>
                             <TableCell classes={{
                                 "root": classes.cellTh
+                            }}>Time Start</TableCell>
+                            <TableCell classes={{
+                                "root": classes.cellTh
+                            }}>Time End</TableCell>
+                            <TableCell classes={{
+                                "root": classes.cellTh
+                            }}>Estimate(hrs)</TableCell>
+                            <TableCell classes={{
+                                "root": classes.cellTh
                             }}>Check in Time</TableCell>
                             <TableCell classes={{
                                 "root": classes.cellTh
                             }}>Check out Time</TableCell>
                             <TableCell classes={{
                                 "root": classes.cellTh
-                            }}>Woking Time(hrs)</TableCell>
+                            }}>Real working time(hrs)</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {user.assignments.map((assignment) => {
-                            let checkInTimeRender = "--:--";
-                            let checkOutTimeRender = "--:--";
-                            let timeDurationRender = 0;
-                            if (assignment.shiftAttendance) {
-                                checkInTimeRender = format(new Date(assignment.shiftAttendance.timeCheckIn), "HH:mm a");
-                                checkOutTimeRender = format(new Date(assignment.shiftAttendance.timeCheckOut), "HH:mm a");
-                                timeDurationRender = getHourDuration(assignment.shiftAttendance.timeCheckIn, assignment.shiftAttendance.timeCheckOut);
-                            }
-                            let timeStart = new Date(assignment.timeStart);
-                            let dateRender = format(new Date(assignment.timeEnd), "dd/MM/yyyy");
-                            let timeStartRender = format(new Date(assignment.timeStart), "HH:mm a");
-                            let timeEndRender = format(new Date(assignment.timeEnd), "HH:mm a");
-                            let skillRender = skillSrc?.find(skill => skill.id == assignment.skillId)?.name;
 
-                            if (timeStart.getFullYear() <= 2000) {
-                                timeStartRender = "--:--";
-                                dateRender = "--:--";
-                                timeEndRender = "--:--";
+                            let timeStart = new Date(assignment.timeStart);
+                            let timeEnd = new Date(assignment.timeEnd);
+                            let checkInTime = new Date(assignment.timeCheckIn);
+                            let checkOutTime = new Date(assignment.timeCheckOut);
+
+
+                            let checkInTimeRender = "--:--";
+                            if (isSameDay(timeStart, checkInTime)) {
+                                if (!checkComeLateLy(checkInTime, timeStart)) {
+                                    checkInTimeRender = (
+                                        <Typography variant="subtitle1" className={classes.okTypography}>{format(new Date(checkInTime), "HH:mm a")}</Typography>
+                                    );
+                                } else {
+                                    checkInTimeRender = (<Typography variant="subtitle1" className={classes.notOkTypography}>{format(new Date(checkInTime), "HH:mm a")}</Typography>);
+                                }
                             }
+
+                            let checkOutTimeRender = "--:--";
+                            if (isSameDay(timeEnd, checkOutTime)) {
+                                if (!checkLeaveEarly(checkOutTime, timeEnd)) {
+                                    checkOutTimeRender = (
+                                        <Typography variant="subtitle1" className={classes.okTypography}>{format(new Date(checkOutTime), "HH:mm a")}</Typography>
+                                    );
+                                } else {
+                                    checkOutTimeRender = (
+                                        <Typography variant="subtitle1" className={classes.notOkTypography}>{format(new Date(checkOutTime), "HH:mm a")}</Typography>
+                                    );
+
+                                }
+                            }
+
+                            let timeDurationRender = renderWorkingHour(checkInTime, checkOutTime, timeStart, timeEnd);
+                            let timePlans = renderEstimate(timeStart, timeEnd);
+                            let timeReals = renderReal(checkInTime, checkOutTime, timeStart, timeEnd);
+                            let dateRender = (
+                                <Typography variant="subtitle1" >{format(new Date(timeStart), "EEE dd MMM yyy")}</Typography>
+                            );
+                            let timeStartRender = (
+                                <Typography variant="subtitle1" >{format(timeStart, "HH:mm a")}</Typography>
+                            );
+                            let timeEndRender = (
+                                <Typography variant="subtitle1" >{format(timeEnd, "HH:mm a")}</Typography>
+                            );
+
+                            let skillRender = (
+                                <Typography variant="subtitle1" >{skillSrc?.find(skill => skill.id == assignment.skillId)?.name}</Typography>
+                            );
+
 
                             return (
-                                <TableRow key={assignment.id} style={{
-                                    borderBottom: "none"
+                                <TableRow key={assignment.id} hover className={classes.root} style={{
+
                                 }}>
                                     <TableCell component="td" scope="row" classes={{
                                         "root": classes.cell
@@ -96,6 +196,23 @@ export function AttendanceDetailTable(props) {
                                     }}>
                                         {skillRender}
                                     </TableCell>
+                                    <TableCell component="td" scope="row" classes={{
+                                        "root": classes.cell
+                                    }}>
+                                        <Typography> {timeStartRender}</Typography>
+
+
+
+                                    </TableCell>
+                                    <TableCell component="td" scope="row" classes={{
+                                        "root": classes.cell
+                                    }}>
+                                        {timeEndRender}
+                                    </TableCell>
+                                    <TableCell classes={{
+                                        "root": classes.cell
+                                    }}> {timePlans}</TableCell>
+
                                     <TableCell component="td" scope="row" classes={{
                                         "root": classes.cell
                                     }}>
@@ -111,7 +228,7 @@ export function AttendanceDetailTable(props) {
                                     </TableCell>
                                     <TableCell classes={{
                                         "root": classes.cell
-                                    }}> {timeDurationRender}</TableCell>
+                                    }}> {timeReals}</TableCell>
 
                                 </TableRow>
                             );

@@ -1,6 +1,7 @@
 import { getDay, addDays, intervalToDuration } from 'date-fns';
 import { forEach } from 'lodash';
 import firebase from "../firebase";
+import { getConstraintDefault, getOperatingTimesDefault } from './scheduleDefault';
 
 const MONDAY = 1;
 
@@ -148,6 +149,7 @@ export function getHourDuration(start, end) {
         start: new Date(start),
         end: new Date(end)
     });
+
     let result = duration.hours * 60 + duration.minutes;
     return (result / 60).toFixed(1);
 }
@@ -249,5 +251,55 @@ export const cloneSchedulesDataFromFirebase = (weekScheduleIdSrc, weekScheduleId
     } catch (e) {
         console.log(e);
     }
+
+}
+
+export const getConstraintDefaultFromFirebase = (storeId, brandId, callBack) => {
+    const ref = firebase.firestore().collection("brands");
+
+    //Check Brand-Store on firebase
+    ref.doc(`${brandId}-${storeId}`).get().then((doc) => {
+
+        if (!doc.exists) {
+            //Set doc
+            const data = {
+                BrandId: brandId,
+                StoreId: storeId,
+                DefaultScheduleConfig: {
+                    constraints: getConstraintDefault(),
+                    operatingTimes: getOperatingTimesDefault()
+                }
+            };
+
+            ref.doc(`${brandId}-${storeId}`)
+                .set(data)
+                .then(() => {
+                    console.log("Document successfully written!");
+                    callBack({ constraints: getConstraintDefault(), operatingTimes: getOperatingTimesDefault() });
+                })
+                .catch((error) => {
+                    console.error("Error writing document: ", error);
+                });
+        } else {
+            if (!doc.data().DefaultScheduleConfig) {
+                ref.doc(`${this.BrandId}-${this.StoreId}`).update({
+                    DefaultScheduleConfig: {
+                        constraints: getConstraintDefault(),
+                        operatingTimes: getOperatingTimesDefault()
+                    }
+                });
+                callBack({ constraints: getConstraintDefault(), operatingTimes: getOperatingTimesDefault() });
+            } else {
+                console.log(doc.data().DefaultScheduleConfig.constraints);
+
+                callBack({
+                    constraints: doc.data().DefaultScheduleConfig.constraints,
+                    operatingTimes: doc.data().DefaultScheduleConfig.operatingTimes
+                });
+            }
+        }
+    }).catch((error) => {
+        console.log("Error getting document:", error);
+    });
 
 }

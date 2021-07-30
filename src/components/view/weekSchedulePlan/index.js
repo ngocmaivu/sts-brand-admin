@@ -274,7 +274,7 @@ class WeekPlanManage extends React.Component {
 
     render() {
         return (<div>
-            <Paper style={{ padding: 16, marginBottom: 32 }} elevation={0}>  <Typography variant="h2">
+            <Paper style={{ padding: 16, marginBottom: 12 }} elevation={0}>  <Typography variant="h2">
                 Schedule Plan
             </Typography>
                 <FormControl margin="normal" variant="outlined" >

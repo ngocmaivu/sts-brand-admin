@@ -5,13 +5,14 @@ import { DateTimePickerComponent, TimePickerComponent } from '@syncfusion/ej2-re
 import { MultiSelectComponent } from '@syncfusion/ej2-react-dropdowns';
 import { format, add, subMinutes, sub, endOfDay } from 'date-fns';
 import { levels } from '../../../_constants/levelData';
+import { connect } from 'react-redux';
 
 
 const useStyles = makeStyles((theme) => ({
 
 }));
 
-export function DemandEditor({ parentProps, setWorkStart, setWorkEnd, setSkillId, skillDataSrc }) {
+const DemandEditor = ({ parentProps, setWorkStart, setWorkEnd, setSkillId, skillDataSrc }) => {
 
     const classes = useStyles();
     const [start, setStart] = useState("");
@@ -117,3 +118,13 @@ export function DemandEditor({ parentProps, setWorkStart, setWorkEnd, setSkillId
         </div>
     );
 }
+
+const mapStateToProps = (state) => {
+    return {
+        defaultConfig: state.schedule.defaultConfig
+    }
+}
+
+export default connect(
+    mapStateToProps, {}
+)(DemandEditor);

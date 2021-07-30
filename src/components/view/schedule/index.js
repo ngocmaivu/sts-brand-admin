@@ -51,7 +51,9 @@ class ScheduleMain extends React.Component {
         this.state = {
             employeeData: null,
             openWaitingComputeModal: false,
-            disabledButton: false
+            disabledButton: false,
+            startHour: 0,
+            endHout: 46,
         }
         this.SkillColors = [
             "#8027f5", "#babe15", "#be1565", "#15d429"
@@ -134,14 +136,15 @@ class ScheduleMain extends React.Component {
     loadData = async () => {
 
         var staffs = await getStaffs();
-
-
+        console.log(staffs);
         staffs = staffs.map(staff => ({ Name: `${staff.firstName} ${staff.lastName}`, Id: staff.username }));
 
+        this.props.getScheduleDataInput(this.props.weekScheduleId);
 
         this.setState({
             employeeData: staffs
-        })
+        });
+
 
     }
 
@@ -555,6 +558,7 @@ class ScheduleMain extends React.Component {
                                 allowMultiple={true}
                                 idField="Id"
                                 textField="Name"
+
                                 colorField="Color"
                                 dataSource={this.state.employeeData} >
                             </ResourceDirective>
@@ -562,7 +566,7 @@ class ScheduleMain extends React.Component {
                         <ViewsDirective>
                             <ViewDirective option='Day' />
                             <ViewDirective option='Week' />
-                            <ViewDirective option='TimelineDay' startHour="7" />
+                            <ViewDirective option='TimelineDay' startHour="07:00" />
                             <ViewDirective option='TimelineWeek' timeScale={{ enable: false }} />
                         </ViewsDirective>
                         <Inject services={[Day, TimelineViews, Week, TimelineMonth, DragAndDrop]} />
@@ -598,7 +602,8 @@ class ScheduleMain extends React.Component {
 const mapStateToProps = (state) => {
     return {
         currentSchedule: state.schedule.currentSchedule,
-        skillSrc: state.schedule.skillSrc
+        skillSrc: state.schedule.skillSrc,
+        defaultConfig: state.schedule.defaultConfig
     }
 }
 

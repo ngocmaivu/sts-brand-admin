@@ -4,7 +4,7 @@ import { createStyles, withStyles } from '@material-ui/core/styles';
 
 import Paper from '@material-ui/core/Paper';
 import { Button, CardContent, CardHeader, Chip, Divider, FormControl, FormLabel, Grid, IconButton, Tab, Tabs, Typography } from '@material-ui/core';
-import { fetchWeekSchedule, fetchSkillSrc } from "../../../_actions/";
+import { fetchWeekSchedule, fetchSkillSrc, fetchDefaultConfig } from "../../../_actions/";
 import { format, isSameDay, startOfWeek, } from 'date-fns';
 import { Skeleton } from '@material-ui/lab';
 import PropTypes from 'prop-types';
@@ -25,7 +25,6 @@ const styles = (Theme) => createStyles({
     containerContent: {
         padding: "20px 20px"
     },
-
 });
 
 function TabPanel(props) {
@@ -69,12 +68,14 @@ class WeekPlan extends React.Component {
             tabIndex: 0,
             methodSubmitConstraint: null
         };
+        this.props.fetchDefaultConfig();
     }
 
     componentDidMount = () => {
         this.fetchData();
         this.props.fetchSkillSrc();
     }
+
 
     componentDidUpdate = () => {
 
@@ -91,6 +92,7 @@ class WeekPlan extends React.Component {
 
             this.renderConstraintData(id);
         }
+
     }
 
     renderConstraintData = async (weekScheduleId) => {
@@ -98,7 +100,9 @@ class WeekPlan extends React.Component {
         console.log(storeScheduleDetails);
 
         if (_.isEmpty(storeScheduleDetails)) {
-            let constraints = getConstraintDefault();
+
+            let constraints = this.props.defaultConfig.constraints;
+
             let id = this.props.match.params.id;
             constraints[0].weekScheduleId = id;
             constraints[1].weekScheduleId = id;
@@ -184,7 +188,6 @@ class WeekPlan extends React.Component {
                         ) : "...Loading"
                     }
                 </TabPanel>
-
                 <TabPanel value={this.state.tabIndex} index={1}>
                     {
                         this.props.currentSchedule ? (
@@ -212,13 +215,15 @@ class WeekPlan extends React.Component {
 const mapStateToProps = (state) => {
     return {
         currentSchedule: state.schedule.currentSchedule,
-        skillSrc: state.schedule.skillSrc
+        skillSrc: state.schedule.skillSrc,
+        defaultConfig: state.schedule.defaultConfig
     }
 }
 export default connect(
     mapStateToProps,
     {
         fetchWeekSchedule,
-        fetchSkillSrc
+        fetchSkillSrc,
+        fetchDefaultConfig
     }
 )(withRouter(withStyles(styles)(WeekPlan)));
