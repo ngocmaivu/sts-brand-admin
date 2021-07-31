@@ -55,7 +55,7 @@ class StaffForm extends React.Component {
                 return {
                     skillId: skill.id,
                     level: formValues[`skill${skill.id}Level`],
-                    username: formValues.username,
+                   
                 }
             });
 

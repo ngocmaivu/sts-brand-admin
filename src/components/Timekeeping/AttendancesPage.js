@@ -4,14 +4,13 @@ import { connect } from 'react-redux';
 import { Button, createStyles, Dialog, DialogContent, TableCell, DialogContentText, DialogTitle, DialogActions, InputAdornment, TextField, withStyles, Paper, Card, Grid, TableContainer, Table, TableHead, TableRow, TableBody, IconButton, Collapse, Typography, FormControl, FormLabel, List, ListItem, ListItemText, CardHeader, FormControlLabel, Box, Chip, Divider, CardMedia, CardActionArea, CardContent } from '@material-ui/core';
 
 import MuiAlert from '@material-ui/lab/Alert';
-import { Delete, Edit, ImageSearch, ImageSearchTwoTone, SearchTwoTone, ViewAgenda, ViewStreamOutlined, VisibilityOutlined } from '@material-ui/icons';
-import { Pagination, Skeleton } from '@material-ui/lab';
+
 import { DateRangePicker, DateRangePickerComponent } from '@syncfusion/ej2-react-calendars';
 import { getFirstDayOfWeek } from "../../ultis/scheduleHandle";
-import { loadSkills, fetchTimeKeeping, getStaffs } from "../../_services";
+import { loadSkills, fetchAttandances, getStaffs } from "../../_services";
 import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined';
 import addDays from 'date-fns/addDays';
-import { AttendanceDetailTable } from './AttendanceDetailTable';
+
 import clsx from 'clsx';
 import { DatePicker, TimePicker } from '@material-ui/pickers';
 function Alert(props) {
@@ -108,7 +107,8 @@ class AttendancesPage extends React.Component {
             toDate: toDate,
             dataSrc: null,
             updateData: false,
-            selectedIndexUser: -1
+            selectedIndexUser: -1,
+            currentUsername: null
         };
 
     }
@@ -124,25 +124,33 @@ class AttendancesPage extends React.Component {
         var staffs = await getStaffs();
         console.log(staffs);
         this.setState({
-            staffs: staffs
+            staffs: staffs,
+            currentUsername: staffs[0]?.username,
+            selectedIndexUser: 0
         });
 
-        // var skills = await loadSkills();
 
-        // let data = await fetchTimeKeeping(this.init.fromDate, this.init.toDate);
-        // this.setState({
-        //     skillSrc: skills,
-        //     dataSrc: data
-        // });
     }
 
 
 
     componentDidMount = async () => {
         this.initData();
+        if (this.state.username) {
+            this.loadAttandances();
+        }
     }
 
     componentDidUpdate = async (preState) => {
+        //gọi api
+        if (this.state.username) {
+            this.loadAttandances();
+        }
+    }
+
+    loadAttandances = async () => {
+        let data = await fetchAttandances(this.state.username, this.state.fromDate, this.state.toDate);
+        this.setState({ attandances: data });
     }
 
 
@@ -219,7 +227,22 @@ class AttendancesPage extends React.Component {
                                 <Typography variant="subtitle1">Time Period</Typography>
                             </Grid>
                             <Grid item xs={8}>
-                                <DateRangePickerComponent />
+                                <DateRangePickerComponent
+                                    change={(props) => {
+                                        console.log(props);
+                                        if (props.startDate && props.endDate && (props.startDate != this.state.fromDate ||
+                                            props.endDate != this.state.toDate)) {
+                                            this.setState({
+                                                fromDate: props.startDate,
+                                                toDate: props.endDate,
+                                                updateData: true
+                                            });
+                                        }
+                                    }}
+
+                                    startDate={this.init.fromDate}
+                                    endDate={this.init.toDate}
+                                />
                             </Grid>
                         </Grid>
                         <Grid item>
