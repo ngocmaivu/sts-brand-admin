@@ -33,7 +33,6 @@ function StaffNew(props) {
 
     const classes = useStyles();
 
-
     const onSubmit = (data) => {
         props.createStaff(data);
         setSuccessAlert(true);

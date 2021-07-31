@@ -6,13 +6,14 @@ import { MultiSelectComponent } from '@syncfusion/ej2-react-dropdowns';
 import { format, add, subMinutes, sub, endOfDay } from 'date-fns';
 import { levels } from '../../../_constants/levelData';
 import { connect } from 'react-redux';
+import { getFirstDayOfWeek } from '../../../ultis/scheduleHandle';
 
 
 const useStyles = makeStyles((theme) => ({
 
 }));
 
-const DemandEditor = ({ parentProps, setWorkStart, setWorkEnd, setSkillId, skillDataSrc }) => {
+const DemandEditor = ({ parentProps, setWorkStart, setWorkEnd, setSkillId, skillDataSrc, defaultConfig }) => {
 
     const classes = useStyles();
     const [start, setStart] = useState("");
@@ -42,12 +43,25 @@ const DemandEditor = ({ parentProps, setWorkStart, setWorkEnd, setSkillId, skill
     useEffect(() => {
 
 
+        console.log(parentProps);
+
         //INIT
         setSkillId(parentProps.skillId);
 
         let tmp = new Date(parentProps.workStart);
-        console.log("ALO");
+
+        let dayOfWeek = tmp.getDay();
+        console.log(dayOfWeek);
+        if (dayOfWeek == 0) {
+            dayOfWeek = 6;
+        } else {
+            dayOfWeek -= 1;
+        }
+
+        console.log(defaultConfig);
         console.log(tmp);
+
+
         setWorkStart(tmp);
         let startTmp = new Date();
         startTmp.setHours(tmp.getHours(), tmp.getMinutes());
@@ -62,7 +76,6 @@ const DemandEditor = ({ parentProps, setWorkStart, setWorkEnd, setSkillId, skill
 
         // setSkill(parentProps.SkillId);
     }, []);
-
 
     return (
         <div>

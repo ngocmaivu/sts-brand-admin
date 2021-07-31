@@ -49,9 +49,6 @@ export const loadStaffNew = () => async dispatch => {
     skills.forEach(skill => (
         init_data[`skill${skill.id}Level`] = 0
     ));
-    skills.forEach(skill => (
-        init_data[`skill${skill.id}Level`] = 0
-    ));
 
     dispatch({ type: staffConstants.STAFF_LOAD, payload: { data: init_data, skills, stores } });
 }
