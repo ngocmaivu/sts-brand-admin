@@ -4,6 +4,8 @@ import { KeyboardTimePicker, TimePicker } from "@material-ui/pickers";
 import { DateTimePickerComponent, TimePickerComponent } from '@syncfusion/ej2-react-calendars';
 import { MultiSelectComponent } from '@syncfusion/ej2-react-dropdowns';
 import { format, add, subMinutes, sub, endOfDay } from 'date-fns';
+import { fetchSkillsOfStaff } from '../../../_services';
+import _ from 'lodash';
 const useStyles = makeStyles((theme) => ({
 
 }));
@@ -14,7 +16,8 @@ export function ShiftEditor({ parentProps, setStartTime, setEndTime, setStaffId,
     const [start, setStart] = useState("");
     const [end, setEnd] = useState("");
     const [skill, setSkill] = useState(parentProps.SkillId);
-    console.log()
+    const [skillStaffs, setSkillStaffs] = useState(null);
+
     const handleStart = (e) => {
         setStart(e.target.value);
         if (e.target.value) {
@@ -34,28 +37,45 @@ export function ShiftEditor({ parentProps, setStartTime, setEndTime, setStaffId,
 
     }
 
-    useEffect(() => {
+    useEffect(async () => {
+
+        console.log(parentProps);
+        if (!_.isEmpty(parentProps)) {
+            //INIT
+            setStaffId(parentProps.StaffId);
+            let staffSkills = await fetchSkillsOfStaff(parentProps.StaffId);
+
+            let tmpss = staffSkills.map(e => {
+                return { id: e.skillId, name: skillSrc.find(s => s.id == e.skillId).name }
+            });
+
+            setSkillStaffs(tmpss);
 
 
-        //INIT
-        setStaffId(parentProps.StaffId);
-        let tmp = new Date(parentProps.startTime || parentProps.StartTime);
-        setStartTime(tmp);
-        console.log("ALO");
-        console.log(tmp);
-        let startTmp = new Date();
-        startTmp.setHours(tmp.getHours(), tmp.getMinutes());
-        setStart(startTmp);
-        let tmp1 = new Date(parentProps.endTime || parentProps.EndTime);
-        setEndTime(tmp1);
-        let endTmp = new Date();
-        endTmp.setHours(tmp1.getHours(), tmp1.getMinutes());
-        setEnd(endTmp);
+            if (!parentProps.SkillId) {
+                console.log(staffSkills);
+                console.log(tmpss);
+                console.log(tmpss[0].id);
+                setSkill(tmpss[0].id);
+            }
 
+            let tmp = new Date(parentProps.startTime || parentProps.StartTime);
+            setStartTime(tmp);
+            console.log("ALO");
+            console.log(tmp);
+            let startTmp = new Date();
+            startTmp.setHours(tmp.getHours(), tmp.getMinutes());
+            setStart(startTmp);
+            let tmp1 = new Date(parentProps.endTime || parentProps.EndTime);
+            setEndTime(tmp1);
+            let endTmp = new Date();
+            endTmp.setHours(tmp1.getHours(), tmp1.getMinutes());
+            setEnd(endTmp);
 
+            // setSkill(parentProps.SkillId);
+        }
 
-        // setSkill(parentProps.SkillId);
-    }, []);
+    }, [parentProps]);
 
 
     return (
@@ -73,9 +93,10 @@ export function ShiftEditor({ parentProps, setStartTime, setEndTime, setStaffId,
                                 required
                             >
                                 {
-                                    skillSrc.map(e => (
-                                        (<MenuItem key={e.id} value={e.id}>{e.name}</MenuItem>)
-                                    ))
+                                    skillStaffs ?
+                                        skillStaffs.map(e => (
+                                            (<MenuItem key={e.id} value={e.id}>{e.name}</MenuItem>)
+                                        )) : null
                                 }
                             </Select>
 

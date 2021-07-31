@@ -1,11 +1,11 @@
 import { Snackbar, CardHeader, Checkbox, Chip, Divider, FormControl, FormControlLabel, FormLabel, Grid, makeStyles, MenuItem, OutlinedInput, Paper, Select, TextField, Typography, useTheme } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { CardCustom } from '../../CardCustom';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import StaffForm from './StaffForm';
 import { connect } from 'react-redux';
-import { loadStaffEdit, createStaff } from '../../../_actions'
+import { getStaffInfo, createStaff } from '../../../_actions'
 import { Skeleton } from '@material-ui/lab';
 import MuiAlert from '@material-ui/lab/Alert';
 const useStyles = makeStyles((theme) => ({
@@ -34,9 +34,9 @@ function Alert(props) {
 function StaffEdit(props) {
 
     const classes = useStyles();
-    const dataNew = {
-    };
+    const [initialValues, setInitialValues] = useState(null);
 
+    const { id } = useParams();
     const onSubmit = (data) => {
         props.createStaff(data);
         setSuccessAlert(true);
@@ -44,8 +44,29 @@ function StaffEdit(props) {
     // const [initData, setInitData] = useState({});
     useEffect(
         () => {
-            props.loadStaffEdit();
+            props.getStaffInfo(id);
         }, []
+    );
+
+
+    useEffect(
+        () => {
+            if (props.staffData) {
+                let skillData = {};
+                props.staffData.staffSkills.forEach(skill => {
+                    skillData[`skill${skill.skillId}Level`] = skill.level;
+                    skillData[`skill${skill.skillId}`] = true
+                });
+                let tmp = {
+                    ...props.staffData.generalInfo,
+                    workAt: props.staffData.jobInformations[0].storeId,
+                    ...skillData
+                }
+
+                setInitialValues(tmp);
+            }
+
+        }, [props.staffData]
     );
 
     console.log({ ...props.initialValues });
@@ -62,11 +83,11 @@ function StaffEdit(props) {
             </Snackbar>
             <CardHeader title={
                 <Typography variant="h2">
-                    Add New Staff
+                    Edit Staff: {id}
                 </Typography>
             } disableTypography={true}
             />
-            {!props.initialValues || Object.keys(props.initialValues).length == 0 ? <div>
+            {!initialValues || Object.keys(initialValues).length == 0 ? <div>
                 <Grid container spacing={2} direction="column" style={{ padding: 20 }}>
                     <Grid item xs>
                         <Skeleton animation="wave" variant="rect" height="200px" />
@@ -87,7 +108,7 @@ function StaffEdit(props) {
 
             </div> : <StaffForm onSubmit={onSubmit} skills={props.skills} stores={props.stores}
                 skillLevels={props.skillLevels}
-                initialValues={{ ...props.initialValues, }} />}
+                initialValues={{ ...initialValues, }} />}
 
         </Paper >
     );
@@ -103,7 +124,7 @@ const skillLevels = [
 const mapStateToProps = (state) => {
 
     return {
-        initialValues: state.staffs.data,
+        staffData: state.staffs.data,
         skills: state.staffs.skills,
         skillLevels: skillLevels,
         stores: state.staffs.stores
@@ -112,5 +133,5 @@ const mapStateToProps = (state) => {
 
 
 export default connect(mapStateToProps, {
-    loadStaffEdit, createStaff
+    getStaffInfo, createStaff
 })(StaffEdit);

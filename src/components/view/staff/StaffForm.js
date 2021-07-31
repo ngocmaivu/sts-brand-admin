@@ -41,9 +41,13 @@ class StaffForm extends React.Component {
             </FormControl>);
     }
     renderCheckboxBase = ({ input }) => {
-        return (<Checkbox {...input} />)
+
+        return (<Checkbox checked={input.value ? true : false}
+            onChange={input.onChange} />)
     }
     onSubmit = (formValues) => {
+
+        console.log(formValues);
 
         const skillData = this.props.skills
             .filter(skill => formValues[`skill${skill.id}`] == true)
@@ -72,7 +76,7 @@ class StaffForm extends React.Component {
             },
             staffSkills: skillData
         }
-        console.log(dataSubmit);
+
         this.props.onSubmit(dataSubmit);
     }
 

@@ -283,3 +283,15 @@ export const unpublishSchedule = async (weekScheduleId) => {
         return null;
     }
 };
+
+export const fetchSkillsOfStaff = async (username,) => {
+    try {
+        const response = await sts.get(`manager/users/${username}/skills`, {
+           
+            headers: authHeader(),
+        });
+        return response.data;
+    } catch (e) {
+        console.log(e);
+    }
+}
