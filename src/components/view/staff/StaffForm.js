@@ -18,13 +18,13 @@ class StaffForm extends React.Component {
 
     }
 
-    renderInput = ({ label, input, type = "text", meta: { touched, invalid, error }, InputProps }) => {
+    renderInput = ({ label, input, type = "text", disabled, meta: { touched, invalid, error }, InputProps }) => {
 
         return (
             <div>
                 <FormControl margin="normal" fullWidth>
                     <FormLabel>{label}</FormLabel>
-                    <TextField  {...input} type={type} variant="outlined" InputProps={InputProps} error={touched && invalid}
+                    <TextField  {...input} type={type} variant="outlined" InputProps={InputProps} disabled={disabled} error={touched && invalid}
                         helperText={touched && error} size="small" />
                 </FormControl>
             </div>);
@@ -35,7 +35,7 @@ class StaffForm extends React.Component {
         return (
             <FormControl margin="normal" error={touched && invalid} fullWidth>
                 <FormLabel >{label}</FormLabel>
-                <Select {...input} variant="outlined">
+                <Select {...input} variant="outlined" onChange={value => input.onChange(value)}>
                     {children}
                 </Select>
             </FormControl>);
@@ -54,7 +54,8 @@ class StaffForm extends React.Component {
             .map(skill => {
                 return {
                     skillId: skill.id,
-                    level: formValues[`skill${skill.id}Level`]
+                    level: formValues[`skill${skill.id}Level`],
+                    username: formValues.username,
                 }
             });
 
@@ -124,7 +125,7 @@ class StaffForm extends React.Component {
 
                                     <Grid container item spacing={2}>
                                         <Grid item xs={6}>
-                                            <Field name="username" component={this.renderInput} label="Username" />
+                                            <Field name="username" component={this.renderInput} label="Username" disabled={this.props.type == "edit"} />
                                         </Grid>
                                         <Grid item xs={12}>
                                             <Field name="address" component={this.renderInput} label="Address" />
@@ -144,7 +145,7 @@ class StaffForm extends React.Component {
                                     </Grid>
                                     <Grid container item spacing={3} >
                                         <Grid item xs={6} >
-                                            <Field name="email" component={this.renderInput} label="Email" />
+                                            <Field name="email" component={this.renderInput} label="Email" disabled={this.props.type == "edit"} />
                                         </Grid>
                                         <Grid item xs={6} >
                                             <Field name="phone" component={this.renderInput} label="Phone" />

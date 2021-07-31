@@ -15,6 +15,18 @@ export const createStaff = (data) => async dispatch => {
     }
 }
 
+export const updateStaff = (data) => async dispatch => {
+    try {
+        const response = await sts.put("/manager/users/staff", { ...data }, { headers: authHeader() });
+        dispatch({ type: staffConstants.STAFF_UPDATE_SUCCESS });
+    } catch (e) {
+        console.log(e);
+        dispatch({ type: staffConstants.STAFF_UPDATE_FAILURE });
+        // TODO excepction
+
+    }
+}
+
 export const getStaffs = (pageIndex, pageSize, searchValue) => async dispatch => {
     try {
         //TODO Phân quyền brand/store ở đây

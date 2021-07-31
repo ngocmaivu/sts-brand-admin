@@ -5,7 +5,7 @@ import { Link, useParams } from 'react-router-dom';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import StaffForm from './StaffForm';
 import { connect } from 'react-redux';
-import { getStaffInfo, createStaff } from '../../../_actions'
+import { getStaffInfo, updateStaff } from '../../../_actions'
 import { Skeleton } from '@material-ui/lab';
 import MuiAlert from '@material-ui/lab/Alert';
 const useStyles = makeStyles((theme) => ({
@@ -38,7 +38,8 @@ function StaffEdit(props) {
 
     const { id } = useParams();
     const onSubmit = (data) => {
-        props.createStaff(data);
+        console.log(data);
+        props.updateStaff(data);
         setSuccessAlert(true);
     }
     // const [initData, setInitData] = useState({});
@@ -60,6 +61,7 @@ function StaffEdit(props) {
                 let tmp = {
                     ...props.staffData.generalInfo,
                     workAt: props.staffData.jobInformations[0].storeId,
+                    hireOn: props.staffData.jobInformations[0].dateStart,
                     ...skillData
                 }
 
@@ -107,31 +109,24 @@ function StaffEdit(props) {
                 </Grid>
 
             </div> : <StaffForm onSubmit={onSubmit} skills={props.skills} stores={props.stores}
-                skillLevels={props.skillLevels}
-                initialValues={{ ...initialValues, }} />}
+                initialValues={{ ...initialValues, }} type="edit" />}
 
         </Paper >
     );
 }
 
 
-const skillLevels = [
-    { value: 0, title: "Beginner" },
-    { value: 1, title: "Immegiate" },
-    { value: 2, title: "Experience" },
-];
-
 const mapStateToProps = (state) => {
 
     return {
         staffData: state.staffs.data,
         skills: state.staffs.skills,
-        skillLevels: skillLevels,
+
         stores: state.staffs.stores
     };
 }
 
 
 export default connect(mapStateToProps, {
-    getStaffInfo, createStaff
+    getStaffInfo, updateStaff
 })(StaffEdit);

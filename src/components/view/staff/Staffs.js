@@ -92,6 +92,16 @@ class Staffs extends React.Component {
         this.props.getStaffs(this.state.pageIndex, this.state.pageSize, this.state.searchValue);
     }
 
+    handlePageChange = (params) => {
+        console.log(params);
+        if (params.page >= params.pageCount) {
+            this.props.getStaffs(1, params.pageSize, this.state.searchValue ? this.state.searchValue : "");
+        } else {
+            this.props.getStaffs(params.page + 1, params.pageSize, this.state.searchValue ? this.state.searchValue : "");
+        }
+
+    };
+
     handleDeleteStore(id) {
         return (e) => this.props.deleteStaff(id);
     }
@@ -224,7 +234,9 @@ class Staffs extends React.Component {
                             </Grid>
                         ) : <DataGrid disableColumnFilter rows={this.props.datas} 
                         columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
-                            paginationMode="server" rowCount={this.props.rowCount} />}
+                        page={this.props.pageIndex - 1}
+                        paginationMode="server" rowCount={this.props.rowCount} 
+                        onPageChange={this.handlePageChange} onPageSizeChange={this.handlePageChange}/>}
 
                     </div>
                     {this.renderDeleteDialog()}
@@ -237,8 +249,9 @@ class Staffs extends React.Component {
     }
 }
 function mapState(state) {
-    const { users } = state;
-    return { datas: Object.values(state.staffs.datas), rowCount: state.users.totalCount };
+
+    return { datas: Object.values(state.staffs.datas), rowCount: state.staffs.totalCount, 
+        pageIndex: state.staffs.currentPage, pageSize: state.staffs.pageSize, };
 }
 
 export default connect(mapState, {

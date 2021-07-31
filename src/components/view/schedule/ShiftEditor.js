@@ -3,7 +3,7 @@ import { Card, CardHeader, CardContent, Divider, Grid, Select, InputLabel, FormC
 import { KeyboardTimePicker, TimePicker } from "@material-ui/pickers";
 import { DateTimePickerComponent, TimePickerComponent } from '@syncfusion/ej2-react-calendars';
 import { MultiSelectComponent } from '@syncfusion/ej2-react-dropdowns';
-import { format, add, subMinutes, sub, endOfDay } from 'date-fns';
+import { format, add, subMinutes, sub, endOfDay, addMinutes } from 'date-fns';
 import { fetchSkillsOfStaff } from '../../../_services';
 import _ from 'lodash';
 const useStyles = makeStyles((theme) => ({
@@ -110,13 +110,13 @@ export function ShiftEditor({ parentProps, setStartTime, setEndTime, setStaffId,
                         <Grid item xs={6}>
                             <FormControl fullWidth>
                                 <FormLabel >From</FormLabel>
-                                <TimePickerComponent format='HH:mm' value={start} required onChange={handleStart} min="0:00" strictMode={true} allowEdit={false} />
+                                <TimePickerComponent format='HH:mm' value={start} required onChange={handleStart} min="0:00" max={subMinutes(end, 30)} strictMode={true} allowEdit={false} />
                             </FormControl>
                         </Grid>
                         <Grid item xs={6}>
                             <FormControl fullWidth>
                                 <FormLabel >To</FormLabel>
-                                <TimePickerComponent format='HH:mm' value={end} required min="0:00" onChange={handleEnd} strictMode={true} allowEdit={false} />
+                                <TimePickerComponent format='HH:mm' value={end} required min={addMinutes(start, 30)}  onChange={handleEnd} strictMode={true} allowEdit={false} />
                             </FormControl>
                         </Grid>
                     </Grid>

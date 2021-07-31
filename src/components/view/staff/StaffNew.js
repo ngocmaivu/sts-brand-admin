@@ -82,7 +82,7 @@ function StaffNew(props) {
                 </Grid>
 
             </div> : <StaffForm onSubmit={onSubmit} skills={props.skills} stores={props.stores}
-                initialValues={{ ...props.initialValues, }} />}
+                initialValues={{ ...props.initialValues, }} type="create" />}
 
         </Paper >
     );

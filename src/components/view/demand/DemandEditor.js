@@ -3,7 +3,7 @@ import { Card, CardHeader, CardContent, Divider, Grid, Select, InputLabel, FormC
 import { KeyboardTimePicker, TimePicker } from "@material-ui/pickers";
 import { DateTimePickerComponent, TimePickerComponent } from '@syncfusion/ej2-react-calendars';
 import { MultiSelectComponent } from '@syncfusion/ej2-react-dropdowns';
-import { format, add, subMinutes, sub, endOfDay } from 'date-fns';
+import { format, add, subMinutes, addMinutes, endOfDay, } from 'date-fns';
 import { levels } from '../../../_constants/levelData';
 import { connect } from 'react-redux';
 import { getFirstDayOfWeek } from '../../../ultis/scheduleHandle';
@@ -28,6 +28,8 @@ const DemandEditor = ({ parentProps, setWorkStart, setWorkEnd, setSkillId, skill
             const workStart = new Date(parentProps.workStart || parentProps.WorkStart);
             workStart.setHours(e.target.value.getHours(), e.target.value.getMinutes());
             setWorkStart(workStart);
+
+
         }
     }
 
@@ -115,13 +117,13 @@ const DemandEditor = ({ parentProps, setWorkStart, setWorkEnd, setSkillId, skill
                             <FormControl fullWidth>
                                 <FormLabel >From</FormLabel>
 
-                                <TimePickerComponent format='HH:mm' value={start} required onChange={handleStart} min="0:00" strictMode={true} allowEdit={false} />
+                                <TimePickerComponent format='HH:mm' value={start} required onChange={handleStart} min="0:00" max={subMinutes(end, 30)} strictMode={true} allowEdit={false} />
                             </FormControl>
                         </Grid>
                         <Grid item xs={6}>
                             <FormControl fullWidth>
                                 <FormLabel >To</FormLabel>
-                                <TimePickerComponent format='HH:mm' value={end} required min="0:00" onChange={handleEnd} strictMode={true} allowEdit={false} />
+                                <TimePickerComponent format='HH:mm' value={end} required min={addMinutes(start, 30)} onChange={handleEnd} strictMode={true} allowEdit={false} />
                             </FormControl>
                         </Grid>
                     </Grid>
