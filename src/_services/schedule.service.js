@@ -313,3 +313,18 @@ export const fetchAttandances = async (username, FromDate, ToDate) => {
         return null;
     }
 }
+
+export const deleteAttandance = async (id) => {
+    try {
+
+        const response = await sts.delete(`/attendances/${id}`, {
+            headers: authHeader(),
+        });
+        return response.data;
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
