@@ -116,7 +116,7 @@ class DemandPage extends React.Component {
                     start1.setMinutes(0);
                     end1.setHours(o.from / 2);
                     end1.setMinutes(o.from % 2 == 1 ? 30 : 0);
-                    
+
                     start2.setHours(o.to / 2);
                     start2.setMinutes(o.to % 2 == 1 ? 30 : 0);
                     console.log(o.to % 2 == 1 ? 30 : 0);
@@ -275,6 +275,21 @@ class DemandPage extends React.Component {
         }
 
     }
+    getDateHeaderText(value) {
+        return this.instance.formatDate(value, { skeleton: 'Ed' });
+    }
+    dateHeaderTemplate = (props) => {
+        return (<div>
+            <Typography variant="subtitle1" >{format(new Date(props.date), "Ed")}</Typography>
+        </div>);
+    }
+
+    resourceHeaderTemplate = (props) => {
+        console.log(props);
+        return (
+            <div className="template-wrap"> <Typography variant="h4" >{props.resourceData.name}</Typography></div>
+        );
+    }
 
     render() {
 
@@ -313,8 +328,11 @@ class DemandPage extends React.Component {
                             } />
 
                             <ScheduleComponent
+                                resourceHeaderTemplate={this.resourceHeaderTemplate}
                                 currentView="Week" selectedDate={this.currentDate}
                                 cssClass="schedule-custom"
+                                height="80vh"
+                                dateHeaderTemplate={this.dateHeaderTemplate}
                                 eventSettings={{
                                     fields: {
                                         id: 'id',
