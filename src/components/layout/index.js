@@ -130,6 +130,7 @@ const INIT_DATA = {
   items: [
   ]
 };
+
 if (user === null) {
   INIT_DATA.items.push(
     {
@@ -160,14 +161,16 @@ if (user === null) {
       type: 'item',
       icon: <CalendarTodayOutlined />
     },
-    {
-      id: 'profile',
-      title: 'Profile',
-      type: 'item',
-      url: "/profile",
-      icon: <ProfileIcon />
-    })
+    // {
+    //   id: 'profile',
+    //   title: 'Profile',
+    //   type: 'item',
+    //   url: "/profile",
+    //   icon: <ProfileIcon />
+    // }
+    )
 } else {
+  var urlStoreInfo = '/configure/store-info/' + user.storeId;
   if (user.role === "brand manager") webName = "STS Brand Manager"
   if (user.role === "brand manager") INIT_DATA.items.push(
     {
@@ -194,7 +197,7 @@ if (user === null) {
     {
       id: 'timekeeping',
       title: 'Timekeeping',
-      url: '/timekeeping',
+      url: '/storeTimekeeping/attandance',
       type: 'item',
       icon: <CalendarTodayOutlined />
     },
@@ -205,13 +208,14 @@ if (user === null) {
       type: 'item',
       icon: <Settings />
     },
-    {
-      id: 'profile',
-      title: 'Profile',
-      type: 'item',
-      url: "/profile",
-      icon: <ProfileIcon />
-    })
+    // {
+    //   id: 'profile',
+    //   title: 'Profile',
+    //   type: 'item',
+    //   url: "/profile",
+    //   icon: <ProfileIcon />
+    // }
+    )
   else if (user.role === "store manager") INIT_DATA.items.push(
     {
       id: 'home',
@@ -329,7 +333,7 @@ if (user === null) {
           type: 'item',
           id: 'store-info',
           title: 'Store Info',
-          url: '/configure/store-info',
+          url: urlStoreInfo,
           icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
         },
         {
@@ -426,7 +430,7 @@ export default function MainLayout(props) {
 
 
         <Divider />
-        <Button component={Link} to="/login">Logout</Button>
+        {/* <Button component={Link} to="/login">Logout</Button> */}
       </Drawer>
       <main
         className={clsx(classes.content, {

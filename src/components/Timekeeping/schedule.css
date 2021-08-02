@@ -1,0 +1,11 @@
+.e-schedule-dialog {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid rgba(144, 202, 249, 0.46);
+}
+
+.e-input-group-custom {
+  border-radius: 2px;
+  border: 1px solid rgba(144, 202, 249, 0.46);
+  border-width: 1px;
+}

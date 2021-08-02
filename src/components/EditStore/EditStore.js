@@ -5,7 +5,9 @@ import PropTypes from 'prop-types';
 import { DataGrid } from "@material-ui/data-grid";
 import { Link } from 'react-router-dom';
 import { connect } from "react-redux";
-import { storesActions, skillActions, storeActions } from "../../_actions";
+import { skillActions, storeActions } from "../../_actions";
+import Dropdown from 'react-dropdown';
+import 'react-dropdown/style.css';
 
 const useStyles = makeStyles((theme) => ({
     card: {
@@ -29,15 +31,20 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
-
+const options = [
+    'Choose store manager',
+];
+var defaultOption = options[0];
+var tmp = 1;
 class EditStore extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             store: {
-                name: props.stores.items.name,
-                address: props.stores.items.address,
-                phone: props.stores.items.phone,
+                name: '',
+                address: '',
+                phone: '',
+                storeManager: '',
                 id: props.match.params.id
             },
             submitted: false,
@@ -46,25 +53,36 @@ class EditStore extends React.Component {
 
         this.handleChange = this.handleChange.bind(this);
         this.handleSubmit = this.handleSubmit.bind(this);
-
+        console.log("chưa làm gì nè");
+        console.log(props.items)
     };
+
+
     handleChange(event) {
         const { name, value } = event.target;
-        const { store } = this.state;
+        var { store } = this.state;
+        // const { stores } = this.props;
+        // console.log("stores trước khi change nè ")
+        // console.log(stores)
+        // if (store.name === '' && store.address === '' && store.phone === '') {
+        //     store = stores;
+        // }
+        // else
         this.setState({
             store: {
                 ...store,
                 [name]: value
             }
         });
-        console.log("change: " + store)
+        console.log("store sau khi change nè ")
+        console.log(store)
     }
 
     handleSubmit(event) {
         event.preventDefault();
 
         this.setState({ submitted: true });
-        const { stores } = this.state;
+        const { store } = this.state;
 
     }
     handleClick(event) {
@@ -72,20 +90,58 @@ class EditStore extends React.Component {
 
         this.setState({ submitted: true });
         const { store } = this.state;
+        // const { stores } = this.props;
+        // console.log("stores trước khi change nè ")
+        // console.log(stores)
+        // if (store.name === '' && store.address === '' && store.phone === '') {
+        //     store.name = stores;
+        // }
         this.props.updateStore(store);
     }
     componentDidMount() {
         this.props.getByID(this.props.match.params.id);
+        console.log("DID MOUNT NE")
+        console.log(this.props.stores.items)
     }
+    loadData() {
+        // this.props.getByID(this.props.match.params.id);
+    }
+    // componentDidUpdate() {
+    //     this.setState({
+    //             store: {
+    //                 name: this.props.stores.items.name,
+    //                 address: this.props.stores.items.address,
+    //                 phone: this.props.stores.items.phone,
+    //             },
+    //         })
+    // }
 
 
     render() {
+
         const { stores, type } = this.props;
+        const { store } = this.state;
+        console.log("stores trước khi change nè ")
+        console.log(stores)
+        // this.loadData()
+        console.log("render ne")
         console.log(this.props)
         if (!this.props.stores.items) {
             return <p>...Loading</p>;
         }
-        console.log(stores.items)
+        console.log(stores.items);
+        if (tmp === 2) {
+            store.name = stores.items.name;
+            store.address = stores.items.address;
+            store.phone = stores.items.phone;
+        }
+
+        tmp++;
+        console.log("store ne")
+        console.log(this.state.store)
+        console.log('tmp nè');
+        console.log(tmp)
+        // this.loadData(stores)
         return (
             <React.Fragment>
                 <Card style={{ padding: '10px', marginBottom: '20px' }}>
@@ -101,14 +157,15 @@ class EditStore extends React.Component {
                                         <TextField name="name" size="small" variant="outlined" defaultValue={stores.items.name} onChange={this.handleChange} />
                                     </FormControl>
                                 </Grid>
+
                             </Grid>
-                            <Grid item xs={12}> 
+                            <Grid item xs={12}>
                                 <FormControl margin="normal" fullWidth>
                                     <FormLabel >Store's Address</FormLabel>
                                     <TextField name="address" size="small" variant="outlined" defaultValue={stores.items.address} onChange={this.handleChange} />
                                 </FormControl>
                             </Grid>
-                            <Grid item xs={12} >
+                            <Grid item xs={12}>
                                 <FormControl margin="normal" fullWidth>
                                     <FormLabel >Phone Number</FormLabel>
                                     <TextField name="phone" size="small" variant="outlined" defaultValue={stores.items.phone} onChange={this.handleChange} />
@@ -119,9 +176,7 @@ class EditStore extends React.Component {
                                 <Button variant="outlined" color="primary" component={Link} to="/stores">Cancel </Button>
                             </Grid>
                         </Grid>
-
                     </form>
-
                 </Paper>
             </React.Fragment>
         );
@@ -130,7 +185,10 @@ class EditStore extends React.Component {
 
 function mapState(state) {
     const { stores, deleting } = state;
-    return { stores, deleting };
+    return {
+        stores,
+        deleting,
+    };
 }
 
 export default connect(mapState, {

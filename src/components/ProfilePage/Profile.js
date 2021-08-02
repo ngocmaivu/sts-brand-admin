@@ -83,7 +83,7 @@ class Profile extends React.Component {
                     <Button variant="outlined" component={Link} to="/settingSkill"> <Settings />Setting Brand Skill</Button>
                 </Card>
                 <Grid container direction="row" spacing={2} style={{ flexWrap: 'nowrap' }}>
-                    <Grid xs={12} sm={6} md={6}>
+                    <Grid item xs={12} sm={6} md={6}>
                         <Card style={{ paddingTop: '5px', backgroundColor: '#FFFFCC' }}>
                             <Typography style={{ marginLeft: '60px', }} variant="h3"> <AccountCircleRoundedIcon style={{ color: 'green', marginBottom: '-3px' }} /> Account Profile</Typography>
                             <Card style={{ padding: '10px', backgroundColor: '' }}>
@@ -112,7 +112,7 @@ class Profile extends React.Component {
 
                         </Card>
                     </Grid>
-                    <Grid xs={12} sm={6} style={{ marginLeft: '10px' }}>
+                    <Grid item xs={12} sm={6} style={{ marginLeft: '10px' }}>
                         <Card style={{ paddingTop: '5px', backgroundColor: '#FFFFCC' }}>
                             <Typography style={{ marginLeft: '60px', }} variant="h3"> <AccountCircleRoundedIcon style={{ color: 'red', marginBottom: '-3px' }} /> Brand Profile</Typography>
                             <Card style={{ padding: '10px' }}>
