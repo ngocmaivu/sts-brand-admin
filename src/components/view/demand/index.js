@@ -4,7 +4,7 @@ import React from 'react';
 import { loadSkills, getWeekScheduleDemand, updateDemand, deleteDemand, createDemand } from "../../../_services";
 import { addDays, differenceInDays, format } from 'date-fns';
 import { levelInit, levels } from "../../../_constants/levelData";
-import { convertDemandData, } from "../../../ultis/scheduleHandle";
+import { convertDemandData, firstDayOfWeek, convertToJSONDateWithoutChangeValue } from "../../../ultis/scheduleHandle";
 import {
     ScheduleComponent, Inject, Day, Week,
     TimelineViews, TimelineMonth, ViewsDirective, ViewDirective, Resize, DragAndDrop, ResourcesDirective, ResourceDirective
@@ -81,14 +81,94 @@ class DemandPage extends React.Component {
     loadDemandDatas = async () => {
 
         var demandDatas = await getWeekScheduleDemand(this.props.weekScheduleId);
+        var NotOperatingTime = this.loadOperatingTimes();
+        console.log([...demandDatas, ...NotOperatingTime]);
         if (this.scheduleObj != null) {
-
-
-            // 
             // this.setState({ dataSource: demandDatas });
-            this.scheduleObj.eventSettings.dataSource = demandDatas;
+
+
+            let dateStart = new Date(this.props.dateStart);
+            let start1 = new Date(this.props.dateStart);
+            let end1 = new Date(this.props.dateStart);
+            start1.setHours(0);
+            end1.setHours(7);
+
+            this.scheduleObj.eventSettings.dataSource = [...demandDatas, ...NotOperatingTime];
         }
     }
+
+    loadOperatingTimes = () => {
+
+        var NotOperatingTime = [];
+
+        if (this.props.defaultConfig && this.props.skillSrc) {
+            var operatingTimes = this.props.defaultConfig.operatingTimes;
+            let dateStart = new Date(this.props.dateStart);
+            operatingTimes.forEach(o => {
+
+                if (o.isWorking) {
+                    let start1 = addDays(dateStart, o.day);
+                    let end1 = addDays(dateStart, o.day);
+                    let start2 = addDays(dateStart, o.day);
+                    let end2 = addDays(dateStart, o.day);
+
+                    start1.setHours(0);
+                    start1.setMinutes(0);
+                    end1.setHours(o.from / 2);
+                    end1.setMinutes(o.from % 2 == 1 ? 30 : 0);
+
+                    start2.setHours(o.to / 2);
+                    start2.setMinutes(o.to % 2 == 1 ? 30 : 0);
+                    console.log(o.to % 2 == 1 ? 30 : 0);
+                    end2.setHours(24);
+                    end2.setMinutes(0);
+                    this.props.skillSrc.forEach(skill => {
+                        NotOperatingTime.push({
+                            workStart: start1,
+                            workEnd: end1,
+                            skillId: skill.id,
+                            IsBlock: true,
+                            level: -1,
+                            id: `${o.day}-1-${skill.id}`
+                        });
+                        NotOperatingTime.push({
+                            workStart: start2,
+                            workEnd: end2,
+                            skillId: skill.id,
+                            IsBlock: true,
+                            level: -1,
+                            id: `${o.day}-1-${skill.id}`
+                        });
+                    });
+
+
+                } else {
+                    let start1 = addDays(dateStart, o.day);
+                    start1.setHours(0);
+                    start1.setMinutes(0);
+
+                    let end1 = addDays(dateStart, o.day);
+                    end1.setHours(24);
+                    end1.setMinutes(0);
+                    this.props.skillSrc.forEach(skill => {
+                        NotOperatingTime.push({
+                            workStart: start1,
+                            workEnd: end1,
+                            skillId: skill.id,
+                            IsBlock: true,
+                            level: -1,
+                            id: `${o.day}-1-${skill.id}`
+                        });
+                    });
+
+                }
+            });
+
+        }
+        return NotOperatingTime;
+
+    }
+
 
     componentDidMount = async () => {
         await this.loadDemandDatas();
@@ -189,8 +269,26 @@ class DemandPage extends React.Component {
     }
 
     onEventRendered = (args) => {
-        let levelColor = levels.find(e => e.value == args.data.level).color;
-        args.element.style.backgroundColor = levelColor;
+        if (args.data.level != -1) {
+            let levelColor = levels.find(e => e.value == args.data.level).color;
+            args.element.style.backgroundColor = levelColor;
+        }
+
+    }
+    getDateHeaderText(value) {
+        return this.instance.formatDate(value, { skeleton: 'Ed' });
+    }
+    dateHeaderTemplate = (props) => {
+        return (<div>
+            <Typography variant="subtitle1" >{format(new Date(props.date), "Ed")}</Typography>
+        </div>);
+    }
+
+    resourceHeaderTemplate = (props) => {
+        console.log(props);
+        return (
+            <div className="template-wrap"> <Typography variant="h4" >{props.resourceData.name}</Typography></div>
+        );
     }
 
     render() {
@@ -230,14 +328,18 @@ class DemandPage extends React.Component {
                             } />
 
                             <ScheduleComponent
+                                resourceHeaderTemplate={this.resourceHeaderTemplate}
                                 currentView="Week" selectedDate={this.currentDate}
                                 cssClass="schedule-custom"
+                                height="80vh"
+                                dateHeaderTemplate={this.dateHeaderTemplate}
                                 eventSettings={{
                                     fields: {
                                         id: 'id',
                                         subject: { name: "quantity" },
                                         startTime: { name: 'workStart' },
                                         endTime: { name: 'workEnd' },
+
                                     }
                                 }}
                                 timeScale={{ enable: true, interval: 120, slotCount: 2 }}
@@ -285,7 +387,8 @@ class DemandPage extends React.Component {
 }
 const mapStateToProps = (state) => {
     return {
-        skillSrc: state.schedule.skillSrc
+        skillSrc: state.schedule.skillSrc,
+        defaultConfig: state.schedule.defaultConfig
     }
 }
 

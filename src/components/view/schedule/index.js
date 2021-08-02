@@ -9,12 +9,13 @@ import {
 } from "@syncfusion/ej2-react-schedule";
 import { extend, isNullOrUndefined, L10n } from '@syncfusion/ej2-base';
 
-import { Card, CardHeader, Grid, Paper, Button, withStyles, Modal, createStyles, Divider, CardContent, LinearProgress, Typography } from '@material-ui/core';
+import { Card, CardHeader, Grid, Paper, Button, withStyles, Modal, createStyles, Divider, CardContent, LinearProgress, Typography, Box } from '@material-ui/core';
 import { ShiftEditor } from './ShiftEditor';
 import firebase from "../../../firebase";
 import { getFirstDayOfWeek, isSameDay, convertShift, convertShiftToFireBaseObj, getTotalHoursPerWeek, getSchedulesDataFromFirebase } from "../../../ultis/scheduleHandle";
 import { getScheduleDataInput } from "../../../_actions";
 import { connect } from 'react-redux';
+import AlertDialog from '../../AlertDialog';
 
 L10n.load({
     'en-US': {
@@ -51,6 +52,7 @@ class ScheduleMain extends React.Component {
         this.state = {
             employeeData: null,
             openWaitingComputeModal: false,
+            openAlertDialog: false,
             disabledButton: false,
             startHour: 0,
             endHout: 46,
@@ -148,7 +150,9 @@ class ScheduleMain extends React.Component {
 
     }
 
-
+    handleCloseAlertDialog = () => {
+        this.setState({ openAlertDialog: false });
+    }
     componentDidMount = async () => {
 
         await this.loadData();
@@ -309,6 +313,10 @@ class ScheduleMain extends React.Component {
 
     triggerComputeSchedule = async () => {
         const data = await triggerCompute(this.props.weekScheduleId);
+        if (data == null) {
+            this.setState({ openAlertDialog: true });
+            return null;
+        }
         return data.id;
     }
 
@@ -394,7 +402,9 @@ class ScheduleMain extends React.Component {
         //Load scheduleId
         this.setState({ openWaitingComputeModal: true });
         let shiftScheduleResultId = await this.triggerComputeSchedule();
-
+        if (!shiftScheduleResultId) {
+            return;
+        }
         this.checkResultInterval = setInterval(async () => {
             let result = await this.checkComputeResult(shiftScheduleResultId);
             if (result)
@@ -427,6 +437,7 @@ class ScheduleMain extends React.Component {
 
                     } else {
                         console.log("Infeasible");
+                        this.setState({ openAlertDialog: true });
                     }
                 } {
                 console.log("...Waiting");
@@ -513,6 +524,7 @@ class ScheduleMain extends React.Component {
                 );
         }
     }
+
     render() {
         return (
             <Paper style={{ minHeight: "80vh" }}>
@@ -529,6 +541,27 @@ class ScheduleMain extends React.Component {
                         </Grid>
                     </Grid>
                 } />
+                 <Divider />
+                <Grid container style={{ height: 40, }}
+                    direction="row"
+                    justifyContent="center"
+                    wrap="nowrap"
+                    alignContent="center"
+                >
+
+                    {this.props.skillSrc.map((skill, index) => {
+
+                        return (<Grid item container alignContent="center" alignItems="baseline" justifyContent="center" key={skill.id}>
+                            <Grid item >
+                                <Box style={{ backgroundColor: this.SkillColors[index], borderRadius: 50, height: 12, width: 12, marginRight: 10 }}></Box>
+                            </Grid>
+                            <Grid item>
+                                {skill.name}
+                            </Grid>
+                        </Grid>);
+                    })}
+                </Grid>
+               
                 {this.props.skillSrc && this.state.employeeData ?
                     (<ScheduleComponent currentView="TimelineWeek" selectedDate={this.currentDate}
                         eventSettings={{
@@ -566,7 +599,7 @@ class ScheduleMain extends React.Component {
                         <ViewsDirective>
                             <ViewDirective option='Day' />
                             <ViewDirective option='Week' />
-                            <ViewDirective option='TimelineDay' startHour="07:00" />
+                            <ViewDirective option='TimelineDay' />
                             <ViewDirective option='TimelineWeek' timeScale={{ enable: false }} />
                         </ViewsDirective>
                         <Inject services={[Day, TimelineViews, Week, TimelineMonth, DragAndDrop]} />
@@ -592,8 +625,8 @@ class ScheduleMain extends React.Component {
                             <LinearProgress />
                         </CardContent>
                     </Card>
-
                 </Modal>
+                <AlertDialog open={this.state.openAlertDialog} handleClose={this.handleCloseAlertDialog} />
             </Paper>
         );
     }
