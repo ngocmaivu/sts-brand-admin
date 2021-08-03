@@ -10,20 +10,16 @@ export const createStaff = (data) => async dispatch => {
     } catch (e) {
         console.log(e);
         dispatch({ type: staffConstants.STAFF_CREATE_FAILURE });
-        // TODO excepction
-
     }
 }
-
 export const getStaffs = (pageIndex, pageSize, searchValue) => async dispatch => {
     try {
-        //TODO Phân quyền brand/store ở đây
+        // console.log(JwtToken.get());
 
         if (searchValue === "") {
             searchValue = null;
         }
-
-        const response = await sts.get("/stores/staff", {
+        const response = await sts.get("/users", {
             headers: authHeader(),
             params: {
                 PageNumber: pageIndex,
@@ -70,6 +66,7 @@ export const getStaffInfo = (id) => async dispatch => {
     }
 
 }
+<<<<<<< HEAD
 
 export const deleteStaff = (id) => async dispatch => {
     //TODO fix
@@ -81,6 +78,8 @@ export const deleteStaff = (id) => async dispatch => {
         console.log(error);
     }
 }
+=======
+>>>>>>> parent of 6e10fd6 (push)
 
 const loadSkills = async () => {
     try {

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { createStyles, Tab, Tabs, withStyles, Grid, CardHeader, CardContent, Card, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Select, MenuItem, FormControl, FormLabel, TextField, FormHelperText } from '@material-ui/core';
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -10,12 +11,27 @@ import { convertDemandDataToDemandPresent, convertDemandPresentToDemandData, } f
 import DemandEditor from './DemandEditor';
 const styles = (theme) => createStyles({
 
+=======
+import { createStyles, Tab, Tabs, div, withStyles, makeStyles, Box, Grid, Divider, CardHeader, CardContent, Card, Typography, styled } from '@material-ui/core';
+import React from 'react';
+import PropTypes from 'prop-types';
+
+
+const styles = (theme) => createStyles({
+    tabs: {
+        borderRight: `1px solid ${theme.palette.divider}`,
+    },
+>>>>>>> parent of 6e10fd6 (push)
     root: {
         //  flexGrow: 1,
         //  backgroundColor: theme.palette.background.div,
         // display: 'flex',
+<<<<<<< HEAD
         minHeight: "75vh",
         padding: 10
+=======
+        height: "100%",
+>>>>>>> parent of 6e10fd6 (push)
         //  border: "none"
     },
     dayTabsWrapper: {
@@ -34,6 +50,7 @@ const styles = (theme) => createStyles({
         height: "100%",
     },
     cardSkillDemand: {
+<<<<<<< HEAD
         border: "1px solid #E3F2FD",
         // backgroundColor: "#E3F2FD",
         borderRadius: 4,
@@ -46,242 +63,18 @@ const styles = (theme) => createStyles({
             padding: "0 0 0 10px"
         }
     },
+=======
+        border: "none",
+        backgroundColor: "#E3F2FD",
+
+    }
+>>>>>>> parent of 6e10fd6 (push)
 
 });
 
-const data = [
-    {
-        day: 0,
-        operatingTime: { start: 14, end: 46 },
-        demands: [ //mang hay map tuy m
-            {
-                skillId: 1,
-                skillName: "Bartender",
-                demandDatas: [
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 }
-                ]
-            },
-            {
-                skillId: 2,
-                skillName: "Cashier",
-                demandDatas: [
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 }
-                ]
-            },
-            {
-                skillId: 3,
-                skillName: "Waiter",
-                demandDatas: [
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 }
-                ]
-            },
-        ]
-    },
-    {
-        day: 1,
-        operatingTime: { start: 14, end: 46 },
-        demands: [ //mang hay map tuy m
-            {
-                skillId: 1,
-                skillName: "Bartender",
-                demandDatas: [
-                    { start: 14, end: 24, level: 1, quantity: 2 },
-                    { start: 24, end: 34, level: 1, quantity: 2 },
-                    { start: 34, end: 46, level: 1, quantity: 2 }
-                ]
-            },
-            {
-                skillId: 2,
-                skillName: "Cashier",
-                demandDatas: [
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 }
-                ]
-            },
-            {
-                skillId: 3,
-                skillName: "Waiter",
-                demandDatas: [
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 }
-                ]
-            },
-        ]
-    },
-    {
-        day: 2,
-        operatingTime: { start: 14, end: 46 },
-        demands: [ //mang hay map tuy m
-            {
-                skillId: 1,
-                skillName: "Bartender",
-                demandDatas: [
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 }
-                ]
-            },
-            {
-                skillId: 2,
-                skillName: "Cashier",
-                demandDatas: [
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 }
-                ]
-            },
-            {
-                skillId: 3,
-                skillName: "Waiter",
-                demandDatas: [
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 }
-                ]
-            },
-        ]
-    },
-    {
-        day: 3,
-        operatingTime: { start: 14, end: 46 },
-        demands: [ //mang hay map tuy m
-            {
-                skillId: 1,
-                skillName: "Bartender",
-                demandDatas: [
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 }
-                ]
-            },
-            {
-                skillId: 2,
-                skillName: "Cashier",
-                demandDatas: [
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 }
-                ]
-            },
-            {
-                skillId: 3,
-                skillName: "Waiter",
-                demandDatas: [
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 }
-                ]
-            },
-        ]
-    },
-    {
-        day: 4,
-        operatingTime: { start: 14, end: 46 },
-        demands: [ //mang hay map tuy m
-            {
-                skillId: 1,
-                skillName: "Bartender",
-                demandDatas: [
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 }
-                ]
-            },
-            {
-                skillId: 2,
-                skillName: "Cashier",
-                demandDatas: [
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 }
-                ]
-            },
-            {
-                skillId: 3,
-                skillName: "Waiter",
-                demandDatas: [
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 }
-                ]
-            },
-        ]
-    },
-    {
-        day: 5,
-        operatingTime: { start: 14, end: 46 },
-        demands: [ //mang hay map tuy m
-            {
-                skillId: 1,
-                skillName: "Bartender",
-                demandDatas: [
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 }
-                ]
-            },
-            {
-                skillId: 2,
-                skillName: "Cashier",
-                demandDatas: [
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 }
-                ]
-            },
-            {
-                skillId: 3,
-                skillName: "Waiter",
-                demandDatas: [
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 }
-                ]
-            },
-        ]
-    },
-    {
-        day: 6,
-        operatingTime: { start: 14, end: 46 },
-        demands: [ //mang hay map tuy m
-            {
-                skillId: 1,
-                skillName: "Bartender",
-                demandDatas: [
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 }
-                ]
-            },
-            {
-                skillId: 2,
-                skillName: "Cashier",
-                demandDatas: [
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 }
-                ]
-            },
-            {
-                skillId: 3,
-                skillName: "Waiter",
-                demandDatas: [
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 },
-                    { start: 14, end: 46, level: 1, quantity: 2 }
-                ]
-            },
-        ]
-    },
-]
+// const CardStyled = styled(Card) {
+
+// }
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -293,7 +86,11 @@ function TabPanel(props) {
             id={`simple-tabpanel-${index}`}
             aria-labelledby={`simple-tab-${index}`}
             {...other}
+<<<<<<< HEAD
             style={{ minHeight: '100%' }}
+=======
+            style={{ width: '100%' }}
+>>>>>>> parent of 6e10fd6 (push)
         >
             {value === index && (
                 <React.Fragment>
@@ -319,6 +116,7 @@ class DemandPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+<<<<<<< HEAD
             openDeleteDialog: false,
             openEditDialog: false,
             EditorIndex: -1,
@@ -340,6 +138,10 @@ class DemandPage extends React.Component {
             })
         );
 
+=======
+            tabIndex: 0
+        }
+>>>>>>> parent of 6e10fd6 (push)
         this.days = [
             { title: "Monday", value: 0 },
             { title: "Tuesday", value: 1 },
@@ -442,6 +244,7 @@ class DemandPage extends React.Component {
             quantity: 1,
         });
     }
+<<<<<<< HEAD
 
     onSaveEditor = async () => {
 
@@ -706,6 +509,8 @@ class DemandPage extends React.Component {
             </Dialog>
         );
     }
+=======
+>>>>>>> parent of 6e10fd6 (push)
 
     handleSubmitDemand = () => {
         // const temp = {
@@ -760,6 +565,7 @@ class DemandPage extends React.Component {
                         {this.days.map(day => (<Tab classes={{ root: classes.tabs_root }} disableRipple label={day.title} key={day.title} value={day.value} />))}
                     </Tabs>
                 </Grid>
+<<<<<<< HEAD
                 <Grid item xs={10} className={classes.demandPanelWrapper}>
                     <TabPanel value={0} index={0} >
 
@@ -833,6 +639,76 @@ class DemandPage extends React.Component {
                 {this.renderDeleteDialog()}
                 {this.renderEditDialog()}
             </Grid >
+=======
+                <Grid item xs={10}>
+                    <TabPanel value={this.state.tabIndex} index={0}>
+                        <Grid container spacing={2} style={{ padding: 20 }}>
+                            <Grid item xs={3}>
+                                <Typography align="center" variant="h4">Bartender</Typography>
+                                <Card className={classes.cardSkillDemand} elevation={0}>
+                                    <CardHeader disableTypography={false}
+                                        title={<Typography variant="h5" style={{ color: "#2196F3" }}>Bartender</Typography>} />
+                                    <CardContent>
+                                        <Typography variant="h6" style={{ color: "#2196F3" }}>7:00 - 12:00</Typography>
+                                        <Typography variant="h6" style={{ color: "#2196F3" }}>2 Beginer</Typography>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                            <Grid item xs={3}>
+                                <Typography align="center" variant="h4">Bartender</Typography>
+                                <Card>
+                                    <CardHeader title="Bartender" />
+                                    <CardContent>
+                                        <Typography variant="h5">7:00 - 12:00</Typography>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                            <Grid item xs={3}>
+                                <Typography align="center" variant="h4">Bartender</Typography>
+                                <Card>
+                                    <CardHeader title="Bartender" />
+                                    <CardContent>
+                                        <Typography variant="h5">7:00 - 12:00</Typography>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                            <Grid item xs={3}>
+                                <Typography align="center" variant="h4">Bartender</Typography>
+                                <Card>
+                                    <CardHeader title="Bartender" classes={{
+                                        title: {
+
+                                        }
+                                    }} />
+                                    <CardContent>
+                                        <Typography variant="h5">7:00 - 12:00</Typography>
+                                    </CardContent>
+                                </Card>
+                            </Grid>
+                        </Grid>
+
+                    </TabPanel>
+                    <TabPanel value={this.state.tabIndex} index={1}>
+                        Item Two
+                    </TabPanel>
+                    <TabPanel value={this.state.tabIndex} index={2}>
+                        Item Three
+                    </TabPanel>
+                    <TabPanel value={this.state.tabIndex} index={3}>
+                        Item Four
+                    </TabPanel>
+                    <TabPanel value={this.state.tabIndex} index={4}>
+                        Item Five
+                    </TabPanel>
+                    <TabPanel value={this.state.tabIndex} index={5}>
+                        Item Six
+                    </TabPanel>
+                    <TabPanel value={this.state.tabIndex} index={6}>
+                        Item Seven
+                    </TabPanel>
+                </Grid>
+            </Grid>
+>>>>>>> parent of 6e10fd6 (push)
         );
     }
 

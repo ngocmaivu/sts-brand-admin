@@ -13,7 +13,7 @@ import { CardCustom } from '../../CardCustom';
 import './schedule.css';
 
 import { Tab } from '@material-ui/core';
-import { Field, reduxForm, formValueSelector } from 'redux-form';
+import { useStyles } from '@material-ui/pickers/views/Calendar/SlideTransition';
 import PropTypes from 'prop-types';
 import Demand from '../demand';
 import SettingConstraintsForm from './SettingConstraintsForm';
@@ -28,18 +28,40 @@ const styles = (theme) => createStyles({
     },
 })
 
+<<<<<<< HEAD
+=======
+const timeSlots = Array.from(new Array(24 * 2)).map(
+    (_, index) => ({
+        title: `${index < 20 ? '0' : ''}${Math.floor(index / 2)}:${index % 2 === 0 ? '00' : '30'}`,
+        value: index
+    })
+);
+
+const SectionSetting = ({ label, children, }) => {
+    return (
+        <Grid style={{ borderBottom: "1px solid #dfe2e6", paddingBlock: 15 }} container item alignItems="center" >
+            <Grid item style={{ maxWidth: 600, flexGrow: 1, fontWeight: 500 }}>{label}</Grid >
+            {/* <Grid item style={{ flexGrow: 1 }}></Grid > */}
+            <Grid item xs={6} >
+                {children}
+            </Grid>
+
+        </Grid>
+    );
+}
+>>>>>>> parent of 6e10fd6 (push)
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
-
+    const classes = useStyles();
     return (
         <div
-            role="tabpanel"
+            role="tabpanel" className={classes.card}
             hidden={value !== index}
             id={`simple-tabpanel-${index}`}
             aria-labelledby={`simple-tab-${index}`}
             {...other}
-            style={{ width: '100%', height: "85%" }}
+            style={{ width: '100%', height: "100%" }}
         >
             {value === index && (
                 <React.Fragment>
@@ -55,6 +77,7 @@ TabPanel.propTypes = {
     index: PropTypes.any.isRequired,
     value: PropTypes.any.isRequired,
 };
+
 
 class SettingSchedule extends React.Component {
     constructor(props) {
@@ -96,6 +119,7 @@ class SettingSchedule extends React.Component {
             }
         ];
 
+<<<<<<< HEAD
 
     }
 
@@ -155,6 +179,8 @@ class SettingSchedule extends React.Component {
         const storeScheduleDetails = await getWeekScheduleConstraint(this.state.weekScheduleId);
 
         this.renderConstraintData(storeScheduleDetails);
+=======
+>>>>>>> parent of 6e10fd6 (push)
     }
 
     componentDidMount = async () => {
@@ -185,7 +211,12 @@ class SettingSchedule extends React.Component {
         const classes = this.props.classes;
         return (
             <Paper className={classes.container}>
-                <CardHeader variant="h2" title=" Template Schedule Setting" disableTypography={false}
+
+                <CardHeader title={
+                    <Typography variant="h2">
+                        Template Schedule Setting
+                    </Typography>
+                } disableTypography={false}
                     action={
                         <Button variant="contained" color="primary">Add Personal Custom Setting</Button>
                     }
@@ -204,11 +235,16 @@ class SettingSchedule extends React.Component {
                     textColor="primary"
                     onChange={this.handleChange}
                     aria-label="disabled tabs example"
+<<<<<<< HEAD
+=======
+                    keep
+>>>>>>> parent of 6e10fd6 (push)
                 >
                     <Tab label="Constraints " value={0} />
                     <Tab label="Demands" value={1} />
                 </Tabs>
                 <TabPanel value={this.state.tabIndex} index={0}>
+<<<<<<< HEAD
                     {
                         this.state.constraintData ? (
                             <SettingConstraintsForm initialValues={this.state.constraintData} onSubmit={this.onSubmitConstraints} />
@@ -218,6 +254,192 @@ class SettingSchedule extends React.Component {
 
                 <TabPanel value={this.state.tabIndex} index={1}>
                     <Demand dateStart={this.state.dateStart} weekScheduleId={this.state.weekScheduleId} />
+=======
+                    <CardContent>
+                        <Grid container spacing={5} >
+                            <Grid item xs={12}>
+                                <CardCustom header='General'>
+                                    <Grid container direction="column" spacing={1} style={{ paddingLeft: 20 }} >
+                                        <SectionSetting label="Operating Hour" >
+                                            <Grid container spacing={2} alignItems="center">
+                                                <Grid item style={{ width: 180 }}>
+                                                    <Autocomplete
+
+                                                        options={timeSlots}
+                                                        getOptionLabel={(option) => option.title}
+                                                        renderInput={(params) => (
+                                                            <TextField
+                                                                classes={{
+                                                                    "root": classes.inputAutoComplete
+                                                                }}
+
+                                                                {...params} variant="outlined" />
+                                                        )}
+                                                    />
+                                                </Grid>
+                                                <Grid item>To</Grid>
+                                                <Grid item style={{ width: 180 }}>
+                                                    <Autocomplete
+                                                        style={{ padding: 0 }}
+                                                        options={timeSlots}
+                                                        getOptionLabel={(option) => option.title}
+                                                        renderInput={(params) => (
+                                                            <TextField
+                                                                classes={{
+                                                                    "root": classes.inputAutoComplete
+                                                                }}
+                                                                {...params} variant="outlined" />
+                                                        )}
+                                                    />
+                                                </Grid>
+                                            </Grid>
+                                        </SectionSetting>
+                                        <SectionSetting label="Min distance between 2 shifts " >
+                                            <TextField classes={{
+                                                "root": classes.inputAutoComplete
+                                            }} size="small" type="number" variant="outlined" />
+                                        </SectionSetting>
+                                    </Grid>
+                                </CardCustom>
+                            </Grid>
+                            <Grid item container direction="row" spacing={5}>
+                                <Grid item xs={6}>
+                                    <CardCustom header='For fulltime'>
+                                        <Grid container direction="column" spacing={1} style={{ paddingLeft: 20 }} >
+                                            <SectionSetting label="Min Day Off" >
+                                                <TextField classes={{
+                                                    "root": classes.inputAutoComplete
+                                                }} size="small" type="number" variant="outlined" />
+                                            </SectionSetting>
+
+                                            <SectionSetting label="Max Day Off" >
+                                                <TextField classes={{
+                                                    "root": classes.inputAutoComplete
+                                                }} size="small" type="number" variant="outlined" />
+                                            </SectionSetting>
+
+                                            <SectionSetting label="Min Working Time of the week " >
+                                                <TextField classes={{
+                                                    "root": classes.inputAutoComplete
+                                                }} size="small" type="number" variant="outlined" />
+                                            </SectionSetting>
+
+                                            <SectionSetting label="Max Working Time of the week " >
+                                                <TextField classes={{
+                                                    "root": classes.inputAutoComplete
+                                                }} size="small" type="number" variant="outlined" />
+                                            </SectionSetting>
+
+                                            <SectionSetting label="Min Working Time of the day " >
+                                                <TextField classes={{
+                                                    "root": classes.inputAutoComplete
+                                                }} size="small" type="number" variant="outlined" />
+                                            </SectionSetting>
+
+                                            <SectionSetting label="Max Working Time of the day " >
+                                                <TextField classes={{
+                                                    "root": classes.inputAutoComplete
+                                                }} size="small" type="number" variant="outlined" />
+                                            </SectionSetting>
+                                            <SectionSetting label="Min shift duration (30 minutes)" >
+                                                <TextField classes={{
+                                                    "root": classes.inputAutoComplete
+                                                }} size="small" type="number" variant="outlined" />
+                                            </SectionSetting>
+
+                                            <SectionSetting label="Max shift duration (30 minutes)" >
+                                                <TextField classes={{
+                                                    "root": classes.inputAutoComplete
+                                                }} size="small" type="number" variant="outlined" />
+                                            </SectionSetting>
+
+                                            <SectionSetting label="Max number of shift of the day" >
+                                                <TextField classes={{
+                                                    "root": classes.inputAutoComplete
+                                                }} size="small" type="number" variant="outlined" />
+                                            </SectionSetting>
+                                        </Grid>
+                                    </CardCustom>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <CardCustom header='For parttime'>
+                                        <Grid container direction="column" spacing={1} style={{ paddingLeft: 20 }} >
+                                            <SectionSetting label="Min Day Off" >
+                                                <TextField classes={{
+                                                    "root": classes.inputAutoComplete
+                                                }} size="small" type="number" variant="outlined" />
+                                            </SectionSetting>
+
+                                            <SectionSetting label="Max Day Off" >
+                                                <TextField classes={{
+                                                    "root": classes.inputAutoComplete
+                                                }} size="small" type="number" variant="outlined" />
+                                            </SectionSetting>
+
+                                            <SectionSetting label="Min Working Time of the week " >
+                                                <TextField classes={{
+                                                    "root": classes.inputAutoComplete
+                                                }} size="small" type="number" variant="outlined" />
+                                            </SectionSetting>
+
+                                            <SectionSetting label="Max Working Time of the week " >
+                                                <TextField classes={{
+                                                    "root": classes.inputAutoComplete
+                                                }} size="small" type="number" variant="outlined" />
+                                            </SectionSetting>
+
+                                            <SectionSetting label="Min Working Time of the day " >
+                                                <TextField classes={{
+                                                    "root": classes.inputAutoComplete
+                                                }} size="small" type="number" variant="outlined" />
+                                            </SectionSetting>
+
+                                            <SectionSetting label="Max Working Time of the day " >
+                                                <TextField classes={{
+                                                    "root": classes.inputAutoComplete
+                                                }} size="small" type="number" variant="outlined" />
+                                            </SectionSetting>
+                                            <SectionSetting label="Min shift duration (30 minutes)" >
+                                                <TextField classes={{
+                                                    "root": classes.inputAutoComplete
+                                                }} size="small" type="number" variant="outlined" />
+                                            </SectionSetting>
+
+                                            <SectionSetting label="Max shift duration (30 minutes)" >
+                                                <TextField classes={{
+                                                    "root": classes.inputAutoComplete
+                                                }} size="small" type="number" variant="outlined" />
+                                            </SectionSetting>
+
+                                            <SectionSetting label="Max number of shift of the day" >
+                                                <TextField classes={{
+                                                    "root": classes.inputAutoComplete
+                                                }} size="small" type="number" variant="outlined" />
+                                            </SectionSetting>
+                                        </Grid>
+                                    </CardCustom>
+                                </Grid>
+                            </Grid>
+
+                            <Grid item container xs={12} justify="flex-end" spacing={1} direction="row">
+                                <Grid item >
+                                    <Button variant="contained" color="primary">Save change</Button>
+                                </Grid>
+                                <Grid item>
+                                    <Button variant="outlined" color="primary">Cancel </Button>
+                                </Grid>
+                            </Grid>
+                        </Grid>
+                    </CardContent>
+                </TabPanel>
+
+                <TabPanel value={this.state.tabIndex} index={1}>
+
+
+                    <Demand />
+
+
+>>>>>>> parent of 6e10fd6 (push)
                 </TabPanel>
 
                 <Divider />
@@ -226,4 +448,8 @@ class SettingSchedule extends React.Component {
     }
 }
 
+<<<<<<< HEAD
 export default withStyles(styles, { withTheme: true })(SettingSchedule);
+=======
+export default withStyles(styles, { withTheme: true })(SettingSchedule);
+>>>>>>> parent of 6e10fd6 (push)

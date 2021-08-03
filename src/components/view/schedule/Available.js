@@ -150,6 +150,13 @@ class AvailablePage extends React.Component {
                 this.updateShiftRegisterDatas();
             }
 
+<<<<<<< HEAD
+=======
+    render(){
+        <div>
+
+        </div>
+>>>>>>> parent of 6e10fd6 (push)
     }
 
     handleWeekChange = async (date) => {
