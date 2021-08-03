@@ -8,7 +8,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { CardContent, CardHeader, Divider, FormControl, FormLabel, Grid, Typography } from '@material-ui/core';
+import { Box, Button, Card, CardContent, CardHeader, Divider, FormControl, FormLabel, Grid, Typography } from '@material-ui/core';
 import WeekPicker from '../../WeekPicker';
 import { format, isSameDay, startOfWeek, } from 'date-fns';
 import { getStaffs, getShiftRegisterDatas, getWeekSchedule, } from '../../../_services';
@@ -25,6 +25,9 @@ const styles = (Theme) => createStyles({
     containerContent: {
         padding: "20px 20px"
     },
+    cell: {
+        border: "1px solid #e0e0e0",
+    }
 
 });
 class AvailablePage extends React.Component {
@@ -49,8 +52,6 @@ class AvailablePage extends React.Component {
             staffs: staffs
         });
     }
-
-
 
     updateShiftRegisterDatas = async () => {
         console.log(this.props.weekSchedules[0]);
@@ -93,7 +94,7 @@ class AvailablePage extends React.Component {
                                     <Typography variant="subtitle1">{shiftRegisterData.fullname}</Typography>
                                 </Grid>
                                 <Grid item>
-                                    <Typography variant="subtitle2">{`${totalHoursPerWeek} hrs`}</Typography>
+                                    <Typography variant="subtitle2" f>{`${totalHoursPerWeek} hrs`}</Typography>
                                 </Grid>
                             </Grid>
                         </TableCell>
@@ -167,56 +168,87 @@ class AvailablePage extends React.Component {
     render() {
 
 
-        return (<div>
-            <Paper className={this.props.classes.container}>
-                <CardHeader title={
-                    <Typography variant="h2">
-                        Availability
-                    </Typography>
-                } disableTypography={false}
-                />
-                <Divider />
-                <CardContent className={this.props.classes.containerContent}>
-                    <FormControl margin="normal" variant="outlined" >
-                        <FormLabel >Select Week</FormLabel>
+        return (<React.Fragment>
+            <Card style={{ padding: '12px', paddingLeft: 18, marginBottom: '16px' }} elevation={0}>
+                <Typography variant="h3">Availability</Typography>
+                <Box height={16}></Box>
+                <Grid container direction="row" justify="space-between" alignItems="center">
+                    <Grid item container direction="row" justify="flex-start" alignItems="center" spacing={4} xs={7}>
+                        <Grid item >
+                            <Typography variant="subtitle1">Select Week</Typography>
+                        </Grid>
+                        <Grid item xs={8}>
+                            <FormControl margin="normal" variant="outlined" >
+                                <WeekPicker onChange={this.handleWeekChange} value={this.state.dateStart} />
+                            </FormControl>
+                        </Grid>
+                    </Grid>
+                    <Grid item>
+                        {/* <Button color="primary" variant="outlined" >Add manually</Button> */}
+                    </Grid>
+                </Grid>
 
-                        <WeekPicker onChange={this.handleWeekChange} value={this.state.dateStart} />
-                    </FormControl>
-                    <TableContainer>
-                        <Table aria-label="simple table" >
-                            <TableHead>
+            </Card>
+            <Paper className={this.props.classes.container} style={{ height: "75vh" }}>
+
+                <CardContent className={this.props.classes.containerContent} style={{ height: "100%" }}>
+
+                    <TableContainer style={{ height: "100%" }}>
+                        <Table aria-label="simple table" stickyHeader>
+                            <TableHead >
                                 <TableRow >
-                                    <TableCell align="left" variant="head" >Username</TableCell>
+                                    <TableCell align="left" variant="head" ><Typography variant="h4">Username</Typography></TableCell>
                                     <TableCell align="center"><Typography variant="h4">Mon, {this.state.dateStart.getDate()}</Typography></TableCell>
-                                    <TableCell align="center">Tue, {this.state.dateStart.getDate() + 1}</TableCell>
-                                    <TableCell align="center">Wed, {this.state.dateStart.getDate() + 2}</TableCell>
-                                    <TableCell align="center">Thu, {this.state.dateStart.getDate() + 3}</TableCell>
-                                    <TableCell align="center">Fri, {this.state.dateStart.getDate() + 4}</TableCell>
-                                    <TableCell align="center">Sat, {this.state.dateStart.getDate() + 5}</TableCell>
-                                    <TableCell align="center">Sun, {this.state.dateStart.getDate() + 6}</TableCell>
+                                    <TableCell align="center"><Typography variant="h4">Tue, {this.state.dateStart.getDate() + 1}</Typography></TableCell>
+                                    <TableCell align="center"><Typography variant="h4">Wed, {this.state.dateStart.getDate() + 2}</Typography></TableCell>
+                                    <TableCell align="center"><Typography variant="h4">Thu, {this.state.dateStart.getDate() + 3}</Typography></TableCell>
+                                    <TableCell align="center"><Typography variant="h4">Fri, {this.state.dateStart.getDate() + 4}</Typography></TableCell>
+                                    <TableCell align="center"><Typography variant="h4">Sat, {this.state.dateStart.getDate() + 5}</Typography></TableCell>
+                                    <TableCell align="center"><Typography variant="h4">Sun, {this.state.dateStart.getDate() + 6}</Typography></TableCell>
                                 </TableRow>
                             </TableHead>
-                            {
-                                this.state.shiftRegisterDatas ?
-                                    (
-                                        <TableBody>
-                                            {
-                                                this.renderAvailableRows()
-                                            }
-                                        </TableBody>
-                                    )
-                                    : (
+                            <TableBody>
+                                {
+                                    this.state.shiftRegisterDatas ?
 
-                                        <Skeleton variant="rect" style={{ width: "100%", height: "700px" }} ></Skeleton>
 
-                                    )
-                            }
+                                        
+                                            this.renderAvailableRows()
+                                        
 
+
+                                        : (
+
+                                            <TableRow>
+                                                <TableCell colSpan={8} >
+                                                    <Grid container spacing={2} direction="column" >
+                                                        <Grid item xs>
+                                                            <Skeleton animation="wave" variant="rect" height="175px" />
+                                                        </Grid>
+                                                        <Grid item xs>
+                                                            <Skeleton animation="wave" variant="rect" height="120px" />
+                                                        </Grid>
+                                                        <Grid item xs>
+                                                            <Skeleton animation="wave" variant="rect" height="70px" />
+                                                        </Grid>
+                                                        <Grid item xs>
+                                                            <Skeleton animation="wave" variant="rect" height="40px" />
+                                                        </Grid>
+                                                        <Grid item xs>
+                                                            <Skeleton animation="wave" variant="rect" height="20px" />
+                                                        </Grid>
+                                                    </Grid>
+                                                </TableCell>
+                                            </TableRow>
+
+                                        )
+                                }
+                            </TableBody>
                         </Table>
                     </TableContainer>
                 </CardContent>
             </Paper>
-        </div >
+        </React.Fragment >
         );
     }
 }

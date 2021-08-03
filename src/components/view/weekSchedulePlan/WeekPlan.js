@@ -3,13 +3,13 @@ import { withRouter } from "react-router";
 import { createStyles, withStyles } from '@material-ui/core/styles';
 
 import Paper from '@material-ui/core/Paper';
-import { Button, CardContent, CardHeader, Chip, Divider, FormControl, FormLabel, Grid, IconButton, Tab, Tabs, Typography } from '@material-ui/core';
+import { Button, CardContent, CardHeader, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControl, FormLabel, Grid, IconButton, Tab, Tabs, TextField, Typography } from '@material-ui/core';
 import { fetchWeekSchedule, fetchSkillSrc, fetchDefaultConfig } from "../../../_actions/";
 import { format, isSameDay, startOfWeek, } from 'date-fns';
 import { Skeleton } from '@material-ui/lab';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getWeekScheduleConstraint, postConstraint, updateConstraint } from '../../../_services';
+import { getWeekScheduleConstraint, postConstraint, updateConstraint, updateWeekScheduleName } from '../../../_services';
 import SettingConstraintsForm from '../schedule/SettingConstraintsForm';
 import { getConstraintDefault } from "../../../ultis/scheduleDefault";
 import Demand from '../demand';
@@ -17,6 +17,8 @@ import Schedule from "../schedule";
 
 import _ from "lodash";
 import { addDays } from '@syncfusion/ej2-react-schedule';
+import { EditOutlined } from '@material-ui/icons';
+import EditWeekScheduleNameDialog from './EditWeekScheduleNameDialog';
 
 const styles = (Theme) => createStyles({
     container: {
@@ -67,6 +69,7 @@ class WeekPlan extends React.Component {
 
         this.state = {
             tabIndex: 0,
+            openEditNameDialog: false,
             methodSubmitConstraint: null
         };
         this.props.fetchDefaultConfig();
@@ -159,13 +162,31 @@ class WeekPlan extends React.Component {
         console.log(event);
         this.setState({ tabIndex: newValue });
     }
+    renderEditNameDialog = () => {
+        const handleClose = () => {
+            this.setState({ openEditNameDialog: false });
+        }
 
+        return (
+            <EditWeekScheduleNameDialog open={this.state.openEditNameDialog}
+                handleClose={handleClose}
+                nameValue={this.props.currentSchedule?.name}
+                onSubmit={async (name) => {
+                    console.log(name);
+                    await updateWeekScheduleName(this.props.currentSchedule.id, name);
+                    this.fetchData();
+                    handleClose();
+
+                }}
+            />);
+    }
     render() {
         return (<div>
             <Paper style={{ padding: 16, marginBottom: 16 }} elevation={0}>
-                <Typography variant="h3">
-                    Schedule Plan Name
-                </Typography>
+                <CardHeader title={this.props.currentSchedule?.name} style={{ padding: 0 }} titleTypographyProps={{ variant: "h3" }}
+                    action={<IconButton onClick={() => {
+                        this.setState({ openEditNameDialog: true });
+                    }}><EditOutlined color="primary" /></IconButton>} />
                 <Typography variant="h3">
                     Week: {this.props.currentSchedule ?
                         `${format(new Date(this.props.currentSchedule.dateStart), "dd/MM/yyyy")} - ${format(addDays(new Date(this.props.currentSchedule.dateStart), 6), "dd/MM/yyyy")}` : null}
@@ -210,6 +231,7 @@ class WeekPlan extends React.Component {
                     }
                 </TabPanel>
             </Paper>
+            {this.renderEditNameDialog()}
         </div >
         );
     }

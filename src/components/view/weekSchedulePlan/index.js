@@ -8,7 +8,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-import { Button, CardContent, CardHeader, Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, FormControl, FormLabel, Grid, IconButton, Tab, Tabs, Tooltip, Typography } from '@material-ui/core';
+import { Box, Button, CardContent, CardHeader, Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, FormControl, FormLabel, Grid, IconButton, Tab, Tabs, Tooltip, Typography } from '@material-ui/core';
 import WeekPicker from '../../WeekPicker';
 import { format, isSameDay, startOfWeek, } from 'date-fns';
 import { cloneSchedule, deleteWeekSchedule, publishSchedule, unpublishSchedule, } from '../../../_services';
@@ -58,6 +58,7 @@ class WeekPlanManage extends React.Component {
             tabIndex: 0,
             openAddDialog: false,
             openDeleteDialog: false,
+            openCloneDialog: false,
             disabledCloneButton: false,
             disabledPublishButton: false,
             disabledUnpublishButton: false,
@@ -137,13 +138,13 @@ class WeekPlanManage extends React.Component {
                 <TableRow key={weekSchedule.id} hover className={this.props.classes.weekScheduleRow} onClick={
                     () => { this.handleRowClick(weekSchedule.id); }
                 } >
-                    <TableCell align="center">{weekSchedule.id}</TableCell>
-                    <TableCell align="left" variant="head" >Plan name</TableCell>
+                    {/* <TableCell align="center">{weekSchedule.id}</TableCell> */}
+                    <TableCell align="left"  >{weekSchedule.name}</TableCell>
                     <TableCell align="center">{format(new Date(weekSchedule.dateStart), dateFormat)}</TableCell>
                     <TableCell align="center">{format(addDays((new Date(weekSchedule.dateStart)), 6), dateFormat)}</TableCell>
                     <TableCell align="center">{format(new Date(weekSchedule.dateCreated), dateFormat)}</TableCell>
-                    <TableCell align="center">Create By</TableCell>
-                    <TableCell align="center">Last result</TableCell>
+                    <TableCell align="center">{weekSchedule.createBy}</TableCell>
+                    {/* <TableCell align="center">Last result</TableCell> */}
                     <TableCell align="center" onClick={(e) => { e.stopPropagation(); }}>
                         {
                             this.renderActionButtons(weekSchedule.status, weekSchedule.id)
@@ -159,7 +160,7 @@ class WeekPlanManage extends React.Component {
                 return (
                     <React.Fragment>
                         <Tooltip title="Duplicate">
-                            <IconButton onClick={(e) => { this.cloneSchedule(id) }} disabled={this.state.cloneScheduleId == id && this.state.disabledCloneButton}>
+                            <IconButton onClick={(e) => { this.setState({ currentScheduleId: id, openCloneDialog: true }); }} >
                                 <FileCopyOutlinedIcon />
                             </IconButton>
                         </Tooltip>
@@ -172,7 +173,7 @@ class WeekPlanManage extends React.Component {
                         </Tooltip>
 
                         <Tooltip title="Unpublish">
-                            <IconButton onClick={(e) => { this.unpublishSchedule(id) }} disabled={this.state.currentScheduleId == id}>
+                            <IconButton onClick={(e) => { this.unpublishSchedule(id) }} >
                                 <GetAppRoundedIcon />
                             </IconButton>
                         </Tooltip>
@@ -182,7 +183,7 @@ class WeekPlanManage extends React.Component {
                 return (
                     <React.Fragment>
                         <Tooltip title="Duplicate">
-                            <IconButton onClick={(e) => { this.cloneSchedule(id) }} disabled={this.state.currentScheduleId == id}>
+                            <IconButton onClick={(e) => { this.setState({ currentScheduleId: id, openCloneDialog: true }); }} >
                                 <FileCopyOutlinedIcon />
                             </IconButton>
                         </Tooltip>
@@ -191,7 +192,7 @@ class WeekPlanManage extends React.Component {
                                 <DeleteOutlineOutlinedIcon />
                             </IconButton>
                         </Tooltip>
-                        <Tooltip title="Publish" onClick={(e) => { this.publishSchedule(id) }} disabled={this.state.currentScheduleId == id}>
+                        <Tooltip title="Publish" onClick={(e) => { this.publishSchedule(id) }} >
                             <IconButton>
                                 <PublishRoundedIcon />
                             </IconButton>
@@ -203,13 +204,16 @@ class WeekPlanManage extends React.Component {
         }
     }
 
-    cloneSchedule = async (weekScheduleId) => {
-        this.setState({ disabledCloneButton: true, currentScheduleId: weekScheduleId });
+    cloneSchedule = async () => {
+        this.setState({ disabledCloneButton: true });
 
-        let result = await cloneSchedule(weekScheduleId);
+        let result = await cloneSchedule(this.state.currentScheduleId);
+
+        cloneSchedulesDataFromFirebase(this.state.currentScheduleId, result.id, this.StoreId, this.BrandId);
+
         this.setState({ disabledCloneButton: false, currentScheduleId: -1 });
         this.fetchData();
-        cloneSchedulesDataFromFirebase(weekScheduleId, result.id, this.StoreId, this.BrandId);
+
         // getSchedulesDataFromFirebase(weekScheduleId, this.StoreId, this.BrandId, getScheduleCallback);
     }
 
@@ -271,16 +275,61 @@ class WeekPlanManage extends React.Component {
             </Dialog>
         );
     }
+    renderDuplicateDialog = () => {
 
+        const handleClose = () => {
+            this.setState({ openCloneDialog: false });
+        }
+
+        return (
+            <Dialog
+                open={this.state.openCloneDialog}
+                onClose={handleClose}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">{"Clone Dialog?"}</DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                        {`Do you want to clone this week plan:${this.state.currentScheduleId} `}
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={() => {
+                        this.cloneSchedule();
+                        handleClose();
+                    }} color="primary" autoFocus>
+                        Confirm
+                    </Button>
+
+                </DialogActions>
+            </Dialog>
+        );
+    }
     render() {
         return (<div>
             <Paper style={{ padding: 16, marginBottom: 12 }} elevation={0}>  <Typography variant="h2">
                 Schedule Plan
             </Typography>
-                <FormControl margin="normal" variant="outlined" >
-                    <FormLabel >Select Week</FormLabel>
-                    <WeekPicker onChange={this.handleWeekChange} value={this.state.dateStart} />
-                </FormControl>
+                <Box height={16}></Box>
+                <Grid container direction="row" justify="space-between" alignItems="center">
+                    <Grid item container direction="row" justify="flex-start" alignItems="center" spacing={4} xs={7}>
+                        <Grid item >
+                            <Typography variant="subtitle1">Select Week</Typography>
+                        </Grid>
+                        <Grid item xs={8}>
+                            <FormControl margin="normal" variant="outlined" >
+                                <WeekPicker onChange={this.handleWeekChange} value={this.state.dateStart} />
+                            </FormControl>
+                        </Grid>
+                    </Grid>
+                    <Grid item>
+                        {/* <Button color="primary" variant="outlined" >Add manually</Button> */}
+                    </Grid>
+                </Grid>
             </Paper>
 
             <Paper className={this.props.classes.container}>
@@ -299,16 +348,16 @@ class WeekPlanManage extends React.Component {
                 <CardContent className={this.props.classes.containerContent}>
 
                     <TableContainer>
-                        <Table aria-label="simple table" >
+                        <Table aria-label="simple table" stickyHeader >
                             <TableHead>
                                 <TableRow >
-                                    <TableCell align="center">WeekId</TableCell>
+                                    {/* <TableCell align="center">WeekId</TableCell> */}
                                     <TableCell align="left" variant="head" >Plan name</TableCell>
                                     <TableCell align="center">From Date</TableCell>
                                     <TableCell align="center">To Date</TableCell>
                                     <TableCell align="center">Create Date</TableCell>
                                     <TableCell align="center">Create By</TableCell>
-                                    <TableCell align="center">Last result</TableCell>
+                                    {/* <TableCell align="center">Last result</TableCell> */}
                                     <TableCell align="center">Actions</TableCell>
                                 </TableRow>
                             </TableHead>
@@ -328,6 +377,9 @@ class WeekPlanManage extends React.Component {
 
                     {
                         this.renderDeleteDialog()
+                    }
+                    {
+                        this.renderDuplicateDialog()
                     }
                 </CardContent>
             </Paper>
