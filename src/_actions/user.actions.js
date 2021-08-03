@@ -12,7 +12,7 @@ export const userActions = {
     updateUser,
     delete: _delete
 };
-
+const userInfor = JSON.parse(localStorage.getItem("jwt_decode"))
 function login(username, password) {
     return dispatch => {
         dispatch(request({ username }));
@@ -25,7 +25,8 @@ function login(username, password) {
                         dispatch(alertActions.error("Invalid user name or password"));
                     } else {
                         dispatch(success(user));
-                        history.push({ pathname: '/brandhome' });
+                        if (userInfor.role === "brand manager") history.push({ pathname: '/brandhome' });
+                        if (userInfor.role === "store manager") history.push({ pathname: '/storehome' });
                     }
                 },
                 error => {
@@ -99,7 +100,7 @@ function getByUserName() {
     };
 
     function request() { return { type: userConstants.GET_USER_REQUEST } }
-    function success(userInfor) { return { type: userConstants.GET_USER_SUCCESS, userInfor} }
+    function success(userInfor) { return { type: userConstants.GET_USER_SUCCESS, userInfor } }
     function failure(error) { return { type: userConstants.GET_USER_FAILURE, error } }
 }
 
