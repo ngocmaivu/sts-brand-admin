@@ -32,7 +32,8 @@ export const updateStaff = (data) => async dispatch => {
         console.log(e);
         dispatch({ type: staffConstants.STAFF_UPDATE_FAILURE });
         // TODO excepction
-
+    }
+}
 // export const createStoreManager = (data) => async dispatch => {
 //     try {
 //         const response = await sts.post("/manager/users/store-manager", { ...data }, { headers: authHeader() });
