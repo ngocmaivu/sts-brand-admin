@@ -80,7 +80,7 @@ class SettingBrandSkill extends React.Component {
         console.log('this is:', this);
     }
     handleDeleteSkill(id) {
-        return (e) => { this.props.delete(id);}
+        return (e) => { this.props.delete(id); }
     }
     componentDidMount() {
         // this.props.getAllByPage(this.state.pageIndex,this.state.pageSize);
@@ -102,8 +102,8 @@ class SettingBrandSkill extends React.Component {
 
                     return (<span>
                         <Button color='primary' > Edit</Button>
-                        <Button  onClick={this.handleDeleteSkill(params.id)} style={{ color: 'red' }}>Delete</Button>
-                        
+                        <Button onClick={this.handleDeleteSkill(params.id)} style={{ color: 'red' }}>Delete</Button>
+
                     </span>);
                 }
             }
@@ -116,31 +116,35 @@ class SettingBrandSkill extends React.Component {
                 <Card style={{ padding: '10px', marginBottom: '20px' }}>
                     <h1>Setting Brand Skill</h1>
                 </Card>
-                <Paper style={{padding: "20px"}}>
+                <Paper style={{ padding: "20px" }}>
                     <form>
                         <Grid container direction="column" spacing={1}>
                             <Grid container item spacing={3} >
-                                <Grid item xs={6}>
+                                <Grid item xs={5}>
                                     <FormControl margin="normal" className={this.props.classes.input} fullWidth >
                                         <FormLabel >Skill:</FormLabel>
                                         <TextField name="name" size="small" variant="outlined" onChange={this.handleChange} />
                                     </FormControl>
                                 </Grid>
-                                <Grid item xs={6}>
+                                <Grid item xs={5}>
                                     <FormControl margin="normal" className={this.props.classes.input} fullWidth>
                                         <FormLabel >Description:</FormLabel>
                                         <TextField name="description" size="small" variant="outlined" onChange={this.handleChange} />
                                     </FormControl>
+                                    {/* {submitted && !user.brand.hotline &&
+                            <div style={{ color: 'red', }} className="help-block">Hotline is required</div>
+                        } */}
+                                </Grid>
+                                <Grid item xs={2}>
+                                    <br/>
+                                    <FormControl margin="normal">
+                                        <Button onClick={() => this.handleClick()} style={{ backgroundColor: '#3751FF', width: '100px' }} variant="contained" >Add</Button>
+                                    </FormControl>
                                 </Grid>
                             </Grid>
-                            <Grid item xs={2}>
-                                <FormControl margin="normal">
-                                    <Button onClick={() => this.handleClick()} style={{ backgroundColor: '#66CCFF' }} variant="contained" >Add</Button>
-                                </FormControl>
 
-                            </Grid>
-                            <div style={{ height: 452, width: '100%' }}>
-                                <DataGrid disableColumnFilter rows={skill.items} columns={columns} rowsPerPageOptions={[10, 20, 50]} rowCount={100} pagination
+                            <div style={{ height: 460, width: '100%' }}>
+                                <DataGrid disableColumnFilter rows={skill.items} columns={columns} rowsPerPageOptions={[10, 20, 50]} rowCount={this.props.rowCount} pagination
                                     paginationMode="server" />
                             </div>
                         </Grid>

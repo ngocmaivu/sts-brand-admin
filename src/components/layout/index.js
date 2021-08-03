@@ -194,13 +194,13 @@ if (user === null) {
       url: '/staffs',
       icon: <GroupOutlinedIcon />
     },
-    {
-      id: 'timekeeping',
-      title: 'Timekeeping',
-      url: '/storeTimekeeping/attandance',
-      type: 'item',
-      icon: <CalendarTodayOutlined />
-    },
+    // {
+    //   id: 'timekeeping',
+    //   title: 'Timekeeping',
+    //   url: '/storeTimekeeping/attandance',
+    //   type: 'item',
+    //   icon: <CalendarTodayOutlined />
+    // },
     {
       id: 'brandskills',
       title: 'Setting Brand Skill',

@@ -195,11 +195,11 @@ class RegisterPage extends React.Component {
                             <div style={{ color: 'red', }} className="help-block">Brand Name is required</div>
                         }
                         <br />
-                        <div className="input-group form-group">
+                        {/* <div className="input-group form-group">
                             <FileCopy color="primary" />
                             <TextField style={{ height: '7px', width: '380px' }} type="file" onChange={this.handleChange} />
                         </div>
-                        <br/>
+                        <br/> */}
                         <div className="input-group form-group">
                             <LocationOn color="primary" />
                             <TextField style={{ height: '7px', width: '380px' }} type="hotline" name="hotline" placeholder="Hotline" value={user.brand.hotline} onChange={this.handleChange} />
