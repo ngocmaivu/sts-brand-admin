@@ -22,6 +22,8 @@ export const createStoreManager = (data) => async dispatch => {
     } catch (e) {
         console.log(e);
         dispatch({ type: staffConstants.STAFF_CREATE_FAILURE });
+    }
+}
 export const updateStaff = (data) => async dispatch => {
     try {
         const response = await sts.put("/manager/users/staff", { ...data }, { headers: authHeader() });
@@ -44,7 +46,7 @@ export const getStaffs = (pageIndex, pageSize, searchValue) => async dispatch =>
         }
         var response = null;
         if (userInfor.role === "store manager") {
-             response = await sts.get("/stores/staff", {
+            response = await sts.get("/stores/staff", {
                 headers: authHeader(),
                 params: {
                     PageNumber: pageIndex,
@@ -55,14 +57,14 @@ export const getStaffs = (pageIndex, pageSize, searchValue) => async dispatch =>
         }
         if (userInfor.role === "brand manager") {
             response = await sts.get("/brands/staff", {
-               headers: authHeader(),
-               params: {
-                   PageNumber: pageIndex,
-                   PageSize: pageSize,
-                   KeyWord: searchValue
-               }
-           });
-       }
+                headers: authHeader(),
+                params: {
+                    PageNumber: pageIndex,
+                    PageSize: pageSize,
+                    KeyWord: searchValue
+                }
+            });
+        }
 
         console.log(response);
         console.log(1);
