@@ -4,16 +4,16 @@ import { connect } from 'react-redux';
 import { Button, createStyles, Dialog, DialogContent, TableCell, DialogContentText, DialogTitle, DialogActions, InputAdornment, TextField, withStyles, Paper, Card, Grid, TableContainer, Table, TableHead, TableRow, TableBody, IconButton, Collapse, Typography, FormControl, FormLabel, List, ListItem, ListItemText, CardHeader, FormControlLabel, Box, Chip, Divider, CardMedia, CardActionArea, CardContent } from '@material-ui/core';
 
 import MuiAlert from '@material-ui/lab/Alert';
-import { Delete, Edit, ImageSearch, ImageSearchTwoTone, SearchTwoTone, ViewAgenda, ViewStreamOutlined, VisibilityOutlined } from '@material-ui/icons';
-import { Pagination, Skeleton } from '@material-ui/lab';
+
 import { DateRangePicker, DateRangePickerComponent } from '@syncfusion/ej2-react-calendars';
 import { getFirstDayOfWeek } from "../../ultis/scheduleHandle";
-import { loadSkills, fetchTimeKeeping, getStaffs } from "../../_services";
+import { loadSkills, fetchAttandances, getStaffs, deleteAttandance } from "../../_services";
 import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined';
 import addDays from 'date-fns/addDays';
-import { AttendanceDetailTable } from './AttendanceDetailTable';
+
 import clsx from 'clsx';
 import { DatePicker, TimePicker } from '@material-ui/pickers';
+import format from 'date-fns/format';
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -82,6 +82,11 @@ const styles = (Theme) => createStyles({
     selectedItem: {
         opacity: 1,
         color: Theme.palette.primary.main
+    },
+    row: {
+        "&:hover": {
+            cursor: "pointer"
+        }
     }
 });
 
@@ -108,7 +113,9 @@ class AttendancesPage extends React.Component {
             toDate: toDate,
             dataSrc: null,
             updateData: false,
-            selectedIndexUser: -1
+            selectedIndexUser: -1,
+            selectRowIndex: 0,
+            currentUsername: null
         };
 
     }
@@ -123,26 +130,39 @@ class AttendancesPage extends React.Component {
     initData = async () => {
         var staffs = await getStaffs();
         console.log(staffs);
+        this.loadAttandances(staffs[0]?.username, this.init.fromDate, this.init.toDate);
         this.setState({
-            staffs: staffs
+            staffs: staffs,
+            currentUsername: staffs[0]?.username,
+            selectedIndexUser: 0
         });
 
-        // var skills = await loadSkills();
 
-        // let data = await fetchTimeKeeping(this.init.fromDate, this.init.toDate);
-        // this.setState({
-        //     skillSrc: skills,
-        //     dataSrc: data
-        // });
     }
 
 
 
     componentDidMount = async () => {
         this.initData();
+
     }
 
     componentDidUpdate = async (preState) => {
+        //gọi api
+        if (this.state.updateData) {
+            this.loadAttandances(this.state.currentUsername, this.state.fromDate, this.state.toDate);
+        }
+    }
+
+    loadAttandances = async (username, fromDate, toDate) => {
+        let data = await fetchAttandances(username, fromDate, toDate);
+        if (data.length > 0) {
+            this.setState({ attandances: data, updateData: false, selectRowIndex: 0, currentAttandance: data[0] });
+        } else {
+            this.setState({ attandances: data, updateData: false, selectRowIndex: 0, currentAttandance: null });
+        }
+
+        console.log(data);
     }
 
 
@@ -203,6 +223,14 @@ class AttendancesPage extends React.Component {
             </Dialog>);
     }
 
+    getCheckType(type) {
+        return "Camera";
+    }
+
+    handleDelete = async (id) => {
+        await deleteAttandance(id);
+        this.loadAttandances(this.state.currentUsername, this.state.fromDate, this.state.toDate);
+    }
 
     render() {
 
@@ -219,7 +247,22 @@ class AttendancesPage extends React.Component {
                                 <Typography variant="subtitle1">Time Period</Typography>
                             </Grid>
                             <Grid item xs={8}>
-                                <DateRangePickerComponent />
+                                <DateRangePickerComponent
+                                    change={(props) => {
+                                        console.log(props);
+                                        if (props.startDate && props.endDate && (props.startDate != this.state.fromDate ||
+                                            props.endDate != this.state.toDate)) {
+                                            this.setState({
+                                                fromDate: props.startDate,
+                                                toDate: props.endDate,
+                                                updateData: true
+                                            });
+                                        }
+                                    }}
+
+                                    startDate={this.init.fromDate}
+                                    endDate={this.init.toDate}
+                                />
                             </Grid>
                         </Grid>
                         <Grid item>
@@ -242,7 +285,7 @@ class AttendancesPage extends React.Component {
                                                 (staff, index) => {
                                                     return (
                                                         <ListItem button key={staff.username}
-                                                            onClick={() => { this.setState({ selectedIndexUser: index }) }}
+                                                            onClick={() => { this.setState({ selectedIndexUser: index, updateData: true, currentUsername: staff.username }) }}
                                                             selected={this.state.selectedIndexUser === index}
                                                             className={clsx(classes.listItem, {
                                                                 [classes.selectedItem]: this.state.selectedIndexUser === index,
@@ -265,7 +308,6 @@ class AttendancesPage extends React.Component {
                                 <Table aria-label="simple table" >
                                     <TableHead >
                                         <TableRow>
-
                                             <TableCell align="left" variant="head" >
                                                 <Typography variant="h4">Date</Typography>
                                             </TableCell>
@@ -282,103 +324,39 @@ class AttendancesPage extends React.Component {
                                     {
 
                                         <TableBody>
-                                            <TableRow selected>
-                                                <TableCell >
-                                                    <Typography variant="subtitle1">26/07/2021</Typography>
-                                                </TableCell>
-                                                <TableCell align="left" variant="head">
-                                                    <Typography variant="subtitle1" >
-                                                        7:02 AM</Typography></TableCell>
-                                                <TableCell align="center"><Chip label="Camera" color="primary" variant="outlined" />
-                                                </TableCell>
-                                                <TableCell align="center"><Typography variant="subtitle1">A1</Typography></TableCell>
-                                                <TableCell align="center"><Typography variant="subtitle1">Cuong Ly</Typography></TableCell>
-                                                <TableCell align="center">
-                                                    <IconButton>
-                                                        <DeleteOutlineOutlinedIcon />
-                                                    </IconButton>
-                                                </TableCell>
-                                            </TableRow>
-                                            <TableRow>
-                                                <TableCell >
-                                                    <Typography variant="subtitle1">26/07/2021</Typography>
-                                                </TableCell>
-                                                <TableCell align="left" variant="head">
-                                                    <Typography variant="subtitle1" >
-                                                        12:02 PM</Typography></TableCell>
-                                                <TableCell align="center"><Chip label="Camera" color="primary" variant="outlined" />
-                                                </TableCell>
-                                                <TableCell align="center"><Typography variant="subtitle1">A1</Typography></TableCell>
-                                                <TableCell align="center"><Typography variant="subtitle1">Cuong Ly</Typography></TableCell>
-                                                <TableCell align="center">
-                                                    <IconButton>
-                                                        <DeleteOutlineOutlinedIcon />
-                                                    </IconButton>
-                                                </TableCell> </TableRow>
-                                            <TableRow>
-                                                <TableCell >
-                                                    <Typography variant="subtitle1">27/07/2021</Typography>
-                                                </TableCell>
-                                                <TableCell align="left" variant="head">
-                                                    <Typography variant="subtitle1" >
-                                                        7:01 AM</Typography></TableCell>
-                                                <TableCell align="center"><Chip label="Camera" color="primary" variant="outlined" />
-                                                </TableCell>
-                                                <TableCell align="center"><Typography variant="subtitle1">A1</Typography></TableCell>
-                                                <TableCell align="center"><Typography variant="subtitle1">Cuong Ly</Typography></TableCell>
-                                                <TableCell align="center">
-                                                    <IconButton>
-                                                        <DeleteOutlineOutlinedIcon />
-                                                    </IconButton>
-                                                </TableCell></TableRow>
-                                            <TableRow>
-                                                <TableCell >
-                                                    <Typography variant="subtitle1">27/07/2021</Typography>
-                                                </TableCell>
-                                                <TableCell align="left" variant="head">
-                                                    <Typography variant="subtitle1" >
-                                                        12:02 PM</Typography></TableCell>
-                                                <TableCell align="center"><Chip label="Camera" color="primary" variant="outlined" />
-                                                </TableCell>
-                                                <TableCell align="center"><Typography variant="subtitle1">A1</Typography></TableCell>
-                                                <TableCell align="center"><Typography variant="subtitle1">Cuong Ly</Typography></TableCell>
-                                                <TableCell align="center">
-                                                    <IconButton>
-                                                        <DeleteOutlineOutlinedIcon />
-                                                    </IconButton>
-                                                </TableCell></TableRow>
-                                            <TableRow>
-                                                <TableCell >
-                                                    <Typography variant="subtitle1">28/07/2021</Typography>
-                                                </TableCell>
-                                                <TableCell align="left" variant="head">
-                                                    <Typography variant="subtitle1" >
-                                                        6:59 AM</Typography></TableCell>
-                                                <TableCell align="center"><Chip label="Camera" color="primary" variant="outlined" />
-                                                </TableCell>
-                                                <TableCell align="center"><Typography variant="subtitle1">A1</Typography></TableCell>
-                                                <TableCell align="center"><Typography variant="subtitle1">Cuong Ly</Typography></TableCell>
-                                                <TableCell align="center">
-                                                    <IconButton>
-                                                        <DeleteOutlineOutlinedIcon />
-                                                    </IconButton>
-                                                </TableCell></TableRow>
-                                            <TableRow>
-                                                <TableCell >
-                                                    <Typography variant="subtitle1">28/07/2021</Typography>
-                                                </TableCell>
-                                                <TableCell align="left" variant="head">
-                                                    <Typography variant="subtitle1" >
-                                                        12:02 PM</Typography></TableCell>
-                                                <TableCell align="center"><Chip label="Camera" color="primary" variant="outlined" />
-                                                </TableCell>
-                                                <TableCell align="center"><Typography variant="subtitle1">A1</Typography></TableCell>
-                                                <TableCell align="center"><Typography variant="subtitle1">Cuong Ly</Typography></TableCell>
-                                                <TableCell align="center">
-                                                    <IconButton>
-                                                        <DeleteOutlineOutlinedIcon />
-                                                    </IconButton>
-                                                </TableCell></TableRow>
+                                            {
+                                                this.state.attandances ?
+                                                    this.state.attandances.map(
+                                                        (attandance, index) => {
+                                                            return (
+                                                                <TableRow selected={this.state.selectRowIndex == index} key={index}
+                                                                    className={this.props.classes.row}
+                                                                    onClick={() => { this.setState({ selectRowIndex: index, currentAttandance: attandance }) }}>
+                                                                    <TableCell >
+                                                                        <Typography variant="subtitle1">{format(
+                                                                            new Date(attandance.timeCheck), "dd/MM/yyyy"
+                                                                        )}</Typography>
+                                                                    </TableCell>
+                                                                    <TableCell align="left" variant="head">
+                                                                        <Typography variant="subtitle1" >
+                                                                            {format(
+                                                                                new Date(attandance.timeCheck), "HH:mm a"
+                                                                            )}</Typography></TableCell>
+                                                                    <TableCell align="center">
+                                                                        <Chip label={this.getCheckType(attandance.checkType)} color="primary" variant="outlined" />
+                                                                    </TableCell>
+                                                                    <TableCell align="center"><Typography variant="subtitle1">{attandance.deviceCode}</Typography></TableCell>
+                                                                    <TableCell align="center"><Typography variant="subtitle1">{attandance.createBy}</Typography></TableCell>
+                                                                    <TableCell align="center">
+                                                                        <IconButton onClick={() => { this.handleDelete(attandance.id) }}>
+                                                                            <DeleteOutlineOutlinedIcon />
+                                                                        </IconButton>
+                                                                    </TableCell>
+                                                                </TableRow>
+                                                            );
+                                                        }
+                                                    ) : "loading"
+                                            }
                                         </TableBody>
 
                                     }
@@ -389,74 +367,77 @@ class AttendancesPage extends React.Component {
                     </Grid>
                     <Grid item xs={3}>
                         <Paper elevation={0}>
-                            <Grid container justify="space-between" direction="column" className={this.props.classes.container} style={{ minHeight: "70vh" }}>
+                            {
+                                this.state.currentAttandance ?
+                                    (<Grid container justify="space-between" direction="column" className={this.props.classes.container} style={{ minHeight: "70vh" }}>
+                                        <Grid item>
+                                            <Typography variant="h4">Detail</Typography>
+                                            <Box height={8} />
+                                            <Divider />
+                                            <Card style={{ padding: 8, border: "none" }} elevation={0} >
+                                                <Typography variant="h5" color="textPrimary">
+                                                    Time Check in: {format(new Date(this.state.currentAttandance.timeCheck), "dd/MM/yyyy - HH:mm a")}
+                                                </Typography>
+                                                <Typography variant="h5" color="textPrimary">
+                                                    Check By: {this.getCheckType(this.state.currentAttandance.checkType)}
+                                                </Typography>
+                                                <Typography variant="h5" color="textPrimary">
+                                                    Device Code: {this.state.currentAttandance.deviceCode}
+                                                </Typography>
+                                                <Typography variant="h5" color="textPrimary">
+                                                    Create By: {this.state.currentAttandance.createBy}
+                                                </Typography>
+                                                <Typography variant="h5" color="textPrimary">
+                                                    Image:
+                                                </Typography>
+                                                <CardMedia
+                                                    style={{
+                                                        height: 300,
 
-                                <Grid item>
-                                    <Typography variant="h4">Detail</Typography>
-                                    <Box height={8} />
-                                    <Divider />
+                                                    }}
+                                                    image={this.state.currentAttandance.imageUrl}
+                                                    title="Contemplative Reptile"
+                                                />
+                                                <CardContent>
+                                                    <Grid container direction="row" alignItems="center" spacing={1}>
+                                                        <Grid item>
+                                                            <Typography variant="subtitle1" color="textSecondary">
+                                                                Recognize Percentage:
+                                                            </Typography></Grid>
+                                                        <Grid item>
+                                                            <Typography variant="h3" color="textPrimary">
+                                                                {this.state.currentAttandance.recognizePercentage.toFixed(2)}%
+                                                            </Typography>
+                                                        </Grid>
+                                                    </Grid>
+                                                </CardContent>
+                                                <CardContent>
+                                                    <Grid container direction="column" spacing={1}>
+                                                        <Grid item>
+                                                            <Typography variant="subtitle2" color="textSecondary" component="p">
+                                                                Note: {this.state.currentAttandance.note}
+                                                            </Typography></Grid>
+                                                        <Grid item>
+                                                            <Typography variant="h3" color="textPrimary">
 
-                                    <Card style={{ padding: 8, border: "none" }} elevation={0} >
-                                        <Typography variant="h5" color="textPrimary">
-                                            Time Check in: 27/07/2021 - 7:00 AM
-                                        </Typography>
-                                        <Typography variant="h5" color="textPrimary">
-                                            Check By: Camera
-                                        </Typography>
-                                        <Typography variant="h5" color="textPrimary">
-                                            Device Code: A1
-                                        </Typography>
-                                        <Typography variant="h5" color="textPrimary">
-                                            Create By: Cuong Ly
-                                        </Typography>
-                                        <Typography variant="h5" color="textPrimary">
-                                            Image:
-                                        </Typography>
-                                        <CardMedia
-                                            style={{
-                                                height: 300,
+                                                            </Typography>
+                                                        </Grid>
+                                                    </Grid>
+                                                </CardContent>
+                                            </Card>
 
-                                            }}
-                                            image="https://www.facebeautyscience.com/wp-content/uploads/2020/04/face-beauty-skin-face2-proc.jpg"
-                                            title="Contemplative Reptile"
-                                        />
-                                        <CardContent>
-                                            <Grid container direction="row" alignItems="center" spacing={1}>
-                                                <Grid item>
-                                                    <Typography variant="subtitle1" color="textSecondary">
-                                                        Recognize Percentage:
-                                                    </Typography></Grid>
-                                                <Grid item>
-                                                    <Typography variant="h3" color="textPrimary">
-                                                        96%
-                                                    </Typography>
-                                                </Grid>
-                                            </Grid>
-                                        </CardContent>
-                                        <CardContent>
-                                            <Grid container direction="column" spacing={1}>
-                                                <Grid item>
-                                                    <Typography variant="subtitle1" color="textSecondary">
-                                                        Note:
-                                                    </Typography></Grid>
-                                                <Grid item>
-                                                    <Typography variant="h3" color="textPrimary">
+                                        </Grid>
+                                        <Grid item>
 
-                                                    </Typography>
-                                                </Grid>
-                                            </Grid>
-                                        </CardContent>
-                                    </Card>
+                                            <Button style={{ backgroundColor: "#ea3529", color: "#fff", padding: "10px 20px", width: "100%" }}>
+                                                Reject
+                                            </Button>
 
-                                </Grid>
-                                <Grid item>
+                                        </Grid>
+                                    </Grid>)
+                                    : null
+                            }
 
-                                    <Button style={{ backgroundColor: "#ea3529", color: "#fff", padding: "10px 20px", width: "100%" }}>
-                                        Reject
-                                    </Button>
-
-                                </Grid>
-                            </Grid>
 
                         </Paper>
                     </Grid>

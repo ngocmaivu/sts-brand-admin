@@ -112,6 +112,16 @@ class Staffs extends React.Component {
         }
     }
 
+    handlePageChange = (params) => {
+        console.log(params);
+        if (params.page >= params.pageCount) {
+            this.props.getStaffs(1, params.pageSize, this.state.searchValue ? this.state.searchValue : "");
+        } else {
+            this.props.getStaffs(params.page + 1, params.pageSize, this.state.searchValue ? this.state.searchValue : "");
+        }
+
+    };
+
     handleDeleteStore(id) {
         return (e) => this.props.deleteStaff(id);
     }
@@ -247,10 +257,11 @@ class Staffs extends React.Component {
                                     <Skeleton animation="wave" variant="rect" height="20px" />
                                 </Grid>
                             </Grid>
-                        ) : <DataGrid disableColumnFilter rows={this.props.datas}
-                            columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
-                            page={this.props.pageIndex - 1}
-                            paginationMode="server" rowCount={this.props.rowCount} onPageChange={this.handlePageChange} onPageSizeChange={this.handlePageChange} />}
+                        ) : <DataGrid disableColumnFilter rows={this.props.datas} 
+                        columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
+                        page={this.props.pageIndex - 1}
+                        paginationMode="server" rowCount={this.props.rowCount} 
+                        onPageChange={this.handlePageChange} onPageSizeChange={this.handlePageChange}/>}
 
                     </div>
                     {this.renderDeleteDialog()}

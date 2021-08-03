@@ -16,6 +16,7 @@ import Demand from '../demand';
 import Schedule from "../schedule";
 
 import _ from "lodash";
+import { addDays } from '@syncfusion/ej2-react-schedule';
 
 const styles = (Theme) => createStyles({
     container: {
@@ -84,12 +85,11 @@ class WeekPlan extends React.Component {
         }
     }
 
-    fetchData = async () => {
+    fetchData = () => {
 
         let id = this.props.match.params.id;
-        if (id) {
+        if (id && this.props.defaultConfig) {
             this.props.fetchWeekSchedule(id);
-
             this.renderConstraintData(id);
         }
 
@@ -139,6 +139,8 @@ class WeekPlan extends React.Component {
         await updateConstraint(constraintValues[0]);
         await updateConstraint(constraintValues[1]);
 
+        await this.renderConstraintData(id);
+
     }
 
     handleWeekChange = async (date) => {
@@ -165,7 +167,8 @@ class WeekPlan extends React.Component {
                     Schedule Plan Name
                 </Typography>
                 <Typography variant="h3">
-                    Week:
+                    Week: {this.props.currentSchedule ?
+                        `${format(new Date(this.props.currentSchedule.dateStart), "dd/MM/yyyy")} - ${format(addDays(new Date(this.props.currentSchedule.dateStart), 6), "dd/MM/yyyy")}` : null}
                 </Typography>
             </Paper>
 

@@ -33,7 +33,6 @@ function StaffNew(props) {
 
     const classes = useStyles();
 
-
     const onSubmit = (data) => {
         props.createStaff(data);
         setSuccessAlert(true);
@@ -83,7 +82,7 @@ function StaffNew(props) {
                 </Grid>
 
             </div> : <StaffForm onSubmit={onSubmit} skills={props.skills} stores={props.stores}
-                initialValues={{ ...props.initialValues, }} />}
+                initialValues={{ ...props.initialValues, }} type="create" />}
 
         </Paper >
     );

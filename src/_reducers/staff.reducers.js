@@ -54,7 +54,7 @@ export function staffReducer(state = INIT, action) {
             return { ...state, message: "SUCCESS" };
 
         case staffConstants.STAFF_GET:
-            
+
             return { ...state, ...action.payload };
 
         default:

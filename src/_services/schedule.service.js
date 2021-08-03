@@ -1,6 +1,6 @@
 import sts from '../apis/sts';
 import { authHeader } from "../_helpers/auth-header";
-import { getFirstDayOfWeek } from "../ultis/scheduleHandle";
+import { convertToJSONDateWithoutChangeValue, getFirstDayOfWeek } from "../ultis/scheduleHandle";
 
 export const loadStores = async () => {
     try {
@@ -283,3 +283,48 @@ export const unpublishSchedule = async (weekScheduleId) => {
         return null;
     }
 };
+
+export const fetchSkillsOfStaff = async (username,) => {
+    try {
+        const response = await sts.get(`manager/users/${username}/skills`, {
+
+            headers: authHeader(),
+        });
+        return response.data;
+    } catch (e) {
+        console.log(e);
+    }
+}
+
+export const fetchAttandances = async (username, FromDate, ToDate) => {
+    try {
+
+        const response = await sts.get(`/manager/users/${username}/attendances`, {
+            params: {
+                FromDate: convertToJSONDateWithoutChangeValue(new Date(FromDate)),
+                ToDate: convertToJSONDateWithoutChangeValue(new Date(ToDate))
+            },
+            headers: authHeader(),
+        });
+        return response.data;
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+export const deleteAttandance = async (id) => {
+    try {
+
+        const response = await sts.delete(`/attendances/${id}`, {
+            headers: authHeader(),
+        });
+        return response.data;
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+

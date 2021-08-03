@@ -513,6 +513,7 @@ class ScheduleMain extends React.Component {
                 );
         }
     }
+    
     render() {
         return (
             <Paper style={{ minHeight: "80vh" }}>
@@ -566,7 +567,7 @@ class ScheduleMain extends React.Component {
                         <ViewsDirective>
                             <ViewDirective option='Day' />
                             <ViewDirective option='Week' />
-                            <ViewDirective option='TimelineDay' startHour="07:00" />
+                            <ViewDirective option='TimelineDay' />
                             <ViewDirective option='TimelineWeek' timeScale={{ enable: false }} />
                         </ViewsDirective>
                         <Inject services={[Day, TimelineViews, Week, TimelineMonth, DragAndDrop]} />
@@ -592,7 +593,6 @@ class ScheduleMain extends React.Component {
                             <LinearProgress />
                         </CardContent>
                     </Card>
-
                 </Modal>
             </Paper>
         );

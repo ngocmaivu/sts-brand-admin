@@ -1,6 +1,7 @@
 import {
     Box, Button, Card, CardContent, CardHeader, Chip,
     Divider, Grid,
+    IconButton,
     LinearProgress, makeStyles, MenuItem, OutlinedInput, Paper, Select, Table, TableBody, TableCell, TableContainer, TableRow, TextField, Typography, useTheme
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
@@ -11,6 +12,7 @@ import { connect } from 'react-redux';
 import { getStaffInfo } from "../../../_actions/staff.action";
 import { Link, useParams } from 'react-router-dom';
 import { Skeleton } from '@material-ui/lab';
+import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import StaffType from "../../../ultis/StaffType";
 const useStyles = makeStyles((theme) => ({
     container: {
@@ -123,6 +125,7 @@ const Staff = (props) => {
                     Staff Information
                 </Typography>
             } disableTypography={false}
+                action={<IconButton component={Link} to={`/staff/edit/${id}`}><EditOutlinedIcon color="primary" /></IconButton>}
             />
             <Divider />
 
