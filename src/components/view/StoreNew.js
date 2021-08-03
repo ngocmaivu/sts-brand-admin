@@ -113,7 +113,7 @@ class StoreNew extends React.Component {
                     <form >
                         <Grid container direction="column" spacing={5} >
                             <Grid item xs={12}>
-                                <CardCustom header='General'>
+                                <CardCustom header='Store information'>
                                     <Grid container direction="column" spacing={1} >
                                         <Grid container item spacing={3} >
                                             <Grid item xs={6}>
@@ -121,12 +121,6 @@ class StoreNew extends React.Component {
                                                     <FormLabel >Store Name</FormLabel>
                                                     <TextField type="input" name="name" size="small" variant="outlined" onChange={this.handleChange} />
                                                 </FormControl>
-                                            </Grid>
-                                            <Grid item xs={6} >
-                                            <FormControl margin="normal" fullWidth>
-                                                <FormLabel >Phone</FormLabel>
-                                                <TextField name="phone" size="small" variant="outlined" onChange={this.handleChange} />
-                                            </FormControl>
                                             </Grid>
                                         </Grid>
 
