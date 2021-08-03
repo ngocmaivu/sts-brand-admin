@@ -369,15 +369,14 @@ class ScheduleMain extends React.Component {
             this.updateTotalHoursPersWeek();
         } else if (args.requestType === 'eventCreate' && args.data.length > 0) {
 
-            //if a specific time slot already contains an shift, then no more shift can be added to that cell
             let eventData = args.data[0];
             let eventField = this.scheduleObj.eventFields;
             let startDate = eventData[eventField.startTime];
             let endDate = eventData[eventField.endTime];
-            args.cancel = !this.scheduleObj.isSlotAvailable(startDate, endDate);
 
-
-
+            //if a specific time slot already contains an shift, then no more shift can be added to that cell
+            args.cancel = !this.scheduleObj.isSlotAvailable(new Date(startDate), new Date(endDate));
+            console.log(!args.cancel);
             if (!args.cancel) {
                 console.log(this.refScheduleCurrentCollection);
                 const newShiftRef = this.refScheduleCurrentCollection.doc();
@@ -541,7 +540,7 @@ class ScheduleMain extends React.Component {
                         </Grid>
                     </Grid>
                 } />
-                 <Divider />
+                <Divider />
                 <Grid container style={{ height: 40, }}
                     direction="row"
                     justifyContent="center"
@@ -549,7 +548,7 @@ class ScheduleMain extends React.Component {
                     alignContent="center"
                 >
 
-                    {this.props.skillSrc.map((skill, index) => {
+                    {this.props.skillSrc ? this.props.skillSrc.map((skill, index) => {
 
                         return (<Grid item container alignContent="center" alignItems="baseline" justifyContent="center" key={skill.id}>
                             <Grid item >
@@ -559,9 +558,9 @@ class ScheduleMain extends React.Component {
                                 {skill.name}
                             </Grid>
                         </Grid>);
-                    })}
+                    }) : null}
                 </Grid>
-               
+
                 {this.props.skillSrc && this.state.employeeData ?
                     (<ScheduleComponent currentView="TimelineWeek" selectedDate={this.currentDate}
                         eventSettings={{
