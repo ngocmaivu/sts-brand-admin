@@ -274,10 +274,12 @@ class Staffs extends React.Component {
     }
 }
 function mapState(state) {
+
     return {
         datas: Object.values(state.staffs.datas), rowCount: state.staffs.totalCount,
         pageIndex: state.staffs.currentPage, pageSize: state.staffs.pageSize,
     };
+
 }
 
 export default connect(mapState, {

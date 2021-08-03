@@ -15,16 +15,6 @@ export const createStaff = (data) => async dispatch => {
     }
 }
 
-export const updateStaff = (data) => async dispatch => {
-    try {
-        const response = await sts.put("/manager/users/staff", { ...data }, { headers: authHeader() });
-        dispatch({ type: staffConstants.STAFF_UPDATE_SUCCESS });
-    } catch (e) {
-        console.log(e);
-        dispatch({ type: staffConstants.STAFF_UPDATE_FAILURE });
-    }
-}
-
 export const createStoreManager = (data) => async dispatch => {
     try {
         const response = await sts.post("/manager/users/store-manager", { ...data }, { headers: authHeader() });
@@ -34,6 +24,25 @@ export const createStoreManager = (data) => async dispatch => {
         dispatch({ type: staffConstants.STAFF_CREATE_FAILURE });
     }
 }
+export const updateStaff = (data) => async dispatch => {
+    try {
+        const response = await sts.put("/manager/users/staff", { ...data }, { headers: authHeader() });
+        dispatch({ type: staffConstants.STAFF_UPDATE_SUCCESS });
+    } catch (e) {
+        console.log(e);
+        dispatch({ type: staffConstants.STAFF_UPDATE_FAILURE });
+        // TODO excepction
+    }
+}
+// export const createStoreManager = (data) => async dispatch => {
+//     try {
+//         const response = await sts.post("/manager/users/store-manager", { ...data }, { headers: authHeader() });
+//         dispatch({ type: staffConstants.STAFF_CREATE_SUCCESS });
+//     } catch (e) {
+//         console.log(e);
+//         dispatch({ type: staffConstants.STAFF_CREATE_FAILURE });
+//     }
+// }
 
 export const getStaffs = (pageIndex, pageSize, searchValue) => async dispatch => {
     try {
@@ -45,7 +54,7 @@ export const getStaffs = (pageIndex, pageSize, searchValue) => async dispatch =>
         }
         var response = null;
         if (userInfor.role === "store manager") {
-             response = await sts.get("/stores/staff", {
+            response = await sts.get("/stores/staff", {
                 headers: authHeader(),
                 params: {
                     PageNumber: pageIndex,
@@ -56,14 +65,14 @@ export const getStaffs = (pageIndex, pageSize, searchValue) => async dispatch =>
         }
         if (userInfor.role === "brand manager") {
             response = await sts.get("/brands/staff", {
-               headers: authHeader(),
-               params: {
-                   PageNumber: pageIndex,
-                   PageSize: pageSize,
-                   KeyWord: searchValue
-               }
-           });
-       }
+                headers: authHeader(),
+                params: {
+                    PageNumber: pageIndex,
+                    PageSize: pageSize,
+                    KeyWord: searchValue
+                }
+            });
+        }
 
         console.log(response);
         console.log(1);
