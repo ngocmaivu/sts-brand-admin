@@ -67,6 +67,10 @@ export function ShiftEditor({ parentProps, setStartTime, setEndTime, setStaffId,
             startTmp.setHours(tmp.getHours(), tmp.getMinutes());
             setStart(startTmp);
             let tmp1 = new Date(parentProps.endTime || parentProps.EndTime);
+            if (tmp1.getHours() == 0 && tmp1.getMinutes() == 0) {
+                tmp1 = new Date(tmp);
+                tmp1.setMinutes(30);
+            }
             setEndTime(tmp1);
             let endTmp = new Date();
             endTmp.setHours(tmp1.getHours(), tmp1.getMinutes());
@@ -116,7 +120,7 @@ export function ShiftEditor({ parentProps, setStartTime, setEndTime, setStaffId,
                         <Grid item xs={6}>
                             <FormControl fullWidth>
                                 <FormLabel >To</FormLabel>
-                                <TimePickerComponent format='HH:mm' value={end} required min={addMinutes(start, 30)}  onChange={handleEnd} strictMode={true} allowEdit={false} />
+                                <TimePickerComponent format='HH:mm' value={end} required min={addMinutes(start, 30)} onChange={handleEnd} strictMode={true} allowEdit={false} />
                             </FormControl>
                         </Grid>
                     </Grid>

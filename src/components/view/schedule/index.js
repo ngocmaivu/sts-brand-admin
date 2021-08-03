@@ -16,6 +16,7 @@ import { getFirstDayOfWeek, isSameDay, convertShift, convertShiftToFireBaseObj, 
 import { getScheduleDataInput } from "../../../_actions";
 import { connect } from 'react-redux';
 import AlertDialog from '../../AlertDialog';
+import format from 'date-fns/format';
 
 L10n.load({
     'en-US': {
@@ -58,7 +59,7 @@ class ScheduleMain extends React.Component {
             endHout: 46,
         }
         this.SkillColors = [
-            "#8027f5", "#babe15", "#be1565", "#15d429"
+            "#c7adff", "#ecb677", "#e28bb4", "#cbf9d9"
         ];
 
         this.rootRef = React.createRef(null);
@@ -272,8 +273,53 @@ class ScheduleMain extends React.Component {
         console.log(this.props.skillSrc);
         let skillColor = this.SkillColors[this.props.skillSrc.findIndex(skill => skill.id == args.data.SkillId)];
         console.log(skillColor);
+        args.element.style.border = "2px solid #4e4f73";
         args.element.style.backgroundColor = skillColor;
+        args.element.style.borderRadius = "8px";
+        // args.element.style.padding = "4px";
+        args.element.style.height = "72px";
+        args.element.style.color = "#4e4f73";
+        // args.element.style.fontsize = "0.875rem";
     }
+
+    eventTemplate = (props) => {
+        console.log(props);
+        return (<div style={{ padding: 8, }}>
+            <Grid container direction="column" spacing={1}>
+                <Grid item >
+                    <Typography style={{ color: "#4e4f73" }} variant="h4">
+                        {`${props.Skill} `}
+                    </Typography>
+                </Grid>
+                <Grid item>
+                    <Typography style={{ color: "#4e4f73" }} variant="h5" noWrap={false} className="time">
+                        {`${format(new Date(props.StartTime), "HH:mm a")} - ${format(new Date(props.EndTime), "HH:mm a")}`}
+                    </Typography>
+                </Grid>
+            </Grid>
+
+        </div>);
+    }
+
+    resourceHeaderTemplate = (props) => {
+        console.log(props);
+        //this.getTotalHoursPerWeek(props.resourceData.Id);
+        return (
+            <div className="template-wrap" style={{ height: 100 }}><div className="employee-category">
+                <div className="employee-name">
+                    <Typography variant="subtitle1">
+                        {this.getEmployeeName(props)}</Typography></div>
+                <div id={`total-hours-${props.resourceData.Id}`}>{`0 hrs/week`}</div>
+            </div></div>
+        );
+    }
+
+    cellTemplate = (props) => {
+
+        return (<div className="templatewrap" style={{ height: 100 }} ></div>);
+        // return (<div></div>);
+    }
+
 
     editorTemplate = (props) => {
         return ((props !== undefined) ?
@@ -375,7 +421,7 @@ class ScheduleMain extends React.Component {
             let endDate = eventData[eventField.endTime];
 
             //if a specific time slot already contains an shift, then no more shift can be added to that cell
-            args.cancel = !this.scheduleObj.isSlotAvailable(new Date(startDate), new Date(endDate));
+            // args.cancel = !this.scheduleObj.isSlotAvailable(new Date(startDate), new Date(endDate));
             console.log(!args.cancel);
             if (!args.cancel) {
                 console.log(this.refScheduleCurrentCollection);
@@ -446,19 +492,7 @@ class ScheduleMain extends React.Component {
 
     }
 
-    resourceHeaderTemplate = (props) => {
-        console.log(props);
-        //this.getTotalHoursPerWeek(props.resourceData.Id);
-        return (
-            <div className="template-wrap"><div className="employee-category">
 
-                <div className="employee-name">
-                    <Typography variant="subtitle1">
-                        {this.getEmployeeName(props)}</Typography></div>
-                <div id={`total-hours-${props.resourceData.Id}`}>{`0 hrs/week`}</div>
-            </div></div>
-        );
-    }
 
     getEmployeeName(props) {
         return props.resourceData.Name;
@@ -568,7 +602,7 @@ class ScheduleMain extends React.Component {
                                 subject: { name: "Skill" },
                             }
                         }}
-
+                        cellTemplate={this.cellTemplate}
                         ref={schedule => this.scheduleObj = schedule}
                         firstDayOfWeek={1}
                         group={{ resources: ['Staff'] }}
@@ -598,8 +632,8 @@ class ScheduleMain extends React.Component {
                         <ViewsDirective>
                             <ViewDirective option='Day' />
                             <ViewDirective option='Week' />
-                            <ViewDirective option='TimelineDay' />
-                            <ViewDirective option='TimelineWeek' timeScale={{ enable: false }} />
+                            <ViewDirective option='TimelineDay' eventTemplate={this.eventTemplate} />
+                            <ViewDirective option='TimelineWeek' eventTemplate={this.eventTemplate} timeScale={{ enable: false }} />
                         </ViewsDirective>
                         <Inject services={[Day, TimelineViews, Week, TimelineMonth, DragAndDrop]} />
                         {/* <Inject services={[Day, Week, WorkWeek, Month, TimelineViews, TimelineMonth]} /> */}

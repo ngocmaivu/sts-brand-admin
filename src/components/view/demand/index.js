@@ -272,9 +272,47 @@ class DemandPage extends React.Component {
         if (args.data.level != -1) {
             let levelColor = levels.find(e => e.value == args.data.level).color;
             args.element.style.backgroundColor = levelColor;
+            args.element.style.border = "2px solid #4e4f73";
+            args.element.style.borderRadius = "12px";
+            // args.element.style.margin = "5px";
+        }else
+        {
+            args.element.style.backgroundColor = "#b9b9b96b";
         }
 
     }
+
+    eventTemplate = (props) => {
+        console.log(props);
+        if (!props.quantity) {
+            return (<div style={{ padding: 8, }}>
+                <Typography style={{ color: "#4e4f73" }} variant="h4">
+                    {`unavailable`}
+                </Typography>
+            </div>);
+        }
+        return (<div style={{ padding: 8, }}>
+            <Grid container direction="column" spacing={2}>
+                <Grid item >
+                    <Typography style={{ color: "#4e4f73" }} variant="h4">
+                        {`${props.quantity} staff`}
+                    </Typography>
+                </Grid>
+                <Grid item>
+                    <Typography style={{ color: "#4e4f73" }} variant="h5" noWrap={false} className="time">
+                        {`${format(new Date(props.workStart), "HH:mm a")} - ${format(new Date(props.workEnd), "HH:mm a")}`}
+                    </Typography>
+                </Grid>
+                <Grid item >
+                    <Typography style={{ color: "#4e4f73" }} variant="h4">
+                        {`Level ${props.level}`}
+                    </Typography>
+                </Grid>
+            </Grid>
+
+        </div>);
+    }
+
     getDateHeaderText(value) {
         return this.instance.formatDate(value, { skeleton: 'Ed' });
     }
@@ -332,6 +370,7 @@ class DemandPage extends React.Component {
                                 currentView="Week" selectedDate={this.currentDate}
                                 cssClass="schedule-custom"
                                 height="80vh"
+
                                 dateHeaderTemplate={this.dateHeaderTemplate}
                                 eventSettings={{
                                     fields: {
@@ -369,9 +408,9 @@ class DemandPage extends React.Component {
                                     >
                                     </ResourceDirective>
                                 </ResourcesDirective>
-                                <ViewsDirective>
-                                    <ViewDirective option='Day' />
-                                    <ViewDirective option='Week' />
+                                <ViewsDirective >
+                                    <ViewDirective option='Day' eventTemplate={this.eventTemplate} />
+                                    {/* <ViewDirective option='Week' eventTemplate={this.eventTemplate} /> */}
 
                                 </ViewsDirective>
                                 <Inject services={[Day, Week, DragAndDrop, Resize]} />

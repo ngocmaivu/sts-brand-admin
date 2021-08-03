@@ -1,7 +1,7 @@
 
 export const levels = [
     {
-        label: "Beginner", value: 1, color: "#a4fd3f"
+        label: "Beginner", value: 1, color: "#cbf9d9"
     },
     {
         label: "Intermediate", value: 2, color: "#75ebeb"
