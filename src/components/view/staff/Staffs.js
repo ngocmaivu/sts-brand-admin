@@ -214,7 +214,7 @@ class Staffs extends React.Component {
                 renderCell: (params) => {
                     const onClick = () => {
                         console.log(params);
-                        this.setState({ openDeleteDialog: true, deleteId: params.getValue('username') });
+                        this.setState({ openDeleteDialog: true, deleteId: params.id });
                     }
 
                     return (<span>
@@ -257,11 +257,11 @@ class Staffs extends React.Component {
                                     <Skeleton animation="wave" variant="rect" height="20px" />
                                 </Grid>
                             </Grid>
-                        ) : <DataGrid disableColumnFilter rows={this.props.datas} 
-                        columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
-                        page={this.props.pageIndex - 1}
-                        paginationMode="server" rowCount={this.props.rowCount} 
-                        onPageChange={this.handlePageChange} onPageSizeChange={this.handlePageChange}/>}
+                        ) : <DataGrid disableColumnFilter rows={this.props.datas}
+                            columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
+                            page={this.props.pageIndex - 1}
+                            paginationMode="server" rowCount={this.props.rowCount}
+                            onPageChange={this.handlePageChange} onPageSizeChange={this.handlePageChange} />}
 
                     </div>
                     {this.renderDeleteDialog()}
@@ -274,8 +274,10 @@ class Staffs extends React.Component {
     }
 }
 function mapState(state) {
-    return { datas: Object.values(state.staffs.datas), rowCount: state.staffs.totalCount, 
-        pageIndex: state.staffs.currentPage, pageSize: state.staffs.pageSize, };
+    return {
+        datas: Object.values(state.staffs.datas), rowCount: state.staffs.totalCount,
+        pageIndex: state.staffs.currentPage, pageSize: state.staffs.pageSize,
+    };
 }
 
 export default connect(mapState, {
