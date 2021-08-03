@@ -20,8 +20,8 @@ function create(brand) {
             .then(
                 brand => {
                     dispatch(success());
-                    history.push('/stores');
-                    dispatch(alertActions.success('Create Store successful'));
+                    // history.push('/stores');
+                    // dispatch(alertActions.success('Create Brand successful'));
                 },
                 error => {
                     dispatch(failure(error.toString()));

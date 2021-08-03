@@ -23,7 +23,7 @@ class BrandHome extends React.Component {
                     <h1>Home page</h1>
                 </Card>
                 <Grid container direction="row" spacing={2} style={{ flexWrap: 'nowrap' }}>
-                    <Grid xs={1} sm={3} md={3}>
+                    <Grid item xs={1} sm={3} md={3}>
                         <Card style={{ paddingTop: '5px', backgroundColor: '#AFD788' }}>
                             <Typography style={{ marginLeft: '60px', }} variant="h3"> <WatchLaterRounded style={{ color: 'green', marginBottom: '-3px' }} /> Start earliest</Typography>
                             <Card style={{ padding: '10px', backgroundColor: '' }}>
@@ -32,7 +32,7 @@ class BrandHome extends React.Component {
                             </Card>
                         </Card>
                     </Grid>
-                    <Grid xs={1} sm={3} md={3} style={{ marginLeft: '10px' }}>
+                    <Grid item xs={1} sm={3} md={3} style={{ marginLeft: '10px' }}>
                         <Card style={{ paddingTop: '5px', backgroundColor: '#FCDAD5' }}>
                             <Typography style={{ marginLeft: '60px', }} variant="h3"> <WatchLaterRounded style={{ color: 'red', marginBottom: '-3px' }} /> End earliest</Typography>
                             <Card style={{ padding: '10px' }}>
@@ -41,7 +41,7 @@ class BrandHome extends React.Component {
                             </Card>
                         </Card>
                     </Grid>
-                    <Grid xs={4} sm={3} md={3} style={{ marginLeft: '10px' }}>
+                    <Grid item xs={4} sm={3} md={3} style={{ marginLeft: '10px' }}>
                         <Card style={{ paddingTop: '5px', backgroundColor: '#AFD788' }}>
                             <Typography style={{ marginLeft: '60px', }} variant="h3"> <ThumbUpAltOutlined style={{ color: 'green', marginBottom: '-3px' }} /> End latest</Typography>
                             <Card style={{ padding: '10px' }}>
@@ -50,7 +50,7 @@ class BrandHome extends React.Component {
                             </Card>
                         </Card>
                     </Grid>
-                    <Grid xs={4} sm={3} md={3} style={{ marginLeft: '10px' }}>
+                    <Grid item xs={4} sm={3} md={3} style={{ marginLeft: '10px' }}>
                         <Card style={{ paddingTop: '5px', backgroundColor: '#FCDAD5' }}>
                             <Typography style={{ marginLeft: '60px', }} variant="h3"> <ThumbDownAltOutlined style={{ color: 'red', marginBottom: '-3px' }} /> Start latest</Typography>
                             <Card style={{ padding: '10px' }}>
@@ -63,7 +63,7 @@ class BrandHome extends React.Component {
                 </Grid>
                 <br /><br />
                 <Grid container direction="row" spacing={2} style={{ flexWrap: 'nowrap' }}>
-                    <Grid xs={12} sm={6} md={6}>
+                    <Grid item xs={12} sm={6} md={6}>
                         <Card style={{ paddingTop: '5px', backgroundColor: '#FFCC99', height: '350px' }}>
                             <Typography style={{ marginLeft: '60px', }} variant="h3"> <WatchLaterRounded style={{ color: 'green', marginBottom: '-3px' }} /> Start earliest</Typography>
                             <Card style={{ padding: '10px', backgroundColor: '', height: '330px' }}>
@@ -71,7 +71,7 @@ class BrandHome extends React.Component {
                             </Card>
                         </Card>
                     </Grid>
-                    <Grid xs={12} sm={6} md={6} style={{ marginLeft: '10px' }}>
+                    <Grid item xs={12} sm={6} md={6} style={{ marginLeft: '10px' }}>
                         <Card style={{ paddingTop: '5px', backgroundColor: '#FFCC99', height: '350px' }}>
                             <Typography style={{ marginLeft: '60px', }} variant="h3"> <WatchLaterRounded style={{ color: 'red', marginBottom: '-3px' }} /> End earliest</Typography>
                             <Card style={{ padding: '10px', backgroundColor: '', height: '330px' }}>
@@ -82,7 +82,7 @@ class BrandHome extends React.Component {
                 </Grid>
                 <br /><br />
                 <Grid container direction="row" spacing={2} style={{ flexWrap: 'nowrap' }}>
-                    <Grid xs={12} sm={6} md={6}>
+                    <Grid item xs={12} sm={6} md={6}>
                         <Card style={{ paddingTop: '5px', backgroundColor: '#FFCC99', height: '350px' }}>
                             <Typography style={{ marginLeft: '60px', }} variant="h3"> <ThumbUpAltOutlined style={{ color: 'green', marginBottom: '-3px' }} /> End latest</Typography>
                             <Card style={{ padding: '10px', backgroundColor: '', height: '330px' }}>
@@ -90,7 +90,7 @@ class BrandHome extends React.Component {
                             </Card>
                         </Card>
                     </Grid>
-                    <Grid xs={12} sm={6} md={6} style={{ marginLeft: '10px' }}>
+                    <Grid item xs={12} sm={6} md={6} style={{ marginLeft: '10px' }}>
                         <Card style={{ paddingTop: '5px', backgroundColor: '#FFCC99', height: '350px' }}>
                             <Typography style={{ marginLeft: '60px', }} variant="h3"> <ThumbDownAltOutlined style={{ color: 'red', marginBottom: '-3px' }} /> Start latest</Typography>
                             <Card style={{ padding: '10px', backgroundColor: '', height: '330px' }}>

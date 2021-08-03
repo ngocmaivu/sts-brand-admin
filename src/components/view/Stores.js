@@ -12,6 +12,7 @@ import { storeActions } from '../../_actions';
 import { Delete, Edit, ImageSearch, ImageSearchTwoTone, SearchTwoTone, ViewAgenda, ViewStreamOutlined } from '@material-ui/icons';
 import { store } from '../../_helpers';
 import { isThisSecond } from 'date-fns';
+import { confirmAlert } from 'react-confirm-alert';
 
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -73,9 +74,14 @@ const styles = (Theme) => createStyles({
         padding: 20
     }
 })
-var deleting = false;
+var tmp1 = 1;
 
 class Stores extends React.Component {
+
+    constructor(props) {
+        super(props);
+        // this.handleDeleteStore = this.handleDeleteStore.bind(this);
+    }
 
     componentDidMount() {
         // this.props.getAllByPage(this.state.pageIndex,this.state.pageSize);
@@ -93,7 +99,23 @@ class Stores extends React.Component {
     handleSearchSubmit = (e) => { }
 
     handleDeleteStore(id) {
-        return (e) => { this.props.deleteStore(id); deleting = true}
+        console.log("delete" + id)
+        // window.confirm('Are you sure, you wanna delete?')
+        // confirmAlert({
+        //     title:'',
+        //     message: 'Are you sure, you wanna delete?',
+        //     buttons: [
+        //       {
+        //         label: 'Yes',
+        //         onClick: () =>  {return (e) => { this.props.deleteStore(id); deleting = true}}
+        //       },
+        //       {
+        //         label: 'No',
+        //         onClick: () => '',
+        //       }
+        //     ]
+        //   })
+        // return (e) => { this.props.deleteStore(id); deleting = true}
     }
 
     renderToolbar = () => {
@@ -102,7 +124,11 @@ class Stores extends React.Component {
                 <TextField style={{ height: '40px', width: '600px' }} placeholder="search" size='small' variant="outlined"
                 />
                 {/* <SearchOutlinedIcon style={{marginLeft: '-350px', color: '#50A625'}} /> */}
-                <Button style={{ marginLeft: '-350px', color: '#009966' }}> <SearchTwoTone fontSize='small' /></Button>
+                {/* <Button style={{ marginLeft: '-350px', color: '#009966' }}>  */}
+                {/* <SearchTwoTone fontSize='small' /> */}
+                {/* </Button> */}
+                <Button variant="outlined" className={this.props.classes.searchButton} component={Link}
+                    to="/storemanager/new"> <AddIcon />ADD STORE MANAGER</Button>
                 <Button variant="outlined" className={this.props.classes.searchButton} component={Link}
                     to="/stores/new"> <AddIcon />Add Store</Button>
             </div>
@@ -159,16 +185,16 @@ class Stores extends React.Component {
     handlePageSizeChange = (params) => {
     };
 
-    handleClick = (id) => {
-        this.props.deleteStore(id);
-        
-    };
+    // handleClick = (id) => {
+    //     this.props.deleteStore(id);
 
-    
+    // };
+
+
     render() {
-        const { stores, type} = this.props;
-
-
+        const { stores, type, tmp } = this.props;
+        console.log('tmp nè');
+        console.log(tmp);
         const columns = [
             { field: 'id', headerName: 'Store ID', width: 200 },
             { field: 'name', headerName: 'Name', width: 300 },
@@ -191,15 +217,13 @@ class Stores extends React.Component {
                 }
             }
         ];
-        var loading = false;
-        
-       
         // if (stores.type === "STORE_GETALL_SUCCESS") loading = true;
         // if (stores.type === "STORE_DELETE_SUCCESS") deleting = true;
-        console.log(this.props.stores.loading);
-        if ( !this.props.stores.items ) {
+        console.log(tmp1);
+        if (!this.props.stores.items || stores.type !== "STORE_GETALL_SUCCESS") {
             return <p>...Loading</p>;
         }
+        tmp1++;
         // var items = JSON.parse(localStorage.getItem("stores"));
         // console.log(stores.items)
         return (
@@ -222,7 +246,7 @@ class Stores extends React.Component {
                 <Paper>
                     <div style={{ height: 452, width: '100%' }}>
                         <DataGrid disableColumnFilter rows={stores.items} columns={columns} rowsPerPageOptions={[10, 20, 50]} pageSize={this.state.pageSize} pagination
-                            paginationMode="server" rowCount={100} />
+                            paginationMode="server" />
                     </div>
                 </Paper>
             </React.Fragment>

@@ -1,7 +1,7 @@
 import sts from '../apis/sts';
 import { staffConstants } from "../_constants"
 import { authHeader } from "../_helpers/auth-header";
-
+const userInfor = JSON.parse(localStorage.getItem("jwt_decode"))
 
 export const createStaff = (data) => async dispatch => {
     try {
@@ -22,8 +22,16 @@ export const updateStaff = (data) => async dispatch => {
     } catch (e) {
         console.log(e);
         dispatch({ type: staffConstants.STAFF_UPDATE_FAILURE });
-        // TODO excepction
+    }
+}
 
+export const createStoreManager = (data) => async dispatch => {
+    try {
+        const response = await sts.post("/manager/users/store-manager", { ...data }, { headers: authHeader() });
+        dispatch({ type: staffConstants.STAFF_CREATE_SUCCESS });
+    } catch (e) {
+        console.log(e);
+        dispatch({ type: staffConstants.STAFF_CREATE_FAILURE });
     }
 }
 
@@ -31,18 +39,32 @@ export const getStaffs = (pageIndex, pageSize, searchValue) => async dispatch =>
     try {
         //TODO Phân quyền brand/store ở đây
 
+
         if (searchValue === "") {
             searchValue = null;
         }
+        var response = null;
+        if (userInfor.role === "store manager") {
+             response = await sts.get("/stores/staff", {
+                headers: authHeader(),
+                params: {
+                    PageNumber: pageIndex,
+                    PageSize: pageSize,
+                    KeyWord: searchValue
+                }
+            });
+        }
+        if (userInfor.role === "brand manager") {
+            response = await sts.get("/brands/staff", {
+               headers: authHeader(),
+               params: {
+                   PageNumber: pageIndex,
+                   PageSize: pageSize,
+                   KeyWord: searchValue
+               }
+           });
+       }
 
-        const response = await sts.get("/stores/staff", {
-            headers: authHeader(),
-            params: {
-                PageNumber: pageIndex,
-                PageSize: pageSize,
-                KeyWord: searchValue
-            }
-        });
         console.log(response);
         console.log(1);
 

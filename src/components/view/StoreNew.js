@@ -122,6 +122,12 @@ class StoreNew extends React.Component {
                                                     <TextField type="input" name="name" size="small" variant="outlined" onChange={this.handleChange} />
                                                 </FormControl>
                                             </Grid>
+                                            <Grid item xs={6} >
+                                            <FormControl margin="normal" fullWidth>
+                                                <FormLabel >Phone</FormLabel>
+                                                <TextField name="phone" size="small" variant="outlined" onChange={this.handleChange} />
+                                            </FormControl>
+                                            </Grid>
                                         </Grid>
 
                                         <Grid item xs={12}>

@@ -115,3 +115,67 @@ export function stores(state = {}, action) {
             return state
     }
 }
+
+// import { storeConstants } from '../_constants';
+// import _ from 'lodash';
+
+// const INIT = {
+//     currentPage: 1,
+//     pageSize: 10,
+//     totalCount: 0,
+//     totalPages: 0,
+//     datas: [],
+//     searchValue: "",
+//     error: "",
+//     data: null,
+
+//     stores: null,
+//     skills: null,
+//     message: null
+// }
+
+// export function storeReducer(state = INIT, action) {
+//     console.log(action.type);
+//     switch (action.type) {
+
+//         case storeConstants.STORE_GETALL_SUCCESS:
+//             const { currentPage, pageSize } = action.payload;
+//             action.payload.datas = action.payload.datas.map(e => {
+//                 return { ...e, counterStatus: (action.payload.datas.indexOf(e) + (currentPage - 1) * pageSize + 1), id: e.username }
+//             }
+//             );
+//             action.payload.datas = _.mapKeys(action.payload.datas, 'id');
+//             console.log("datas" + action.payload.datas)
+//             return { ...state, ...action.payload };
+
+//         case storeConstants.STORE_GETALL_FAILURE:
+//             return { ...state, error: action.payload.error };
+
+//         case storeConstants.STORE_DELETE_SUCCESS:
+//             console.log('DELETE ' + action.payload);
+//             let datas = _.omit(state.datas, action.payload);
+//             let arr = Object.values(datas);
+//             let datas1 = arr.map(e => {
+//                 return { ...e, counterStatus: (arr.indexOf(e) + (state.currentPage - 1) * state.pageSize + 1), id: e.username }
+//             }
+//             );
+//             console.log(datas1);
+//             return { ...state, datas: _.mapKeys(datas1, 'id') };
+
+//         // case storeConstants.STORE_CREAT_SUCCESS:
+//         //     return { ...state, data: action.payload.data, skills: action.payload.skills, stores: action.payload.stores };
+
+//         case storeConstants.STORE_CREAT_FAILURE:
+//             return { ...state, error: "Fail Create" };
+
+//         case storeConstants.STORE_CREAT_SUCCESS:
+//             return { ...state, message: "SUCCESS" };
+
+//         case storeConstants.STORE_GETBYID_SUCCESS:
+            
+//             return { ...state, ...action.payload };
+
+//         default:
+//             return state;
+//     }
+// }

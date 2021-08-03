@@ -33,6 +33,7 @@ import EditStore from './EditStore/EditStore';
 import StoreTimekeeping from './Timekeeping/StoreTimekeeping';
 import AttendancesPage from './Timekeeping/AttendancesPage';
 import WeekPlan from './view/weekSchedulePlan/WeekPlan';
+import StoreManagerNew from './view/store/StoreManagerNew';
 import ScheduleConfig from './view/configure/ScheduleConfig';
 import StaffEdit from './view/staff/StaffEdit';
 
@@ -41,38 +42,41 @@ function Alert(props) {
 }
 class App extends React.Component {
 
-  constructor(props) {
-    super(props);
-    history.listen((location, action) => {
-      // clear alert on location change
-      this.props.clearAlerts();
-    });
-  }
-  state = { open: false }
+  // constructor(props) {
+  //   super(props);
+  //   history.listen((location, action) => {
+  //     // clear alert on location change
+  //     this.props.clearAlerts();
+  //   });
+  // }
+  // state = { open: false }
   render() {
-    const { alert } = this.props;
+    // const { alert } = this.props;
 
-    if (alert.message === "" || !alert.message) {
-      this.state.open = false
-    }
-    else this.state.open = true
+    // if (alert.message === "" || !alert.message) {
+    //   this.state.open = false
+    // }
+    // else this.state.open = true
     return (
       <div>
         <ThemeProvider theme={theme}>
-          <Snackbar open={this.state.open} autoHideDuration={3000} onClose={() => this.state.open = false} >
+          {/* <Snackbar open={this.state.open} autoHideDuration={3000} onClose={() => this.state.open = false} >
             <Alert severity="success">
               {alert.message &&
                 <div className={`alert ${alert.type}`}>{alert.message}</div>
               }
             </Alert>
-          </Snackbar>
+          </Snackbar> */}
           {/* <MuiPickersUtilsProvider utils={DatePicker}> */}
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Router history={history} >
               <Switch>
+                {/* <Route path="/" component={LoginPage} /> */}
+                <PrivateRoute path="/" exact> <LoginPage /> </PrivateRoute>
                 <Route path="/login" component={LoginPage} />
+                <Route path="/register" component={RegisterPage} />
                 <Layout>
-                  <PrivateRoute path="/" exact> <BrandHome /> </PrivateRoute>
+                  
                   <Route path="/stores" exact>
                     <Stores />
                   </Route>
@@ -85,7 +89,9 @@ class App extends React.Component {
                   <Route path="/editbrand" exact>
                     <EditBrand />
                   </Route>
+                  <Route exact path="/storemanager/new" component={StoreManagerNew} />
                   <Route path="/editStore/:id" render={(props) => <EditStore {...props} />} />
+                  <Route path="/configure/store-info/:id" render={(props) => <EditStore {...props} />} />
                   {/* <EditStore />
                   </Route> */}
                   <Route path="/stores/new" >
