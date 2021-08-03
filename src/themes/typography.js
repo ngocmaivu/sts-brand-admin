@@ -40,7 +40,7 @@ export function themeTypography(navObject) {
             color: navObject.textDark
         },
         subtitle2: {
-            fontSize: '0.75rem',
+            fontSize: '0.85rem',
             fontWeight: 400,
             color: navObject.textSecondary
         },

@@ -15,6 +15,7 @@ import { Button, Chip, Drawer, Icon, useMediaQuery } from "@material-ui/core";
 import GroupOutlinedIcon from '@material-ui/icons/GroupOutlined';
 import EventNoteOutlined from '@material-ui/icons/EventNoteOutlined';
 import ProfileIcon from "@material-ui/icons/Person";
+import AssessmentIcon from '@material-ui/icons/Assessment';
 import jwt_decode from "jwt-decode";
 // import Logout from "../auth/Logout";
 import ProfileSection from "./ProfileSection";
@@ -322,6 +323,29 @@ if (user === null) {
     //     }
     //   ]
     // },
+    {
+      id: 'report',
+      title: 'Report',
+      url: '/report',
+      type: 'collapse',
+      icon: <AssessmentIcon />,
+      children: [
+        {
+          type: 'item',
+          id: 'report-staff',
+          title: 'Staff',
+          url: '/report/staff',
+          icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+        },
+        {
+          type: 'item',
+          id: 'report-store',
+          title: 'Store',
+          url: '/report/store',
+          icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+        },
+      ]
+    },
     {
       id: 'configure',
       title: 'Configure',
