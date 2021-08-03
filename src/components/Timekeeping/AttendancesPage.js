@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import { connect } from 'react-redux';
-import { Button, createStyles, Dialog, DialogContent, TableCell, DialogContentText, DialogTitle, DialogActions, InputAdornment, TextField, withStyles, Paper, Card, Grid, TableContainer, Table, TableHead, TableRow, TableBody, IconButton, Collapse, Typography, FormControl, FormLabel, List, ListItem, ListItemText, CardHeader, FormControlLabel, Box, Chip, Divider, CardMedia, CardActionArea, CardContent } from '@material-ui/core';
+import { Button, createStyles, Dialog, DialogContent, TableCell, DialogContentText, DialogTitle, DialogActions, InputAdornment, TextField, withStyles, Paper, Card, Grid, TableContainer, Table, TableHead, TableRow, TableBody, IconButton, Collapse, Typography, FormControl, FormLabel, List, ListItem, ListItemText, CardHeader, FormControlLabel, Box, Chip, Divider, CardMedia, CardActionArea, CardContent, ListSubheader } from '@material-ui/core';
 
 import MuiAlert from '@material-ui/lab/Alert';
 
 import { DateRangePicker, DateRangePickerComponent } from '@syncfusion/ej2-react-calendars';
 import { getFirstDayOfWeek } from "../../ultis/scheduleHandle";
-import { loadSkills, fetchAttandances, getStaffs, deleteAttandance } from "../../_services";
+import { fetchAllAttandances, fetchAttandances, getStaffs, deleteAttandance } from "../../_services";
 import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined';
 import addDays from 'date-fns/addDays';
 
@@ -130,11 +130,11 @@ class AttendancesPage extends React.Component {
     initData = async () => {
         var staffs = await getStaffs();
         console.log(staffs);
-        this.loadAttandances(staffs[0]?.username, this.init.fromDate, this.init.toDate);
+        this.loadAttandances(null, this.init.fromDate, this.init.toDate);
         this.setState({
             staffs: staffs,
-            currentUsername: staffs[0]?.username,
-            selectedIndexUser: 0
+            currentUsername: null,
+            selectedIndexUser: -1
         });
 
 
@@ -155,7 +155,13 @@ class AttendancesPage extends React.Component {
     }
 
     loadAttandances = async (username, fromDate, toDate) => {
-        let data = await fetchAttandances(username, fromDate, toDate);
+        let data = [];
+        if (!username) {
+            data = await fetchAllAttandances(fromDate, toDate);
+        } else {
+            data = await fetchAttandances(username, fromDate, toDate);
+        }
+
         if (data.length > 0) {
             this.setState({ attandances: data, updateData: false, selectRowIndex: 0, currentAttandance: data[0] });
         } else {
@@ -164,10 +170,6 @@ class AttendancesPage extends React.Component {
 
         console.log(data);
     }
-
-
-
-
 
     renderAttandanceDialog = () => {
 
@@ -276,38 +278,63 @@ class AttendancesPage extends React.Component {
 
                 <Grid container direction="row" spacing={2}>
                     <Grid item xs={2}>
-                        <Paper className={this.props.classes.container} style={{ minHeight: "70vh", padding: "16px 12px" }} elevation={0}>
-                            <List>
+                        <Paper className={this.props.classes.container} style={{ height: "70vh", padding: "16px 12px" }} elevation={0}>
+                            <List
+                                style={{ height: "100%", overflow: 'auto', }}
+                                subheader={
+                                    <ListSubheader component="div" style={{ backgroundColor: '#fff', borderBottom: "1px solid inherit" }} >
+                                        <Typography variant="h4">Staff</Typography>
+                                    </ListSubheader>
+                                }>
+
                                 {
                                     this.state.staffs ?
                                         (
-                                            this.state.staffs.map(
-                                                (staff, index) => {
-                                                    return (
-                                                        <ListItem button key={staff.username}
-                                                            onClick={() => { this.setState({ selectedIndexUser: index, updateData: true, currentUsername: staff.username }) }}
-                                                            selected={this.state.selectedIndexUser === index}
-                                                            className={clsx(classes.listItem, {
-                                                                [classes.selectedItem]: this.state.selectedIndexUser === index,
-                                                            })}>
-                                                            <ListItemText >
-                                                                <Typography variant="subtitle1">{staff.firstName + " " + staff.lastName}</Typography>
-                                                            </ListItemText>
-                                                        </ListItem>
+                                            <React.Fragment>
+                                                <ListItem button
+                                                    onClick={() => { this.setState({ selectedIndexUser: -1, updateData: true, currentUsername: null }) }}
+                                                    selected={this.state.selectedIndexUser === -1}
+                                                    className={clsx(classes.listItem, {
+                                                        [classes.selectedItem]: this.state.selectedIndexUser === -1,
+                                                    })}>
+                                                    <ListItemText >
+                                                        <Typography variant="subtitle1">All</Typography>
+                                                    </ListItemText>
+                                                </ListItem>
+                                                {
+                                                    this.state.staffs.map(
+                                                        (staff, index) => {
+                                                            return (
+                                                                <ListItem button key={staff.username}
+                                                                    onClick={() => { this.setState({ selectedIndexUser: index, updateData: true, currentUsername: staff.username }) }}
+                                                                    selected={this.state.selectedIndexUser === index}
+                                                                    className={clsx(classes.listItem, {
+                                                                        [classes.selectedItem]: this.state.selectedIndexUser === index,
+                                                                    })}>
+                                                                    <ListItemText >
+                                                                        <Typography variant="subtitle1">{staff.firstName + " " + staff.lastName}</Typography>
+                                                                    </ListItemText>
+                                                                </ListItem>
+                                                            )
+                                                        }
                                                     )
                                                 }
-                                            )
+                                            </React.Fragment>
+
                                         ) : ".. loading"
                                 }
                             </List>
                         </Paper>
                     </Grid>
                     <Grid item xs={7}>
-                        <Paper className={this.props.classes.container} style={{ minHeight: "70vh" }} elevation={0}>
-                            <TableContainer>
-                                <Table aria-label="simple table" >
+                        <Paper className={this.props.classes.container} style={{ height: "70vh" }} elevation={0}>
+                            <TableContainer style={{ height: "100%" }}>
+                                <Table aria-label="simple table" stickyHeader>
                                     <TableHead >
                                         <TableRow>
+                                            <TableCell align="left" variant="head" >
+                                                <Typography variant="h4">Username</Typography>
+                                            </TableCell>
                                             <TableCell align="left" variant="head" >
                                                 <Typography variant="h4">Date</Typography>
                                             </TableCell>
@@ -317,7 +344,7 @@ class AttendancesPage extends React.Component {
                                             <TableCell align="center"><Typography variant="h4">
                                                 Check Type</Typography></TableCell>
                                             <TableCell align="center"><Typography variant="h4">Device Code</Typography></TableCell>
-                                            <TableCell align="center"><Typography variant="h4">Create by</Typography></TableCell>
+                                            {/* <TableCell align="center"><Typography variant="h4">Create by</Typography></TableCell> */}
                                             <TableCell align="center"><Typography variant="h4">Actions</Typography></TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -333,11 +360,14 @@ class AttendancesPage extends React.Component {
                                                                     className={this.props.classes.row}
                                                                     onClick={() => { this.setState({ selectRowIndex: index, currentAttandance: attandance }) }}>
                                                                     <TableCell >
+                                                                        <Typography variant="subtitle1">{attandance.username}</Typography>
+                                                                    </TableCell>
+                                                                    <TableCell >
                                                                         <Typography variant="subtitle1">{format(
                                                                             new Date(attandance.timeCheck), "dd/MM/yyyy"
                                                                         )}</Typography>
                                                                     </TableCell>
-                                                                    <TableCell align="left" variant="head">
+                                                                    <TableCell align="left">
                                                                         <Typography variant="subtitle1" >
                                                                             {format(
                                                                                 new Date(attandance.timeCheck), "HH:mm a"
@@ -346,7 +376,7 @@ class AttendancesPage extends React.Component {
                                                                         <Chip label={this.getCheckType(attandance.checkType)} color="primary" variant="outlined" />
                                                                     </TableCell>
                                                                     <TableCell align="center"><Typography variant="subtitle1">{attandance.deviceCode}</Typography></TableCell>
-                                                                    <TableCell align="center"><Typography variant="subtitle1">{attandance.createBy}</Typography></TableCell>
+                                                                    {/* <TableCell align="center"><Typography variant="subtitle1">{attandance.createBy}</Typography></TableCell> */}
                                                                     <TableCell align="center">
                                                                         <IconButton onClick={() => { this.handleDelete(attandance.id) }}>
                                                                             <DeleteOutlineOutlinedIcon />
@@ -377,15 +407,6 @@ class AttendancesPage extends React.Component {
                                             <Card style={{ padding: 8, border: "none" }} elevation={0} >
                                                 <Typography variant="h5" color="textPrimary">
                                                     Time Check in: {format(new Date(this.state.currentAttandance.timeCheck), "dd/MM/yyyy - HH:mm a")}
-                                                </Typography>
-                                                <Typography variant="h5" color="textPrimary">
-                                                    Check By: {this.getCheckType(this.state.currentAttandance.checkType)}
-                                                </Typography>
-                                                <Typography variant="h5" color="textPrimary">
-                                                    Device Code: {this.state.currentAttandance.deviceCode}
-                                                </Typography>
-                                                <Typography variant="h5" color="textPrimary">
-                                                    Create By: {this.state.currentAttandance.createBy}
                                                 </Typography>
                                                 <Typography variant="h5" color="textPrimary">
                                                     Image:

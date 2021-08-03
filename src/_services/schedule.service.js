@@ -298,11 +298,38 @@ export const fetchSkillsOfStaff = async (username,) => {
 
 export const fetchAttandances = async (username, FromDate, ToDate) => {
     try {
+        let from = new Date(FromDate);
+        from.setHours(0, 0);
+        let to = new Date(ToDate);
+        to.setHours(23, 59);
 
         const response = await sts.get(`/manager/users/${username}/attendances`, {
             params: {
-                FromDate: convertToJSONDateWithoutChangeValue(new Date(FromDate)),
-                ToDate: convertToJSONDateWithoutChangeValue(new Date(ToDate))
+                FromDate: convertToJSONDateWithoutChangeValue(from),
+                ToDate: convertToJSONDateWithoutChangeValue(to)
+            },
+            headers: authHeader(),
+        });
+        return response.data;
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
+export const fetchAllAttandances = async (FromDate, ToDate) => {
+    try {
+
+        let from = new Date(FromDate);
+        from.setHours(0, 0);
+        let to = new Date(ToDate);
+        to.setHours(23, 59);
+
+        const response = await sts.get(`/manager/users/attendances`, {
+            params: {
+                FromDate: convertToJSONDateWithoutChangeValue(from),
+                ToDate: convertToJSONDateWithoutChangeValue(to)
             },
             headers: authHeader(),
         });
@@ -327,4 +354,19 @@ export const deleteAttandance = async (id) => {
         return null;
     }
 }
+
+export const updateWeekScheduleName = async (weekScheduleId, name) => {
+    try {
+
+        const response = await sts.put("/week-schedules/" + weekScheduleId,
+            {
+                name
+            }, { headers: authHeader() });
+        return response.data;
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+};
 

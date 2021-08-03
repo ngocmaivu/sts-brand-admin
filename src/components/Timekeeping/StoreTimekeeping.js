@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { DataGrid } from '@material-ui/data-grid';
 import { connect } from 'react-redux';
-import { Button, createStyles, Dialog, DialogContent, TableCell, DialogContentText, DialogTitle, DialogActions, InputAdornment, TextField, withStyles, Paper, Card, Grid, TableContainer, Table, TableHead, TableRow, TableBody, IconButton, Collapse, Typography, FormControl, FormLabel } from '@material-ui/core';
+import { Button, createStyles, Dialog, DialogContent, TableCell, DialogContentText, DialogTitle, DialogActions, InputAdornment, TextField, withStyles, Paper, Card, Grid, TableContainer, Table, TableHead, TableRow, TableBody, IconButton, Collapse, Typography, FormControl, FormLabel, Box } from '@material-ui/core';
 
 import MuiAlert from '@material-ui/lab/Alert';
 import { Delete, Edit, ImageSearch, ImageSearchTwoTone, SearchTwoTone, ViewAgenda, ViewStreamOutlined, VisibilityOutlined } from '@material-ui/icons';
 import { Skeleton } from '@material-ui/lab';
 import { DateRangePicker, DateRangePickerComponent } from '@syncfusion/ej2-react-calendars';
 import { TimeKeepingRow } from './TimeKeepingRow';
-import { loadSkills, fetchTimeKeeping } from "../../_services";
+import { loadSkills, fetchTimeKeeping, calculateTimeKeeping } from "../../_services";
 import { ShiftUserTable } from './ShiftUserTable';
 import addDays from 'date-fns/addDays';
 import { getFirstDayOfWeek } from "../../ultis/scheduleHandle";
@@ -225,7 +225,8 @@ class StoreTimekeeping extends React.Component {
             fromDate: fromDate,
             toDate: toDate,
             dataSrc: null,
-            updateData: false
+            updateData: false,
+            isLoading: false
         };
 
     }
@@ -287,6 +288,12 @@ class StoreTimekeeping extends React.Component {
         this.setState({ selectedUser: user, openAttendanceDialog: true });
 
     }
+    handleReCaculate = async () => {
+        this.setState({ dataSrc: null });
+        await calculateTimeKeeping(this.state.fromDate, this.state.toDate);
+        this.setState({ updateData: true, });
+
+    }
     renderAttandanceDialog = () => {
 
         const handleClose = () => { this.setState({ openAttendanceDialog: false }); };
@@ -326,90 +333,100 @@ class StoreTimekeeping extends React.Component {
             <React.Fragment>
                 <Card style={{ padding: '10px', marginBottom: '15px' }} elevation={0}>
                     <div> <h1>Timekeeping</h1></div>
-                    <FormControl>
-                        <FormLabel>Select Date</FormLabel>
-                        <DateRangePickerComponent
-                            change={(props) => {
-                                console.log(props);
-                                if (props.startDate && props.endDate && (props.startDate != this.state.fromDate ||
-                                    props.endDate != this.state.toDate)) {
-                                    this.setState({
-                                        fromDate: props.startDate,
-                                        toDate: props.endDate,
-                                        updateData: true
-                                    });
-                                }
-                            }}
+                    <Box height={16}></Box>
+                    <Grid container direction="row" justify="space-between" alignItems="center">
+                        <Grid item container direction="row" justify="flex-start" alignItems="center" spacing={4} xs={7}>
+                            <Grid item >
+                                <Typography variant="subtitle1">Time Period</Typography>
+                            </Grid>
+                            <Grid item xs={8}>
+                                <DateRangePickerComponent
+                                    change={(props) => {
+                                        console.log(props);
+                                        if (props.startDate && props.endDate && (props.startDate != this.state.fromDate ||
+                                            props.endDate != this.state.toDate)) {
+                                            this.setState({
+                                                fromDate: props.startDate,
+                                                toDate: props.endDate,
+                                                updateData: true
+                                            });
+                                        }
+                                    }}
 
-                            startDate={this.init.fromDate}
-                            endDate={this.init.toDate}
-                        />
-                    </FormControl>
+                                    startDate={this.init.fromDate}
+                                    endDate={this.init.toDate}
+                                />
+                            </Grid>
+                        </Grid>
+                        <Grid item>
+                            <Button color="primary" variant="outlined" onClick={() => {
+                                this.handleReCaculate();
+                            }} >Re-Calculate</Button>
+                        </Grid>
+                    </Grid>
                 </Card>
                 <Paper className={this.props.classes.container} style={{
-                    minHeight: "70vh"
+                    height: "74vh"
                 }} elevation={0}>
-                    <div style={{ width: '100%' }}>
-                        {false ? (
-                            <Grid container spacing={2} direction="column" style={{ padding: 20 }}>
-                                <Grid item xs>
-                                    <Skeleton animation="wave" variant="rect" height="175" />
-                                </Grid>
-                                <Grid item xs>
-                                    <Skeleton animation="wave" variant="rect" height="120" />
-                                </Grid>
-                                <Grid item xs>
-                                    <Skeleton animation="wave" variant="rect" height="70px" />
-                                </Grid>
-                                <Grid item xs>
-                                    <Skeleton animation="wave" variant="rect" height="40px" />
-                                </Grid>
-                                <Grid item xs>
-                                    <Skeleton animation="wave" variant="rect" height="20px" />
-                                </Grid>
-                            </Grid>
-                        ) :
-                            <TableContainer>
-                                <Table aria-label="simple table"  >
-                                    <TableHead >
-                                        <TableRow>
-                                            <TableCell align="left" variant="head"  >
-                                                <Typography variant="h4" className={classes.theadCell}>#</Typography>
-                                            </TableCell>
-                                            <TableCell align="left" variant="head" style={{ color: "#fff" }} >
-                                                <Typography variant="h4" className={classes.theadCell}>Username</Typography>
-                                            </TableCell>
-                                            <TableCell align="left" variant="head" style={{ color: "#fff" }}>
-                                                <Typography variant="h4" className={classes.theadCell}>
-                                                    Fullname</Typography></TableCell>
 
-                                            <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Total Shift</Typography></TableCell>
-                                            <TableCell align="center"><Typography variant="h4" className={classes.theadCell}>
-                                                Total Hours</Typography></TableCell>
-                                            <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Absent</Typography></TableCell>
-                                            <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Late Check in</Typography></TableCell>
-                                            <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Early Check out</Typography></TableCell>
+                    <TableContainer style={{
+                        height: "100%"
+                    }}>
+                        <Table aria-label="simple table" stickyHeader>
+                            <TableHead >
+                                <TableRow>
+                                    <TableCell align="left" variant="head"  >
+                                        <Typography variant="h4" className={classes.theadCell}>#</Typography>
+                                    </TableCell>
+                                    <TableCell align="left" variant="head" style={{ color: "#fff" }} >
+                                        <Typography variant="h4" className={classes.theadCell}>Username</Typography>
+                                    </TableCell>
+                                    <TableCell align="left" variant="head" style={{ color: "#fff" }}>
+                                        <Typography variant="h4" className={classes.theadCell}>
+                                            Fullname</Typography></TableCell>
 
-                                        </TableRow>
-                                    </TableHead>
+                                    <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Total Shift</Typography></TableCell>
+                                    <TableCell align="center"><Typography variant="h4" className={classes.theadCell}>
+                                        Total Hours</Typography></TableCell>
+                                    <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Absent</Typography></TableCell>
+                                    <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Late Check in</Typography></TableCell>
+                                    <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Early Check out</Typography></TableCell>
+
+                                </TableRow>
+                            </TableHead>
+                            {
+                                <TableBody>
                                     {
-                                        <TableBody>
-                                            {
-                                                this.state.dataSrc ? this.renderRows() : (
-                                                    <TableRow>
-                                                        <TableCell colSpan={8} align="center" >No Record</TableCell>
-                                                    </TableRow>
-                                                )
-                                            }
-                                        </TableBody>
+                                        this.state.dataSrc ? this.renderRows() : (
+                                            <TableRow>
+                                                <TableCell colSpan={8} >
+                                                    <Grid container spacing={2} direction="column" >
+                                                        <Grid item xs>
+                                                            <Skeleton animation="wave" variant="rect" height="175px" />
+                                                        </Grid>
+                                                        <Grid item xs>
+                                                            <Skeleton animation="wave" variant="rect" height="120px" />
+                                                        </Grid>
+                                                        <Grid item xs>
+                                                            <Skeleton animation="wave" variant="rect" height="70px" />
+                                                        </Grid>
+                                                        <Grid item xs>
+                                                            <Skeleton animation="wave" variant="rect" height="40px" />
+                                                        </Grid>
+                                                        <Grid item xs>
+                                                            <Skeleton animation="wave" variant="rect" height="20px" />
+                                                        </Grid>
+                                                    </Grid>
+                                                </TableCell>
+                                            </TableRow>
+                                        )
                                     }
+                                </TableBody>
+                            }
 
-                                </Table>
+                        </Table>
 
-                            </TableContainer>
-                        }
-
-                    </div>
+                    </TableContainer>
 
                     {this.renderAttandanceDialog()}
                 </Paper>
