@@ -42,31 +42,31 @@ function Alert(props) {
 }
 class App extends React.Component {
 
-  // constructor(props) {
-  //   super(props);
-  //   history.listen((location, action) => {
-  //     // clear alert on location change
-  //     this.props.clearAlerts();
-  //   });
-  // }
-  // state = { open: false }
+  constructor(props) {
+    super(props);
+    history.listen((location, action) => {
+      // clear alert on location change
+      this.props.clearAlerts();
+    });
+  }
+  state = { open: false }
   render() {
-    // const { alert } = this.props;
+    const { alert } = this.props;
 
-    // if (alert.message === "" || !alert.message) {
-    //   this.state.open = false
-    // }
-    // else this.state.open = true
+    if (alert.message === "" || !alert.message) {
+      this.state.open = false
+    }
+    else this.state.open = true
     return (
       <div>
         <ThemeProvider theme={theme}>
-          {/* <Snackbar open={this.state.open} autoHideDuration={3000} onClose={() => this.state.open = false} >
+          <Snackbar open={this.state.open} autoHideDuration={3000} onClose={() => this.state.open = false} >
             <Alert severity="success">
               {alert.message &&
                 <div className={`alert ${alert.type}`}>{alert.message}</div>
               }
             </Alert>
-          </Snackbar> */}
+          </Snackbar>
           {/* <MuiPickersUtilsProvider utils={DatePicker}> */}
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Router history={history} >
