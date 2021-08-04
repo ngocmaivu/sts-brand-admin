@@ -411,14 +411,18 @@ class AttendancesPage extends React.Component {
                                                 <Typography variant="h5" color="textPrimary">
                                                     Image:
                                                 </Typography>
-                                                <CardMedia
+                                                {/* <CardMedia
                                                     style={{
                                                         height: 300,
 
                                                     }}
                                                     image={this.state.currentAttandance.imageUrl}
                                                     title="Contemplative Reptile"
-                                                />
+                                                /> */}
+                                                <img src={this.state.currentAttandance.imageUrl} style={{
+                                                    // height: 300,
+                                                    width: "100%"
+                                                }} />
                                                 <CardContent>
                                                     <Grid container direction="row" alignItems="center" spacing={1}>
                                                         <Grid item>
