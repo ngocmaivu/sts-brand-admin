@@ -116,7 +116,7 @@ class WeekPlanManage extends React.Component {
 
     handleRowClick = (id) => {
         console.log("Redirect");
-        history.push(`/schedule/plans/detail/${id}`);
+        history.push(`/schedule/plans/${this.props.match.params.status}/detail/${id}`);
     }
     renderWeekScheduleRows = () => {
         const dateFormat = "dd/MM/yyyy";

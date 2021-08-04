@@ -76,7 +76,7 @@ class App extends React.Component {
                 <Route path="/login" component={LoginPage} />
                 <Route path="/register" component={RegisterPage} />
                 <Layout>
-                  
+
                   <Route path="/stores" exact>
                     <Stores />
                   </Route>
@@ -121,7 +121,7 @@ class App extends React.Component {
                   <Route path="/schedule/plans/:status" exact>
                     <SchedulePlans />
                   </Route>
-                  <Route path="/schedule/plans/detail/:id" exact>
+                  <Route path="/schedule/plans/:status/detail/:id" exact>
                     <WeekPlan />
                   </Route>
 
