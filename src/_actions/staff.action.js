@@ -89,8 +89,10 @@ export const loadStaffNew = () => async dispatch => {
     const skills = await loadSkills();
     const stores = await loadStores();
     const init_data = {};
+    init_data.gender = 1;
+    init_data.type = 0;
     skills.forEach(skill => (
-        init_data[`skill${skill.id}Level`] = 0
+        init_data[`skill${skill.id}Level`] = 1
     ));
 
     dispatch({ type: staffConstants.STAFF_LOAD, payload: { data: init_data, skills, stores } });
@@ -139,6 +141,12 @@ const loadStores = async () => {
     } catch (e) {
         console.log('Load Stores Fail');
         console.log(e);
+    }
+}
+
+export const clearAlert = ()=> {
+    return {
+        type: staffConstants.STAFF_CLEAR_ALERT
     }
 }
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Field, reduxForm, formValueSelector } from 'redux-form';
-import { Accordion, AccordionDetails, AccordionSummary, Button, Card, CardContent, CardHeader, Checkbox, Chip, Divider, FormControl, FormControlLabel, FormLabel, Grid, makeStyles, MenuItem, OutlinedInput, Paper, Select, TextField, Typography, useTheme } from '@material-ui/core';
+import { Accordion, AccordionDetails, AccordionSummary, Button, Card, CardContent, CardHeader, Checkbox, Chip, Divider, FormControl, FormControlLabel, FormHelperText, FormLabel, Grid, makeStyles, MenuItem, OutlinedInput, Paper, Select, TextField, Typography, useTheme } from '@material-ui/core';
 import { CardCustom } from '../../CardCustom';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { levels } from "../../../_constants/levelData";
@@ -38,6 +38,7 @@ class StaffForm extends React.Component {
                 <Select {...input} variant="outlined" onChange={value => input.onChange(value)}>
                     {children}
                 </Select>
+                {this.renderFromHelper({ touched, error })}
             </FormControl>);
     }
     renderCheckboxBase = ({ input }) => {
@@ -55,7 +56,7 @@ class StaffForm extends React.Component {
                 return {
                     skillId: skill.id,
                     level: formValues[`skill${skill.id}Level`],
-                   
+
                 }
             });
 
@@ -105,6 +106,14 @@ class StaffForm extends React.Component {
             </Grid>
         ));
     }
+    renderFromHelper = ({ touched, error }) => {
+        if (!(touched && error)) {
+            return
+        } else {
+            return <FormHelperText>{touched && error}</FormHelperText>
+        }
+    }
+
     render() {
         return (
             <CardContent >
@@ -230,14 +239,19 @@ const validate = (formValues) => {
     if (!formValues.email) {
         error.email = "You must enter a email";
     }
+    if (formValues.gender==null) {
+        error.gender = "You must choose a gender";
+    }
 
     if (!formValues.username) {
         error.username = "You must enter a username";
     }
 
-
-    if (!formValues.workAt) {
-        error.type = "You must choose a store";
+    if (formValues.workAt == null) {
+        error.workAt = "You must choose a store";
+    }
+    if (formValues.type == null) {
+        error.type = "You must choose a type staff";
     }
 
     return error;
