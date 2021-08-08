@@ -3,7 +3,7 @@ import { withRouter } from "react-router";
 import { createStyles, withStyles } from '@material-ui/core/styles';
 
 import Paper from '@material-ui/core/Paper';
-import { Button, CardContent, CardHeader, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControl, FormLabel, Grid, IconButton, Tab, Tabs, TextField, Typography } from '@material-ui/core';
+import { Accordion, AccordionDetails, AccordionSummary, Box, Button, Card, CardContent, CardHeader, Chip, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControl, FormLabel, Grid, IconButton, Tab, Tabs, TextField, Typography } from '@material-ui/core';
 import { fetchWeekSchedule, fetchSkillSrc, fetchDefaultConfig } from "../../../_actions/";
 import { format, isSameDay, startOfWeek, } from 'date-fns';
 import { Skeleton } from '@material-ui/lab';
@@ -14,7 +14,7 @@ import SettingConstraintsForm from '../schedule/SettingConstraintsForm';
 import { getConstraintDefault } from "../../../ultis/scheduleDefault";
 import Demand from '../demand';
 import Schedule from "../schedule";
-
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import _ from "lodash";
 import { addDays } from '@syncfusion/ej2-react-schedule';
 import { EditOutlined } from '@material-ui/icons';
@@ -23,11 +23,29 @@ import EditWeekScheduleNameDialog from './EditWeekScheduleNameDialog';
 const styles = (Theme) => createStyles({
     container: {
         height: '100%',
-        padding: 16
+        padding: 12,
+
     },
     containerContent: {
-        padding: "20px 20px"
+        padding: "16px 16px"
     },
+    tabsStyled: {
+        // "& .MuiTabs-indicator": {
+        //     display: "none"
+        // }
+    },
+    tabStyled: {
+        backgroundColor: "#fff",
+
+        marginRight: 12,
+        "& .MuiTab-selected": {
+            backgroundColor: Theme.palette.primary.main
+        }
+    },
+    tabsInputStyled: {
+        borderRight: `1px solid ${Theme.palette.divider}`,
+        height: "70vh"
+    }
 });
 
 function TabPanel(props) {
@@ -41,7 +59,7 @@ function TabPanel(props) {
             aria-labelledby={`simple-tab-${index}`}
             {...other}
             style={{
-                width: '100%', height: "85%",
+                width: '100%',
                 // display: value !== index ? "none" : null
             }}
         >
@@ -69,6 +87,7 @@ class WeekPlan extends React.Component {
 
         this.state = {
             tabIndex: 0,
+            tabInputIndex: 0,
             openEditNameDialog: false,
             methodSubmitConstraint: null
         };
@@ -162,6 +181,11 @@ class WeekPlan extends React.Component {
         console.log(event);
         this.setState({ tabIndex: newValue });
     }
+
+    handleTabInputChange = (event, newValue) => {
+        this.setState({ tabInputIndex: newValue });
+    }
+
     renderEditNameDialog = () => {
         const handleClose = () => {
             this.setState({ openEditNameDialog: false });
@@ -182,55 +206,86 @@ class WeekPlan extends React.Component {
     }
     render() {
         return (<div>
-            <Paper style={{ padding: 16, marginBottom: 16 }} elevation={0}>
-                <CardHeader title={this.props.currentSchedule?.name} style={{ padding: 0 }} titleTypographyProps={{ variant: "h3" }}
+            <Paper style={{ paddingTop: 16, paddingLeft: 16, marginBottom: 8 }} elevation={0}>
+                <CardHeader title={this.props.currentSchedule?.name}
+                    subheader={
+                        this.props.currentSchedule ?
+                            `${format(new Date(this.props.currentSchedule.dateStart), "dd/MM/yyyy")} - ${format(addDays(new Date(this.props.currentSchedule.dateStart), 6), "dd/MM/yyyy")}` : ""
+                    }
+                    style={{ padding: 0 }} titleTypographyProps={{ variant: "h3" }}
                     action={<IconButton onClick={() => {
                         this.setState({ openEditNameDialog: true });
                     }}><EditOutlined color="primary" /></IconButton>} />
-                <Typography variant="h3">
-                    Week: {this.props.currentSchedule ?
-                        `${format(new Date(this.props.currentSchedule.dateStart), "dd/MM/yyyy")} - ${format(addDays(new Date(this.props.currentSchedule.dateStart), 6), "dd/MM/yyyy")}` : null}
-                </Typography>
-            </Paper>
-
-            <Paper className={this.props.classes.container}>
                 <Tabs
                     value={this.state.tabIndex}
                     indicatorColor="primary"
                     textColor="primary"
+                    className={this.props.classes.tabsStyled}
                     onChange={this.handleChange}
                 >
-                    <Tab label="Constraints " value={0} />
-                    <Tab label="Demands" value={1} />
-                    <Tab label="View" value={2} />
+                    <Tab label="Config" value={0} className={this.props.classes.tabStyled} />
+                    <Tab label="Result" value={1} className={this.props.classes.tabStyled} />
                 </Tabs>
-                <Divider />
-                <TabPanel value={this.state.tabIndex} index={0}>
-                    {
-                        this.state.constraintData ? (
-                            <SettingConstraintsForm initialValues={this.state.constraintData} onSubmit={this.onSubmitConstraints} />
-                        ) : "...Loading"
-                    }
-                </TabPanel>
-                <TabPanel value={this.state.tabIndex} index={1}>
-                    {
-                        this.props.currentSchedule ? (
-                            <Demand dateStart={this.props.currentSchedule.dateStart} weekScheduleId={this.props.currentSchedule.id} />
-                        ) : "...Loading"
-                    }
-
-                </TabPanel>
-                <TabPanel value={this.state.tabIndex} index={2}>
-                    {
-                        this.props.currentSchedule ? (
-                            <Schedule dateStart={this.props.currentSchedule.dateStart} weekScheduleId={this.props.currentSchedule.id}
-                                refreshSchedule={() => {
-                                    this.fetchData();
-                                }} />
-                        ) : "...Loading"
-                    }
-                </TabPanel>
             </Paper>
+
+
+
+            {/* <Box height={12} /> */}
+
+            <TabPanel value={this.state.tabIndex} index={0}>
+                <Card style={{
+                    paddingTop: 8,
+
+                    flexGrow: 1,
+                }}>
+                    <Grid container spacing={1} direction="row">
+                        <Grid item style={{width: 200}} >
+                            <Tabs
+                                value={this.state.tabInputIndex}
+                                indicatorColor="primary"
+                                orientation="vertical"
+                                textColor="primary"
+                                className={this.props.classes.tabsInputStyled}
+
+                                onChange={this.handleTabInputChange}
+                            >
+                                <Tab label="Constraints" value={0} />
+                                <Tab label="Demand" value={1} />
+                            </Tabs>
+                        </Grid>
+                        <Grid item  zeroMinWidth style={{ flexBasis: 0, flexGrow: 1, padding: 12 }}>
+                            <TabPanel value={this.state.tabInputIndex} index={0}>
+
+                                {
+                                    this.state.constraintData ? (
+                                        <SettingConstraintsForm initialValues={this.state.constraintData} onSubmit={this.onSubmitConstraints} />
+                                    ) : "...Loading"
+                                }   </TabPanel>
+                            <TabPanel value={this.state.tabInputIndex} index={1}>
+                                {
+                                    this.props.currentSchedule ? (
+                                        <Demand dateStart={this.props.currentSchedule.dateStart} weekScheduleId={this.props.currentSchedule.id} />
+                                    ) : "...Loading"
+                                }
+                            </TabPanel>
+
+                        </Grid>
+                    </Grid>
+                </Card>
+            </TabPanel>
+            <TabPanel value={this.state.tabIndex} index={1}>
+
+                {
+                    this.props.currentSchedule ? (
+                        <Schedule dateStart={this.props.currentSchedule.dateStart} weekScheduleId={this.props.currentSchedule.id}
+                            refreshSchedule={() => {
+                                this.fetchData();
+                            }} />
+                    ) : "...Loading"
+                }
+
+            </TabPanel>
+
             {this.renderEditNameDialog()}
         </div >
         );

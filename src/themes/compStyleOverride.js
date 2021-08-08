@@ -28,7 +28,7 @@ export function componentStyleOverrides(theme) {
             rounded: {
                 //border: '1px solid',
                 border: ' 1px solid rgba(144, 202, 249, 0.46)',
-                borderRadius: 12
+                borderRadius: 8
             },
 
         },

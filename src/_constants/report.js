@@ -1,0 +1,4 @@
+export const reportConstants = {
+    REPORT_FETCH_STAFF: 'REPORT_FETCH_STAFF',
+    REPORT_FETCH_STORE: 'REPORT_FETCH_STORE'
+};

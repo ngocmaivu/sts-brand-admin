@@ -7,3 +7,4 @@ export * from './store.action';
 export * from './staff.action';
 export * from './skill.actions';
 export * from './schedule.action';
+export * from './report';

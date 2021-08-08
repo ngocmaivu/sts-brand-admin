@@ -1,4 +1,4 @@
-import { createStyles, Tab, Tabs, withStyles, Grid, CardHeader, CardContent, Card, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Select, MenuItem, FormControl, FormLabel, TextField, FormHelperText, Paper, FormControlLabel } from '@material-ui/core';
+import { createStyles, Tab, Tabs, withStyles, Grid, CardHeader, CardContent, Card, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Select, MenuItem, FormControl, FormLabel, TextField, FormHelperText, Paper, FormControlLabel, Box } from '@material-ui/core';
 import React from 'react';
 
 import { loadSkills, getWeekScheduleDemand, updateDemand, deleteDemand, createDemand } from "../../../_services";
@@ -22,8 +22,8 @@ const styles = (theme) => createStyles({
         //  flexGrow: 1,
         //  backgroundColor: theme.palette.background.div,
         // display: 'flex',
-        minHeight: "75vh",
-        padding: 10
+        height: "100%",
+
         //  border: "none"
     },
     dayTabsWrapper: {
@@ -63,7 +63,8 @@ class DemandPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            byDate: false
+            byDate: false,
+            selectedSkillId: -1,
         }
 
         this.rootRef = React.createRef(null);
@@ -73,11 +74,21 @@ class DemandPage extends React.Component {
             workEnd: null,
             quantity: null,
             level: null,
+            minHour: 0,
             skillId: null,
         };
     }
 
+    handleChangeSelectedSkill = (e) => {
+        let skillId = e.target.value;
+        if (this.state.selectedSkillId !== -1) {
+            this.scheduleObj.removeResource(this.state.selectedSkillId, "Skill");
+        }
+        let resourceData = this.props.skillSrc.find(skill => skill.id == skillId);
+        this.scheduleObj.addResource(resourceData, "Skill", 1);
 
+        this.setState({ selectedSkillId: e.target.value });
+    }
     loadDemandDatas = async () => {
 
         var demandDatas = await getWeekScheduleDemand(this.props.weekScheduleId);
@@ -85,7 +96,6 @@ class DemandPage extends React.Component {
         console.log([...demandDatas, ...NotOperatingTime]);
         if (this.scheduleObj != null) {
             // this.setState({ dataSource: demandDatas });
-
 
             let dateStart = new Date(this.props.dateStart);
             let start1 = new Date(this.props.dateStart);
@@ -103,7 +113,9 @@ class DemandPage extends React.Component {
 
         if (this.props.defaultConfig && this.props.skillSrc) {
             var operatingTimes = this.props.defaultConfig.operatingTimes;
+
             let dateStart = new Date(this.props.dateStart);
+            let minHour = 24;
             operatingTimes.forEach(o => {
 
                 if (o.isWorking) {
@@ -116,6 +128,10 @@ class DemandPage extends React.Component {
                     start1.setMinutes(0);
                     end1.setHours(o.from / 2);
                     end1.setMinutes(o.from % 2 == 1 ? 30 : 0);
+
+                    if (o.from / 2 < minHour) {
+                        minHour = o.from / 2;
+                    }
 
                     start2.setHours(o.to / 2);
                     start2.setMinutes(o.to % 2 == 1 ? 30 : 0);
@@ -163,19 +179,32 @@ class DemandPage extends React.Component {
 
                 }
             });
-
+            // this.scheduleObj.startHour = minHour;
+            this.setState({ minHour: minHour });
         }
+
         return NotOperatingTime;
 
     }
 
 
     componentDidMount = async () => {
+
+        if (this.props.skillSrc) {
+            this.setState({ selectedSkillId: this.props.skillSrc[0].id });
+            if (this.scheduleObj) {
+                let resource = this.props.skillSrc.find(skill => skill.id == this.props.skillSrc[0].id);
+                // this.scheduleObj.addResource(resource, "Skill", 1);
+            }
+        }
+
         await this.loadDemandDatas();
         // 
     }
 
     componentDidUpdate = async (prevProps, prevState, snapshot) => {
+
+
         if (prevProps.weekScheduleId != this.props.weekScheduleId && this.props.skillSrc) {
             await this.loadDemandDatas();
         }
@@ -268,15 +297,20 @@ class DemandPage extends React.Component {
         // this.updateTotalHoursPersWeek();
     }
 
+    cellTemplate = (props) => {
+        return (<div className="templatewrap" style={{ paddingTop: 8 }} ></div>);
+        // return (<div></div>);
+    }
+
     onEventRendered = (args) => {
         if (args.data.level != -1) {
             let levelColor = levels.find(e => e.value == args.data.level).color;
             args.element.style.backgroundColor = levelColor;
-            args.element.style.border = "2px solid #4e4f73";
-            args.element.style.borderRadius = "12px";
+            args.element.style.border = "1px solid #4e4f73";
+            args.element.style.borderRadius = "4px";
+            // args.element.style.height = 100;
             // args.element.style.margin = "5px";
-        }else
-        {
+        } else {
             args.element.style.backgroundColor = "#b9b9b96b";
         }
 
@@ -305,7 +339,7 @@ class DemandPage extends React.Component {
                 </Grid>
                 <Grid item >
                     <Typography style={{ color: "#4e4f73" }} variant="h4">
-                        {`Level ${props.level}`}
+                        {`Level `}&#8805; {`${props.level}`}
                     </Typography>
                 </Grid>
             </Grid>
@@ -318,7 +352,7 @@ class DemandPage extends React.Component {
     }
     dateHeaderTemplate = (props) => {
         return (<div>
-            <Typography variant="subtitle1" >{format(new Date(props.date), "Ed")}</Typography>
+            <Typography variant="subtitle1" >{format(new Date(props.date), "E d")}</Typography>
         </div>);
     }
 
@@ -336,13 +370,28 @@ class DemandPage extends React.Component {
         return (
             <div className={classes.root} >
                 {
-                    this.props.skillSrc ? (
-                        <Paper>
-                            <CardHeader title="Demand" action={
+                    this.props.skillSrc && this.props.skillSrc.length != 0 ? (
+                        <Box>
+
+                            <CardHeader title="" action={
                                 <Grid container justify="flex-end" spacing={1} direction="row">
                                     <Grid item>
-
-                                        <ToggleButtonGroup
+                                        <FormControl >
+                                            <Select
+                                                labelId="demo-simple-select-label"
+                                                id="demo-simple-select"
+                                                value={this.state.selectedSkillId}
+                                                label="Select Skill"
+                                                onChange={this.handleChangeSelectedSkill}
+                                            >
+                                                {
+                                                    this.props.skillSrc.map(skill => {
+                                                        return (<MenuItem value={skill.id}>{skill.name}</MenuItem>);
+                                                    })
+                                                }
+                                            </Select>
+                                        </FormControl>
+                                        {/* <ToggleButtonGroup
                                             value={this.state.byDate}
                                             exclusive
                                             size="small"
@@ -360,7 +409,7 @@ class DemandPage extends React.Component {
                                             <ToggleButton value={false} aria-label="centered">
                                                 Skill
                                             </ToggleButton>
-                                        </ToggleButtonGroup>
+                                        </ToggleButtonGroup> */}
                                     </Grid>
                                 </Grid>
                             } />
@@ -369,9 +418,12 @@ class DemandPage extends React.Component {
                                 resourceHeaderTemplate={this.resourceHeaderTemplate}
                                 currentView="Week" selectedDate={this.currentDate}
                                 cssClass="schedule-custom"
-                                height="80vh"
-
-                                dateHeaderTemplate={this.dateHeaderTemplate}
+                                height="70vh"
+                                cellTemplate={this.cellTemplate}
+                                showTimeIndicator={false}
+                                startHour={`${this.state.minHour}:00`}
+                                // dateHeaderTemplate={this.dateHeaderTemplate}
+                                showHeaderBar={false}
                                 eventSettings={{
                                     fields: {
                                         id: 'id',
@@ -381,7 +433,7 @@ class DemandPage extends React.Component {
 
                                     }
                                 }}
-                                timeScale={{ enable: true, interval: 120, slotCount: 2 }}
+                                timeScale={{ enable: true, interval: 60, slotCount: 1 }}
                                 eventRendered={this.onEventRendered}
                                 ref={schedule => this.scheduleObj = schedule}
                                 editorTemplate={this.editorTemplate}
@@ -402,21 +454,19 @@ class DemandPage extends React.Component {
                                         allowMultiple={true}
                                         idField="id"
                                         textField="name"
-                                        dataSource={this.props.skillSrc}
-
-
+                                        dataSource={[this.props.skillSrc[0]]}
                                     >
                                     </ResourceDirective>
                                 </ResourcesDirective>
                                 <ViewsDirective >
                                     <ViewDirective option='Day' eventTemplate={this.eventTemplate} />
-                                    {/* <ViewDirective option='Week' eventTemplate={this.eventTemplate} /> */}
+                                    <ViewDirective option='Week' eventTemplate={this.eventTemplate} />
 
                                 </ViewsDirective>
                                 <Inject services={[Day, Week, DragAndDrop, Resize]} />
                                 {/* <Inject services={[Day, Week, WorkWeek, Month, TimelineViews, TimelineMonth]} /> */}
                             </ScheduleComponent>
-                        </Paper>) : "...Loading"
+                        </Box>) : "...Loading"
                 }
             </div >
         );

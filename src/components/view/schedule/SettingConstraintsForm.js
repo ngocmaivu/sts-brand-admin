@@ -1,6 +1,6 @@
 import {
     createStyles, withStyles, CardContent, Grid,
-    TextField, Button,
+    TextField, Button, Card,
 } from '@material-ui/core';
 
 import React from 'react';
@@ -17,8 +17,9 @@ const styles = (Theme) => createStyles({
 
     },
     container: {
-        padding: 10,
-        height: "100%"
+     
+        height: "100%",
+        width: "100%"
     }
 })
 
@@ -53,7 +54,7 @@ function TabPanel(props) {
             id={`simple-tabpanel-${index}`}
             aria-labelledby={`simple-tab-${index}`}
             {...other}
-            style={{ width: '100%', height: "85%" }}
+            style={{ width: '100%' }}
         >
             {value === index && (
                 <React.Fragment>
@@ -210,54 +211,10 @@ class SettingConstraintsForm extends React.Component {
     render() {
         const classes = this.props.classes;
         return (
-            <CardContent>
+            <CardContent className={classes.container}>
                 <form onSubmit={this.props.handleSubmit(this.onSubmit)}>
-                    <Grid container spacing={5} >
-                        {/* <Grid item xs={12}>
-                            <CardCustom header='General'>
-                                <Grid container direction="column" spacing={1} style={{ paddingLeft: 20 }} >
-                                    <SectionSetting label="Operating Hour" >
-                                        <Grid container spacing={2} alignItems="center">
-                                            <Grid item style={{ width: 180 }}>
-                                                <Autocomplete
-                                                    options={timeSlots}
-                                                    getOptionLabel={(option) => option.title}
-                                                    getOptionSelected={(option, value) => option.title === value.title}
-                                                    renderInput={(params) => (
-                                                        <TextField
-                                                            classes={{
-                                                                "root": classes.inputAutoComplete
-                                                            }}
-
-                                                            {...params} variant="outlined" />
-                                                    )}
-                                                />
-                                            </Grid>
-                                            <Grid item>To</Grid>
-                                            <Grid item style={{ width: 180 }}>
-                                                <Autocomplete
-                                                    style={{ padding: 0 }}
-                                                    options={timeSlots}
-                                                    getOptionLabel={(option) => option.title}
-                                                    renderInput={(params) => (
-                                                        <TextField
-                                                            classes={{
-                                                                "root": classes.inputAutoComplete
-                                                            }}
-                                                            {...params} variant="outlined" />
-                                                    )}
-                                                />
-                                            </Grid>
-                                        </Grid>
-                                    </SectionSetting>
-                                    <SectionSetting label="Min distance between 2 shifts " >
-                                        <TextField classes={{
-                                            "root": classes.inputAutoComplete
-                                        }} size="small" type="number" variant="outlined" />
-                                    </SectionSetting>
-                                </Grid>
-                            </CardCustom>
-                        </Grid> */}
+                    <Grid container spacing={2} direction="column" >
+                        
                         <Grid item container direction="row" spacing={5}>
                             <Grid item xs={6}>
                                 <CardCustom header='For fulltime'>
@@ -280,7 +237,7 @@ class SettingConstraintsForm extends React.Component {
                                 <Button variant="contained" color="primary" type="submit">Save change</Button>
                             </Grid>
                             <Grid item>
-                                <Button variant="outlined" color="primary">Reset</Button>
+                                {/* <Button variant="outlined" color="primary">Reset</Button> */}
                             </Grid>
                         </Grid>
                     </Grid>

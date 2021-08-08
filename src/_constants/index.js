@@ -5,3 +5,4 @@ export * from './brand.constant';
 export * from './staff.constants';
 export * from './skill.constants';
 export * from './schedule';
+export * from './report';
