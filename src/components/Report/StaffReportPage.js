@@ -51,12 +51,16 @@ const columns = [
     {
         field: 'date',
         headerName: 'Date',
+        align: "center",
+        headerAlign: "center",
         type: 'date',
         valueFormatter: ({ value }) => format(new Date(value), "dd/MM/yyyy"),
         flex: 1,
     },
     {
         field: 'timeStart',
+        align: "center",
+        headerAlign: "center",
         headerName: 'Start',
         type: 'datetime',
         valueFormatter: ({ value }) => format(new Date(value), "HH:mm"),
@@ -65,6 +69,8 @@ const columns = [
     {
         field: 'timeEnd',
         headerName: 'End',
+        align: "center",
+        headerAlign: "center",
         type: 'datetime',
         valueFormatter: ({ value }) => format(new Date(value), "HH:mm"),
         flex: 1,
@@ -72,40 +78,64 @@ const columns = [
     {
         field: 'timeCheckIn',
         headerName: 'Check In',
-        type: 'datetime',
-        valueFormatter: ({ value }) => format(new Date(value), "HH:mm"),
+        align: "center",
+        headerAlign: "center",
+        valueFormatter: ({ value }) => {
+            let date = new Date(value);
+            console.log(value);
+            if (date.getDay() == 1 && date.getHours() == 0 && date.getFullYear() == 1) {
+                return "--:--";
+            }
+            return format(date, "HH:mm");
+        },
         flex: 1,
-
     },
     {
         field: 'timeCheckOut',
         headerName: 'Check Out',
+        align: "center",
+        headerAlign: "center",
         type: 'datetime',
-        valueFormatter: ({ value }) => format(new Date(value), "HH:mm"),
+        valueFormatter: ({ value }) => {
+            let date = new Date(value);
+            console.log(value);
+            if (date.getDay() == 1 && date.getHours() == 0 && date.getFullYear() == 1) {
+                return "--:--";
+            }
+            return format(date, "HH:mm");
+        },
         flex: 1,
     },
 
     {
         field: 'arrivedLate',
         headerName: 'Arrived Late',
+        align: "center",
+        headerAlign: "center",
         type: 'boolean',
         flex: 1,
     },
     {
         field: 'leftEarly',
         headerName: 'Left Early',
+        align: "center",
+        headerAlign: "center",
         type: 'boolean',
         flex: 1,
     },
     {
         field: 'absent',
         headerName: 'Absent',
+        align: "center",
+        headerAlign: "center",
         type: 'boolean',
         flex: 1,
     },
     {
         field: 'workHours',
         headerName: 'Total Hours',
+        align: "center",
+        headerAlign: "center",
         type: 'number',
         valueFormatter: ({ value }) => Number(value).toFixed(2),
         flex: 1,
@@ -128,56 +158,53 @@ function CustomToolbar() {
         </GridToolbarContainer>
     );
 }
-function CustomFooter({ totalWorkHours, totalArriveLate, totalLeaveEarly, totalAbsent }) {
+
+
+function CustomFooter({ totalWorkHours, totalArriveLate, totalLeaveEarly, totalAbsent, totalLackCheckIn, totalLackCheckOut }) {
     return (
         <GridFooterContainer>
-            <GridPanelFooter>
-                <Grid container >
-                    <Grid item container xs={12} justify="space-between"
-                        justifyContent="center" alignContent="center"
-                        alignItems="center" >
-                        <Grid item xs={3}
-                        //  style={{
-                        //     borderRight: "1px solid"
-                        // }}
-                        >
-                            <Typography variant="subtitle1" align="center">
-                                Total Working: {totalWorkHours}
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={3} >
-                            <Typography variant="subtitle1" align="center">
-                                Total Late: {totalArriveLate}</Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                            <Typography variant="subtitle1" align="center">
-                                Total Leave Early: {totalLeaveEarly} </Typography>
-                        </Grid>
-                        <Grid item xs={3}>
-                            <Typography variant="subtitle1" align="center">
-                                Total Absent {totalAbsent} </Typography>
-                        </Grid>
 
+            <Grid container >
+                <Grid item container xs={12} justify="space-between"
+                    alignContent="center"
+                    alignItems="center" >
+                    <Grid item xs={2}
+                    //  style={{
+                    //     borderRight: "1px solid"
+                    // }}
+                    >
+                        <Typography variant="subtitle1" align="center">
+                            Total Working: {totalWorkHours}
+                        </Typography>
                     </Grid>
-                    {/* <Grid item container xs={12} justifyContent="center" alignContent="center">
-                    <Grid item xs={3}>
-                        {totalWorkHours}
+                    <Grid item xs={2} >
+                        <Typography variant="subtitle1" align="center">
+                            Total Lack Check In: {totalLackCheckIn}</Typography>
                     </Grid>
-                    <Grid item xs={3}>
-                        {totalArriveLate}
+                    <Grid item xs={2} >
+                        <Typography variant="subtitle1" align="center">
+                            Total Lack Check Out: {totalLackCheckOut}</Typography>
                     </Grid>
-                    <Grid item xs={3}>
-                        {totalLeaveEarly}
+                    <Grid item xs={2} >
+                        <Typography variant="subtitle1" align="center">
+                            Total Late: {totalArriveLate}</Typography>
                     </Grid>
-                    <Grid item xs={3}>
-                        {totalAbsent}
+                    <Grid item xs={2}>
+                        <Typography variant="subtitle1" align="center">
+                            Total Leave Early: {totalLeaveEarly} </Typography>
                     </Grid>
-                </Grid> */}
+                    <Grid item xs={2}>
+                        <Typography variant="subtitle1" align="center">
+                            Total Absent {totalAbsent} </Typography>
+                    </Grid>
 
-                    <Grid item> <GridFooter hideFooterRowCount={false} >
-                    </GridFooter></Grid>
                 </Grid>
-            </GridPanelFooter>
+
+
+                <Grid item> <GridFooter hideFooterRowCount={false} >
+                </GridFooter></Grid>
+            </Grid>
+
 
 
         </GridFooterContainer>
@@ -206,7 +233,7 @@ class StaffReportPage extends React.Component {
             tabIndex: 0
         };
     }
-    
+
     initData = async () => {
         var staffs = await getStaffs();
         console.log(staffs);

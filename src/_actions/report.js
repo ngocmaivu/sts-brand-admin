@@ -7,12 +7,11 @@ import { convertToJSONDateWithoutChangeValue } from "../ultis/scheduleHandle";
 
 export const fetchStaffReport = (username, fromDate, toDate) => async dispatch => {
     try {
-
         let from = new Date(fromDate);
         from.setHours(0, 0);
         let to = new Date(toDate);
-        to.setHours(23, 59);
-
+        to.setHours(0, 0);
+        console.log(fromDate, toDate);
         const response = await sts.get(`/manager/stores/${username}/report`, {
             headers: authHeader(),
             params: {
@@ -31,7 +30,7 @@ export const fetchStaffReport = (username, fromDate, toDate) => async dispatch =
 
 export const fetchStoreReport = (fromDate, toDate) => async dispatch => {
     try {
-        
+
         let from = new Date(fromDate);
         from.setHours(0, 0);
         let to = new Date(toDate);
