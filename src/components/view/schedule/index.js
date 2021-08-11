@@ -275,24 +275,24 @@ class ScheduleMain extends React.Component {
         console.log(skillColor);
         args.element.style.border = "2px solid #4e4f73";
         args.element.style.backgroundColor = skillColor;
-        args.element.style.borderRadius = "8px";
+        args.element.style.borderRadius = "4px";
         // args.element.style.padding = "4px";
-        args.element.style.height = "72px";
+        args.element.style.height = "62px";
         args.element.style.color = "#4e4f73";
         // args.element.style.fontsize = "0.875rem";
     }
 
     eventTemplate = (props) => {
         console.log(props);
-        return (<div style={{ padding: 8, }}>
+        return (<div style={{ padding: 4, width: "100%" }}>
             <Grid container direction="column" spacing={1}>
                 <Grid item >
-                    <Typography style={{ color: "#4e4f73" }} variant="h4">
+                    <Typography style={{ color: "#4e4f73" }} variant="subtitle1">
                         {`${props.Skill} `}
                     </Typography>
                 </Grid>
                 <Grid item>
-                    <Typography style={{ color: "#4e4f73" }} variant="h5" noWrap={false} className="time">
+                    <Typography style={{ color: "#4e4f73" }} variant="subtitle2" noWrap={false} className="time">
                         {`${format(new Date(props.StartTime), "HH:mm a")} - ${format(new Date(props.EndTime), "HH:mm a")}`}
                     </Typography>
                 </Grid>
@@ -305,7 +305,7 @@ class ScheduleMain extends React.Component {
         console.log(props);
         //this.getTotalHoursPerWeek(props.resourceData.Id);
         return (
-            <div className="template-wrap" style={{ height: 100 }}><div className="employee-category">
+            <div className="template-wrap" style={{ height: 72 }}><div className="employee-category">
                 <div className="employee-name">
                     <Typography variant="subtitle1">
                         {this.getEmployeeName(props)}</Typography></div>
@@ -315,8 +315,7 @@ class ScheduleMain extends React.Component {
     }
 
     cellTemplate = (props) => {
-
-        return (<div className="templatewrap" style={{ height: 100 }} ></div>);
+        return (<div className="templatewrap" style={{ height: 72 }} ></div>);
         // return (<div></div>);
     }
 
@@ -560,7 +559,7 @@ class ScheduleMain extends React.Component {
 
     render() {
         return (
-            <Paper style={{ minHeight: "80vh" }}>
+            <Paper style={{ width: "100%" }}>
                 <CardHeader title="Schedule" action={
                     <Grid container justify="flex-end" spacing={1} direction="row">
                         <Grid item >
@@ -579,12 +578,15 @@ class ScheduleMain extends React.Component {
                     direction="row"
                     justifyContent="center"
                     wrap="nowrap"
+                    justify="center"
+
                     alignContent="center"
                 >
 
                     {this.props.skillSrc ? this.props.skillSrc.map((skill, index) => {
 
-                        return (<Grid item container alignContent="center" alignItems="baseline" justifyContent="center" key={skill.id}>
+                        return (<Grid item container alignContent="center" alignItems="baseline"
+                            justify="center" justifyContent="center" key={skill.id}>
                             <Grid item >
                                 <Box style={{ backgroundColor: this.SkillColors[index], borderRadius: 50, height: 12, width: 12, marginRight: 10 }}></Box>
                             </Grid>
@@ -596,12 +598,16 @@ class ScheduleMain extends React.Component {
                 </Grid>
 
                 {this.props.skillSrc && this.state.employeeData ?
-                    (<ScheduleComponent currentView="TimelineWeek" selectedDate={this.currentDate}
+                    (<ScheduleComponent
+
+                        height="69vh"
+                        currentView="TimelineWeek" selectedDate={this.currentDate}
                         eventSettings={{
                             fields: {
                                 subject: { name: "Skill" },
                             }
                         }}
+                        rowAutoHeight={true}
                         cellTemplate={this.cellTemplate}
                         ref={schedule => this.scheduleObj = schedule}
                         firstDayOfWeek={1}
@@ -630,8 +636,8 @@ class ScheduleMain extends React.Component {
                             </ResourceDirective>
                         </ResourcesDirective>
                         <ViewsDirective>
-                            <ViewDirective option='Day' />
-                            <ViewDirective option='Week' />
+                            {/* <ViewDirective option='Day' eventTemplate={this.eventTemplate}/>
+                            <ViewDirective option='Week' eventTemplate={this.eventTemplate}/> */}
                             <ViewDirective option='TimelineDay' eventTemplate={this.eventTemplate} />
                             <ViewDirective option='TimelineWeek' eventTemplate={this.eventTemplate} timeScale={{ enable: false }} />
                         </ViewsDirective>

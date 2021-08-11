@@ -17,7 +17,7 @@ let navObject = {
     menuSelected: '',
     menuSelectedBack: '',
     divider: '',
-    borderRadius: 12
+    borderRadius: 6
 
 };
 
@@ -30,7 +30,7 @@ navObject.textDark = value.grey900;
 navObject.menuSelected = purple;
 navObject.menuSelectedBack = value.blue50;
 navObject.divider = value.blue50;
-navObject.borderRadius = 12;
+navObject.borderRadius = 6;
 
 
 export default createMuiTheme({
@@ -43,7 +43,7 @@ export default createMuiTheme({
         common: {
             white: customWhite,
             purpleBg: purpleMin,
-            blue50 : value.blue50
+            blue50: value.blue50
         },
         danger: {
             main: '#c70000'

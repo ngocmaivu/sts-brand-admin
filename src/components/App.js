@@ -37,6 +37,8 @@ import StoreManagerNew from './view/store/StoreManagerNew';
 import ScheduleConfig from './view/configure/ScheduleConfig';
 import StaffEdit from './view/staff/StaffEdit';
 import StoreHome from './StoreHome/StoreHome';
+import StaffReportPage from './Report/StaffReportPage';
+import StoreReportPage from './Report/StoreReportPage';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -136,6 +138,12 @@ class App extends React.Component {
                   </Route>
                   <Route path="/configure/schedule">
                     <ScheduleConfig />
+                  </Route>
+                  <Route path="/report/staff">
+                    <StaffReportPage />
+                  </Route>
+                  <Route path="/report/store">
+                    <StoreReportPage />
                   </Route>
                   <Route path="/brandhome">
                     <BrandHome />

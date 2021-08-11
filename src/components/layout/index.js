@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
 
     padding: 10,
     backgroundColor: '#e3f2fd',
-    padding: theme.spacing(2),
+    padding: theme.spacing(1),
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
@@ -169,7 +169,7 @@ if (user === null) {
     //   url: "/profile",
     //   icon: <ProfileIcon />
     // }
-    )
+  )
 } else {
   var urlStoreInfo = '/configure/store-info/' + user.storeId;
   if (user.role === "brand manager") webName = "STS Brand Manager"
@@ -216,7 +216,7 @@ if (user === null) {
     //   url: "/profile",
     //   icon: <ProfileIcon />
     // }
-    )
+  )
   else if (user.role === "store manager") INIT_DATA.items.push(
     {
       id: 'home',
@@ -300,29 +300,29 @@ if (user === null) {
       url: '/staffs',
       icon: <GroupOutlinedIcon />
     },
-    // {
-    //   type: 'collapse',
-    //   id: 'notify',
-    //   title: 'Notification',
-    //   url: '/notify/1',
-    //   icon: <NotificationsNoneOutlined />,
-    //   children: [
-    //     {
-    //       type: 'item',
-    //       id: 'request',
-    //       title: 'Request',
-    //       url: '/notify/request',
-    //       icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
-    //     },
-    //     {
-    //       type: 'item',
-    //       id: 'activity',
-    //       title: 'Activity',
-    //       url: '/notify/activity',
-    //       icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
-    //     }
-    //   ]
-    // },
+    {
+      type: 'collapse',
+      id: 'notify',
+      title: 'Notification',
+      url: '/notify/1',
+      icon: <NotificationsNoneOutlined />,
+      children: [
+        {
+          type: 'item',
+          id: 'request',
+          title: 'Request',
+          url: '/notify/request',
+          icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+        },
+        {
+          type: 'item',
+          id: 'activity',
+          title: 'Activity',
+          url: '/notify/activity',
+          icon: <FiberManualRecord style={{ width: 6, height: 6 }} />,
+        }
+      ]
+    },
     {
       id: 'report',
       title: 'Report',

@@ -14,6 +14,8 @@ import { Link, useParams } from 'react-router-dom';
 import { Skeleton } from '@material-ui/lab';
 import EditOutlinedIcon from '@material-ui/icons/EditOutlined';
 import StaffType from "../../../ultis/StaffType";
+import { levelInit, levels, renderLevelLableChip } from "../../../_constants/levelData";
+import format from 'date-fns/format';
 const useStyles = makeStyles((theme) => ({
     container: {
 
@@ -49,12 +51,6 @@ const MenuProps = {
         },
     },
 };
-
-const skills = [
-    'Barista',
-    'Waiter',
-    'Cashier',
-];
 
 function getStyles(name, personName, theme) {
     return {
@@ -104,9 +100,11 @@ const Staff = (props) => {
             if (props.staffInfo.jobInformations[0]) {
                 tmp.jobInformations = props.staffInfo.jobInformations[0];
                 tmp.jobInformations.type = StaffType.find(type => type.value == props.staffInfo.generalInfo.type)?.title;
+                // tmp.jobInformation.dateStart = format(new Date(tmp.jobInformations.dateStart), "dd/MM/yyyy");
                 console.log(props.stores);
-                console.log(tmp.jobInformations);
+                // console.log(tmp.jobInformations);
                 tmp.jobInformations.workAt = props.stores.find(e => e.id == tmp.jobInformations.storeId).name;
+
             }
             tmp.skills = props.staffInfo.staffSkills;
 
@@ -117,6 +115,8 @@ const Staff = (props) => {
         }
     },
         [props.staffInfo]);
+
+
 
     return (
         <Paper className={classes.container}>
@@ -132,71 +132,78 @@ const Staff = (props) => {
             {
                 !isLoad ? (
                     <CardContent className={classes.containerContent}>
-                        <CardCustom header='General'>
-                            <Grid container spacing={2}>
-                                {
+                        <Grid container direction="row" spacing={2}>
+                            <Grid item xs={6}>
+                                <CardCustom header='General'>
+                                    <Grid container spacing={2}>
+                                        {
 
-                                    Object.keys(titlePersonals).map(e => {
-                                        console.log(e);
-                                        console.log(e);
-                                        return (
-                                            <Grid container item >
-                                                <Grid item xs={2} style={{ fontWeight: 500 }}>{titlePersonals[e]}</Grid >
-                                                <Grid item xs={1}><Typography variant="body2">:</Typography></Grid >
-                                                <Grid item><Typography variant="body2">{staffInfo.generalInfo[e]}</Typography></Grid>
-                                            </Grid>
-                                        );
-                                    })
-                                }
+                                            Object.keys(titlePersonals).map(e => {
+                                                console.log(e);
+                                                console.log(e);
+                                                return (
+                                                    <Grid container item >
+                                                        <Grid item xs={2} style={{ fontWeight: 500 }}>{titlePersonals[e]}</Grid >
+                                                        <Grid item xs={1}><Typography variant="body2">:</Typography></Grid >
+                                                        <Grid item><Typography variant="body2">{staffInfo.generalInfo[e]}</Typography></Grid>
+                                                    </Grid>
+                                                );
+                                            })
+                                        }
+                                    </Grid>
+                                </CardCustom>
                             </Grid>
-                        </CardCustom>
+                            <Grid item xs={6}>
+                                <CardCustom header='Job Information'>
+                                    <Grid container spacing={2}>
+                                        {
+                                            Object.keys(titleJobs).map(e => {
+                                                return (
+                                                    <Grid container item >
+                                                        <Grid item xs={2} style={{ fontWeight: 500 }}>{titleJobs[e]}</Grid >
+                                                        <Grid item xs={1}><Typography variant="body2">:</Typography></Grid >
+                                                        <Grid item><Typography variant="body2">{staffInfo.jobInformations[e]}</Typography></Grid>
+                                                    </Grid>
+                                                );
+                                            })
+                                        }
+                                    </Grid>
 
-                        <Box style={{ height: 20 }} />
+                                </CardCustom>
 
-                        <CardCustom header='Job Information'>
-                            <Grid container spacing={2}>
-                                {
-                                    Object.keys(titleJobs).map(e => {
-                                        return (
-                                            <Grid container item >
-                                                <Grid item xs={2} style={{ fontWeight: 500 }}>{titleJobs[e]}</Grid >
-                                                <Grid item xs={1}><Typography variant="body2">:</Typography></Grid >
-                                                <Grid item><Typography variant="body2">{staffInfo.jobInformations[e]}</Typography></Grid>
-                                            </Grid>
-                                        );
-                                    })
-                                }
                             </Grid>
+                            <Grid item xs={6}>
 
-                        </CardCustom>
+                                <CardCustom header='Skills'>
+                                    <Grid container spacing={2}>
+                                        {
+                                            staffInfo.skills.map(skill => {
+                                                return (
+                                                    <Grid container item >
+                                                        <Grid item xs={2} style={{ fontWeight: 500 }}>{props.skills.find(e => e.id == skill.skillId).name}</Grid >
 
-                        <Box style={{ height: 20 }} />
+                                                        <Grid item xs={1}><Typography variant="body2">:</Typography></Grid >
+                                                        <Grid item>{renderLevelLableChip(skill.level)}</Grid>
+                                                    </Grid>
+                                                );
+                                            })
+                                        }
 
-                        <CardCustom header='Skills'>
-                            <Grid container spacing={2}>
-                                {
-                                    staffInfo.skills.map(skill => {
-                                        return (
-                                            <Grid container item >
-                                                <Grid item xs={2} style={{ fontWeight: 500 }}>{props.skills.find(e => e.id == skill.skillId).name}</Grid >
-
-                                                <Grid item xs={1}><Typography variant="body2">:</Typography></Grid >
-                                                <Grid item><Typography variant="body2">{skill.level}</Typography></Grid>
-                                            </Grid>
-                                        );
-                                    })
-                                }
-
-                                {/* <Grid container item >
+                                        {/* <Grid container item >
                                     <Typography variant="body2">Junior</Typography>
                                     <LinearProgress />
                                     <LinearProgress variant="determinate" style={{ height: 10, }} value={30} color="primary" />
                                 </Grid> */}
 
 
-                            </Grid>
+                                    </Grid>
 
-                        </CardCustom>
+                                </CardCustom>
+
+                            </Grid>
+                        </Grid>
+
+                        <Box style={{ height: 20 }} />
                         <Grid item  >
                             <Button variant="contained" color="primary" component={Link} to="/staffs" onClick={
                                 () => { setIsLoad(true); }

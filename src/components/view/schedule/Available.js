@@ -94,7 +94,7 @@ class AvailablePage extends React.Component {
                                     <Typography variant="subtitle1">{shiftRegisterData.fullname}</Typography>
                                 </Grid>
                                 <Grid item>
-                                    <Typography variant="subtitle2" f>{`${totalHoursPerWeek} hrs`}</Typography>
+                                    <Typography variant="subtitle2">{`${totalHoursPerWeek} hrs`}</Typography>
                                 </Grid>
                             </Grid>
                         </TableCell>

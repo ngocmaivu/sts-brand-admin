@@ -9,6 +9,8 @@ const INIT = {
     datas: [],
     searchValue: "",
     error: "",
+    isError: false,
+    isSuccess: false,
     data: null,
 
     stores: null,
@@ -45,18 +47,19 @@ export function staffReducer(state = INIT, action) {
             return { ...state, datas: _.mapKeys(datas1, 'id') };
 
         case staffConstants.STAFF_LOAD:
-            return { ...state, data: action.payload.data, skills: action.payload.skills, stores: action.payload.stores };
+            return { ...state, data: { ...action.payload.data }, skills: action.payload.skills, stores: action.payload.stores };
 
         case staffConstants.STAFF_CREATE_FAILURE:
-            return { ...state, error: "Fail Create" };
+            return { ...state, error: "Fail Create", isError: true, isSuccess: false };
 
         case staffConstants.STAFF_CREATE_SUCCESS:
-            return { ...state, message: "SUCCESS" };
+            return { ...state, message: "SUCCESS", isError: false, isSuccess: true };
 
         case staffConstants.STAFF_GET:
 
             return { ...state, ...action.payload };
-
+        case staffConstants.STAFF_CLEAR_ALERT:
+            return { ...state, isSuccess: false, isError: false };
         default:
             return state;
     }

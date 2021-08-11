@@ -2,7 +2,7 @@ import { Snackbar, CardHeader, Grid, makeStyles, Paper, Typography } from '@mate
 import React, { useEffect, useState } from 'react';
 import StaffForm from './StaffForm';
 import { connect } from 'react-redux';
-import { loadStaffNew, createStaff } from '../../../_actions'
+import { loadStaffNew, createStaff, clearAlert } from '../../../_actions'
 import { Skeleton } from '@material-ui/lab';
 import MuiAlert from '@material-ui/lab/Alert';
 
@@ -34,8 +34,8 @@ function StaffNew(props) {
     const classes = useStyles();
 
     const onSubmit = (data) => {
+        props.clearAlert();
         props.createStaff(data);
-        setSuccessAlert(true);
     }
     // const [initData, setInitData] = useState({});
     useEffect(
@@ -44,16 +44,28 @@ function StaffNew(props) {
         }, []
     );
 
+    useEffect(
+        () => {
+            setErrorAlert(props.isError);
+            setSuccessAlert(props.isSuccess);
+        }, [props.isError, props.isSuccess]
+    );
+
     console.log({ ...props.initialValues });
 
     const [openSuccessAlert, setSuccessAlert] = React.useState(false);
-
+    const [openErrorAlert, setErrorAlert] = React.useState(false);
     return (
 
         <Paper className={classes.container}>
             <Snackbar open={openSuccessAlert} autoHideDuration={6000} onClose={() => { setSuccessAlert(false); }}>
                 <Alert onClose={() => { setSuccessAlert(false); }} severity="success">
-                    Update success!
+                    Create staff success!
+                </Alert>
+            </Snackbar>
+            <Snackbar open={openErrorAlert} autoHideDuration={6000} onClose={() => { setErrorAlert(false); }}>
+                <Alert onClose={() => { setErrorAlert(false); }} severity="error">
+                    Invalid Username!
                 </Alert>
             </Snackbar>
             <CardHeader title={
@@ -92,17 +104,16 @@ function StaffNew(props) {
 
 const mapStateToProps = (state) => {
 
-
-
     return {
         initialValues: state.staffs.data,
         skills: state.staffs.skills,
-
-        stores: state.staffs.stores
+        stores: state.staffs.stores,
+        isError: state.staffs.isError,
+        isSuccess: state.staffs.isSuccess,
     };
 }
 
 
 export default connect(mapStateToProps, {
-    loadStaffNew, createStaff
+    loadStaffNew, createStaff, clearAlert
 })(StaffNew);
