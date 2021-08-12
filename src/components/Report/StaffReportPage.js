@@ -55,7 +55,7 @@ const columns = [
         headerAlign: "center",
         type: 'date',
         valueFormatter: ({ value }) => format(new Date(value), "dd/MM/yyyy"),
-        flex: 1,
+        width:200,
     },
     {
         field: 'timeStart',
@@ -64,7 +64,7 @@ const columns = [
         headerName: 'Start',
         type: 'datetime',
         valueFormatter: ({ value }) => format(new Date(value), "HH:mm"),
-        flex: 1,
+        width:200,
     },
     {
         field: 'timeEnd',
@@ -73,7 +73,7 @@ const columns = [
         headerAlign: "center",
         type: 'datetime',
         valueFormatter: ({ value }) => format(new Date(value), "HH:mm"),
-        flex: 1,
+        width:200,
     },
     {
         field: 'timeCheckIn',
@@ -88,7 +88,7 @@ const columns = [
             }
             return format(date, "HH:mm");
         },
-        flex: 1,
+        width:200,
     },
     {
         field: 'timeCheckOut',
@@ -104,7 +104,7 @@ const columns = [
             }
             return format(date, "HH:mm");
         },
-        flex: 1,
+        width:200,
     },
 
     {
@@ -113,7 +113,7 @@ const columns = [
         align: "center",
         headerAlign: "center",
         type: 'boolean',
-        flex: 1,
+        width:200,
     },
     {
         field: 'leftEarly',
@@ -121,7 +121,7 @@ const columns = [
         align: "center",
         headerAlign: "center",
         type: 'boolean',
-        flex: 1,
+        width:200,
     },
     {
         field: 'absent',
@@ -129,7 +129,7 @@ const columns = [
         align: "center",
         headerAlign: "center",
         type: 'boolean',
-        flex: 1,
+        width:200,
     },
     {
         field: 'workHours',
@@ -138,7 +138,7 @@ const columns = [
         headerAlign: "center",
         type: 'number',
         valueFormatter: ({ value }) => Number(value).toFixed(2),
-        flex: 1,
+        width:200,
     },
     // {
     //     field: 'fullName',

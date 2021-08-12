@@ -48,48 +48,47 @@ const columnsStart = [
         width: 200,
         editable: true,
     },
-
-];
-
-const columnsEnd = [
     {
         field: 'staffTotalWorkHours',
-        headerName: 'TotalWorkHours',
+        headerName: 'Total Work Hours',
         width: 200,
         headerAlign: "center",
         align: "center",
     },
+];
+
+const columnsEnd = [
     {
         field: 'staffTotalArriveLate',
-        headerName: 'TotalArriveLate',
+        headerName: 'Total Arrive Late',
         width: 200,
         headerAlign: "center",
         align: "center",
     },
     {
         field: 'staffTotalLeaveEarly',
-        headerName: 'staffTotalLeaveEarly',
+        headerName: 'Total Leave Early',
         width: 200,
         headerAlign: "center",
         align: "center",
     },
     {
         field: 'staffTotalAbsent',
-        headerName: 'staffTotalAbsent',
+        headerName: 'Total Absent',
         width: 200,
         headerAlign: "center",
         align: "center",
     },
     {
         field: 'staffTotalLackCheckIn',
-        headerName: 'staffTotalLackCheckIn',
+        headerName: 'Total Lack CheckIn',
         width: 200,
         headerAlign: "center",
         align: "center",
     },
     {
         field: 'staffTotalLackCheckOut',
-        headerName: 'staffTotalLackCheckOut',
+        headerName: 'Total Lack CheckOut',
         width: 200,
         headerAlign: "center",
         align: "center",
