@@ -79,11 +79,11 @@ function getAllByPage() {
     function failure(error) { return { type: storeConstants.STORE_GETALL_FAILURE, error } }
 }
 
-function getById(id) {
+function getById() {
     return dispatch => {
         dispatch(request());
 
-        storeService.getById(id)
+        storeService.getById(user.storeId)
             .then(
                 store => {
                     dispatch(success(store));
