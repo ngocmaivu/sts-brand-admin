@@ -40,13 +40,12 @@ const columnsStart = [
         field: 'username',
         headerName: 'Staff',
         width: 200,
-        editable: true,
     },
     {
         field: 'fullName',
         headerName: 'Fullname',
         width: 200,
-        editable: true,
+       
     },
     {
         field: 'staffTotalWorkHours',
