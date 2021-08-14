@@ -1,7 +1,7 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormLabel, TextField, Typography } from "@material-ui/core";
 import { useEffect, useState } from "react";
 
-function EditWeekScheduleNameDialog(props) {
+function DemandTemplateEditor(props) {
 
     const { handleClose, open, nameValue, onSubmit } = props;
     const [name, setName] = useState(nameValue ? nameValue : "");
@@ -20,7 +20,7 @@ function EditWeekScheduleNameDialog(props) {
             maxWidth="xs"
             open={open}>
             <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-                <Typography variant="h3">Edit</Typography>
+                <Typography variant="h3">New Template</Typography>
             </DialogTitle>
             <form onSubmit={(e) => {
                 e.preventDefault();
@@ -29,7 +29,7 @@ function EditWeekScheduleNameDialog(props) {
                 <DialogContent dividers>
 
                     <FormControl fullWidth>
-                        <FormLabel>Schedule plan name:</FormLabel>
+                        <FormLabel>Template name:</FormLabel>
                         <TextField required variant="outlined" size="small" value={name} onChange={(e) => {
                             setName(e.target.value);
                         }} />
@@ -51,4 +51,4 @@ function EditWeekScheduleNameDialog(props) {
             </form>
         </Dialog>);
 }
-export default EditWeekScheduleNameDialog;
+export default DemandTemplateEditor;

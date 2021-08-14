@@ -1,3 +1,4 @@
+import { getOfficialAPI } from '../apis/sts';
 import { authHeader } from '../_helpers';
 
 const userInfor = JSON.parse(localStorage.getItem("jwt_decode"))
@@ -12,10 +13,10 @@ export const brandService = {
 function getAllByPage(pageNumber, pageSize) {
     const requestOptions = {
         method: 'GET',
-        headers: authHeader(), 
+        headers: authHeader(),
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/brands?PageNumber=${pageNumber}&PageSize=${pageSize}`, requestOptions).then(handleResponse);
+    return fetch(`${getOfficialAPI}brands?PageNumber=${pageNumber}&PageSize=${pageSize}`, requestOptions).then(handleResponse);
 }
 
 function getById(id) {
@@ -24,13 +25,13 @@ function getById(id) {
         headers: authHeader(),
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/brands/${userInfor.brandId}`, requestOptions)
-    .then(handleResponse)
-    .then(brand => {
-        // store user details and jwt token in local storage to keep user logged in between page refreshes
-        localStorage.setItem('brandInfor', JSON.stringify(brand));
-        return brand;
-    });
+    return fetch(`${getOfficialAPI()}brands/${userInfor.brandId}`, requestOptions)
+        .then(handleResponse)
+        .then(brand => {
+            // store user details and jwt token in local storage to keep user logged in between page refreshes
+            localStorage.setItem('brandInfor', JSON.stringify(brand));
+            return brand;
+        });
 }
 
 function create(brand) {
@@ -40,7 +41,7 @@ function create(brand) {
         body: JSON.stringify(brand)
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/brands`, requestOptions).then(handleResponse);
+    return fetch(`${getOfficialAPI()}brands`, requestOptions).then(handleResponse);
 }
 
 function update(brand) {
@@ -50,10 +51,10 @@ function update(brand) {
         body: JSON.stringify(brand)
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/brands/${userInfor.brandId}`, requestOptions).then(handleResponse)
-    .then(brand => {
-        return brand;
-    });;
+    return fetch(`${getOfficialAPI()}brands/${userInfor.brandId}`, requestOptions).then(handleResponse)
+        .then(brand => {
+            return brand;
+        });;
 }
 
 function _delete(id) {
@@ -62,7 +63,7 @@ function _delete(id) {
         headers: authHeader()
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/brands/${id}`, requestOptions).then(handleResponse);
+    return fetch(`${getOfficialAPI()}brands/${id}`, requestOptions).then(handleResponse);
 }
 
 function handleResponse(response) {

@@ -1,5 +1,5 @@
 import { authHeader } from '../_helpers';
-
+import { getOfficialAPI } from '../apis/sts';
 export const storeService = {
     create,
     getAllByPage,
@@ -15,7 +15,7 @@ function getAllByPage() {
         headers: authHeader(),
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/brands/stores`, requestOptions)
+    return fetch(`${getOfficialAPI()}brands/stores`, requestOptions)
     .then(handleResponse)
     // .then(stores => {
     //     // store user details and jwt token in local storage to keep user logged in between page refreshes
@@ -31,7 +31,7 @@ function getById(id) {
         headers: authHeader(),
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/stores/${id}`, requestOptions).then(handleResponse);
+    return fetch(`${getOfficialAPI()}stores/${id}`, requestOptions).then(handleResponse);
 }
 
 function create(store) {
@@ -41,7 +41,7 @@ function create(store) {
         body: JSON.stringify(store)
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/stores`, requestOptions).then(handleResponse);
+    return fetch(`${getOfficialAPI()}stores`, requestOptions).then(handleResponse);
 }
 
 function createStoreManager(assign) {
@@ -51,7 +51,7 @@ function createStoreManager(assign) {
         body: JSON.stringify(assign)
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/manager/assign/store-manager`, requestOptions).then(handleResponse);
+    return fetch(`${getOfficialAPI()}manager/assign/store-manager`, requestOptions).then(handleResponse);
 }
 
 function update(store) {
@@ -61,7 +61,7 @@ function update(store) {
         body: JSON.stringify(store)
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/manager/stores/${store.id}`, requestOptions).then(handleResponse);;
+    return fetch(`${getOfficialAPI()}manager/stores/${store.id}`, requestOptions).then(handleResponse);;
 }
 
 function _delete(id) {
@@ -70,7 +70,7 @@ function _delete(id) {
         headers: authHeader()
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/stores/${id}`, requestOptions).then(handleResponse);
+    return fetch(`${getOfficialAPI()}stores/${id}`, requestOptions).then(handleResponse);
 }
 
 function handleResponse(response) {

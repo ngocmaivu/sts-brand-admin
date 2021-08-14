@@ -239,7 +239,7 @@ class WeekPlan extends React.Component {
                     flexGrow: 1,
                 }}>
                     <Grid container spacing={1} direction="row">
-                        <Grid item style={{width: 200}} >
+                        <Grid item style={{ width: 200 }} >
                             <Tabs
                                 value={this.state.tabInputIndex}
                                 indicatorColor="primary"
@@ -253,7 +253,7 @@ class WeekPlan extends React.Component {
                                 <Tab label="Demand" value={1} />
                             </Tabs>
                         </Grid>
-                        <Grid item  zeroMinWidth style={{ flexBasis: 0, flexGrow: 1, padding: 12 }}>
+                        <Grid item zeroMinWidth style={{ flexBasis: 0, flexGrow: 1, padding: 12 }}>
                             <TabPanel value={this.state.tabInputIndex} index={0}>
 
                                 {

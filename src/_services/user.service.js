@@ -1,7 +1,7 @@
 // import config from 'config';
 import { authHeader } from '../_helpers';
 import jwt_decode from "jwt-decode";
-
+import { getOfficialAPI } from '../apis/sts';
 const userInfor = JSON.parse(localStorage.getItem("jwt_decode"))
 export const userService = {
     login,
@@ -21,7 +21,7 @@ function login(username, password) {
         body: JSON.stringify({ username, password })
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/auth/login`, requestOptions)
+    return fetch(`${getOfficialAPI()}auth/login`, requestOptions)
         .then(handleResponse)
         .then(user => {
             // store user details and jwt token in local storage to keep user logged in between page refreshes
@@ -38,7 +38,7 @@ function getUserProfile() {
         // body: JSON.stringify({ username})
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/users/profile`, requestOptions)
+    return fetch(`${getOfficialAPI()}users/profile`, requestOptions)
         .then(handleResponse)
 }
 
@@ -55,7 +55,7 @@ function getAll() {
         headers: authHeader()
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/brands/users`, requestOptions).then(handleResponse);
+    return fetch(`${getOfficialAPI()}brands/users`, requestOptions).then(handleResponse);
 }
 
 function getById(id) {
@@ -64,7 +64,7 @@ function getById(id) {
         headers: authHeader()
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/users/${id}`, requestOptions).then(handleResponse);
+    return fetch(`${getOfficialAPI()}users/${id}`, requestOptions).then(handleResponse);
 }
 
 function register(user) {
@@ -74,7 +74,7 @@ function register(user) {
         body: JSON.stringify(user)
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/auth/register`, requestOptions).then(handleResponse);
+    return fetch(`${getOfficialAPI()}auth/register`, requestOptions).then(handleResponse);
 }
 
 function update(user) {
@@ -84,7 +84,7 @@ function update(user) {
         body: JSON.stringify(user)
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/users`, requestOptions).then(handleResponse);;
+    return fetch(`${getOfficialAPI()}users`, requestOptions).then(handleResponse);;
 }
 
 // prefixed function name with underscore because delete is a reserved word in javascript
@@ -94,7 +94,7 @@ function _delete(id) {
         headers: authHeader()
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/users/${id}`, requestOptions).then(handleResponse);
+    return fetch(`${getOfficialAPI()}users/${id}`, requestOptions).then(handleResponse);
 }
 
 function handleResponse(response) {

@@ -145,6 +145,17 @@ export const createDemand = async (demand, weekScheduleId) => {
     }
 }
 
+export const createDemands = async (demands) => {
+    try {
+        const response = await sts.post("/week-schedule-details", demands, { headers: authHeader() });
+
+        return response.data;
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
+
 export const updateDemand = async (demand) => {
     try {
         const response = await sts.put(`/week-schedule-details/${demand.id}`, { ...demand }, { headers: authHeader() });

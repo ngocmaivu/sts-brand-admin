@@ -71,3 +71,5 @@ export const getOperatingTimesDefault = () => [
         to: 25
     },
 ];
+
+export const getDateTemp = () => new Date(2000, 1, 7);

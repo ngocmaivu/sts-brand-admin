@@ -7,6 +7,7 @@ import { pickBy } from 'lodash';
 import OperatingHoursConfig from './OperatingHour';
 import PropTypes from 'prop-types';
 import { getConstraintDefaultFromFirebase } from '../../../ultis/scheduleHandle';
+import DemandTemplates from './DemandTemplates';
 
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -18,7 +19,7 @@ function TabPanel(props) {
             id={`simple-tabpanel-${index}`}
             aria-labelledby={`simple-tab-${index}`}
             {...other}
-            style={{ width: '100%', height: "85%" }}
+            style={{ width: '100%', height: "86vh" }}
         >
             {value === index && (
                 <React.Fragment>
@@ -97,7 +98,7 @@ class ScheduleConfig extends React.Component {
                 operatingTimes: this.state.operatingTimes
             }
         });
-        this.setState({  constraints: constraintValues,});
+        this.setState({ constraints: constraintValues, });
     }
 
     handleChange = (event, newValue) => {
@@ -111,7 +112,7 @@ class ScheduleConfig extends React.Component {
                 operatingTimes: operatingTimesNew
             }
         });
-        this.setState({ operatingTimes: operatingTimesNew});
+        this.setState({ operatingTimes: operatingTimesNew });
     }
 
 
@@ -126,6 +127,7 @@ class ScheduleConfig extends React.Component {
             >
                 <Tab label="Constraints " value={0} />
                 <Tab label="Operating Hours" value={1} />
+                <Tab label="Demand Template" value={2} />
             </Tabs>
 
             <TabPanel value={this.state.tabIndex} index={1}>
@@ -140,8 +142,10 @@ class ScheduleConfig extends React.Component {
                     ) : "...Loading"
                 }
             </TabPanel>
-
-        </Paper>);
+            <TabPanel value={this.state.tabIndex} index={2}>
+                <DemandTemplates />
+            </TabPanel>
+        </Paper >);
     }
 }
 

@@ -1,5 +1,5 @@
 import { authHeader } from '../_helpers';
-
+import { getOfficialAPI } from '../apis/sts';
 export const skillService = {
     create,
     getAllSkill,
@@ -13,7 +13,7 @@ function getAllSkill() {
         headers: { ...authHeader(), 'Content-Type': 'application/json' },
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/brands/skills/all`, requestOptions).then(handleResponse);
+    return fetch(`${getOfficialAPI()}brands/skills/all`, requestOptions).then(handleResponse);
 }
 
 function create(skill) {
@@ -23,7 +23,7 @@ function create(skill) {
         body: JSON.stringify(skill)
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/skills`, requestOptions).then(handleResponse);
+    return fetch(`${getOfficialAPI()}skills`, requestOptions).then(handleResponse);
 }
 
 function updateSkill(skill) {
@@ -33,7 +33,7 @@ function updateSkill(skill) {
         body: JSON.stringify(skill)
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/skills/${skill.id}`, requestOptions).then(handleResponse);;
+    return fetch(`${getOfficialAPI()}skills/${skill.id}`, requestOptions).then(handleResponse);;
 }
 
 function _delete(id) {
@@ -42,7 +42,7 @@ function _delete(id) {
         headers: authHeader()
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/skills/${id}`, requestOptions).then(handleResponse);
+    return fetch(`${getOfficialAPI()}skills/${id}`, requestOptions).then(handleResponse);
 }
 
 function handleResponse(response) {

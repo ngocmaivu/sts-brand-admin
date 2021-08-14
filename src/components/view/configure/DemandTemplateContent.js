@@ -1,22 +1,26 @@
 import { createStyles, Tab, Tabs, withStyles, Grid, CardHeader, CardContent, Card, Typography, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button, Select, MenuItem, FormControl, FormLabel, TextField, FormHelperText, Paper, FormControlLabel, Box } from '@material-ui/core';
 import React from 'react';
 
-import { loadSkills, getWeekScheduleDemand, updateDemand, deleteDemand, createDemand, createDemands } from "../../../_services";
+import { loadSkills, getWeekScheduleDemand, updateDemand, deleteDemand, createDemand } from "../../../_services";
 import { addDays, differenceInDays, format } from 'date-fns';
 import { levelInit, levels } from "../../../_constants/levelData";
-import { convertDemandData, convertDateFromTemplate, convertToJSONDateWithoutChangeValue } from "../../../ultis/scheduleHandle";
+import { convertDemandData, firstDayOfWeek, convertToJSONDateWithoutChangeValue } from "../../../ultis/scheduleHandle";
+
+import { getDateTemp } from "../../../ultis/scheduleDefault";
+
 import {
     ScheduleComponent, Inject, Day, Week,
     TimelineViews, TimelineMonth, ViewsDirective, ViewDirective, Resize, DragAndDrop, ResourcesDirective, ResourceDirective
 
 } from "@syncfusion/ej2-react-schedule";
+
 import { extend, isNullOrUndefined, L10n } from '@syncfusion/ej2-base';
+
 import DemandEditor from './DemandEditor';
 import firebase from "../../../firebase";
-import "./demand.css";
 import { connect } from 'react-redux';
-import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
-import GetDemandTemplateDialog from './GetDemandTemplateDialog';
+import _ from 'lodash';
+
 
 const styles = (theme) => createStyles({
 
@@ -43,14 +47,6 @@ const styles = (theme) => createStyles({
 
         height: "100%",
     },
-    cardSkillDemand: {
-        border: "1px solid #E3F2FD",
-        // backgroundColor: "#E3F2FD",
-        borderRadius: 4,
-        "&:hover": {
-            border: "1px solid #2196F3"
-        }
-    },
     inputAutoComplete: {
         "& .MuiInputBase-root": {
             padding: "0 0 0 10px"
@@ -60,18 +56,20 @@ const styles = (theme) => createStyles({
 });
 
 
-class DemandPage extends React.Component {
+class DemandTemplateContent extends React.Component {
 
     constructor(props) {
         super(props);
         this.state = {
             byDate: false,
             selectedSkillId: -1,
-            demandTemplates: null,
-            openGetDemandTemplateDialog: false
         }
-
+        this.currentDate = getDateTemp()
         this.rootRef = React.createRef(null);
+
+        const user = JSON.parse(localStorage.getItem("jwt_decode"));
+        this.BrandId = user.brandId;
+        this.StoreId = user.storeId;
 
         this.PreInsertObj = {
             workStart: null,
@@ -81,10 +79,39 @@ class DemandPage extends React.Component {
             minHour: 0,
             skillId: null,
         };
+    }
 
-        const user = JSON.parse(localStorage.getItem("jwt_decode"));
-        this.BrandId = user.brandId;
-        this.StoreId = user.storeId;
+    getDemandTemplate = (templateId) => {
+        const ref = firebase.firestore().collection("brands");
+        console.log(templateId);
+        this.currentDemandTemplateRef = ref.doc(`${this.BrandId}-${this.StoreId}`).collection("demandTemplates").doc(templateId).collection("demands");
+        this.currentDemandTemplateRef.onSnapshot((querySnapshot) => {
+            //Get DataSource
+            console.log(querySnapshot.docs);
+            //  let src = [];
+            if (!querySnapshot.docs.exists) {
+                console.log("Not Exist");
+
+            }
+
+            let src = querySnapshot.docs.map(e => {
+                return {
+                    ...e.data(),
+                    workStart: e.data().workStart.toDate(),
+                    workEnd: e.data().workEnd.toDate(),
+                }
+            });
+
+            if (this.scheduleObj) {
+                var NotOperatingTime = this.loadOperatingTimes();
+
+                this.scheduleObj.eventSettings.dataSource = src ? [...src, ...NotOperatingTime] : [...NotOperatingTime];
+                console.log("__________________");
+                console.log(src);
+                // this.updateTotalHoursPersWeek();
+            }
+
+        });
     }
 
     handleChangeSelectedSkill = (e) => {
@@ -97,23 +124,24 @@ class DemandPage extends React.Component {
 
         this.setState({ selectedSkillId: e.target.value });
     }
-    loadDemandDatas = async () => {
 
-        var demandDatas = await getWeekScheduleDemand(this.props.weekScheduleId);
-        var NotOperatingTime = this.loadOperatingTimes();
-        console.log([...demandDatas, ...NotOperatingTime]);
-        if (this.scheduleObj != null) {
-            // this.setState({ dataSource: demandDatas });
+    // loadDemandDatas = async () => {
 
-            let dateStart = new Date(this.props.dateStart);
-            let start1 = new Date(this.props.dateStart);
-            let end1 = new Date(this.props.dateStart);
-            start1.setHours(0);
-            end1.setHours(7);
 
-            this.scheduleObj.eventSettings.dataSource = [...demandDatas, ...NotOperatingTime];
-        }
-    }
+    //     // var NotOperatingTime = this.loadOperatingTimes();
+    //     // console.log([...demandDatas, ...NotOperatingTime]);
+    //     if (this.scheduleObj != null) {
+    //         // this.setState({ dataSource: demandDatas });
+
+    //         let dateStart = new Date(this.props.dateStart);
+    //         let start1 = new Date(this.props.dateStart);
+    //         let end1 = new Date(this.props.dateStart);
+    //         start1.setHours(0);
+    //         end1.setHours(7);
+
+    //         this.scheduleObj.eventSettings.dataSource = [...demandDatas, ...NotOperatingTime];
+    //     }
+    // }
 
     loadOperatingTimes = () => {
 
@@ -122,7 +150,7 @@ class DemandPage extends React.Component {
         if (this.props.defaultConfig && this.props.skillSrc) {
             var operatingTimes = this.props.defaultConfig.operatingTimes;
 
-            let dateStart = new Date(this.props.dateStart);
+            let dateStart = getDateTemp();
             let minHour = 24;
             operatingTimes.forEach(o => {
 
@@ -197,21 +225,38 @@ class DemandPage extends React.Component {
 
 
     componentDidMount = async () => {
+
         if (this.props.skillSrc) {
+            console.log("vao day:" + this.props.skillSrc[0].id);
             this.setState({ selectedSkillId: this.props.skillSrc[0].id });
             if (this.scheduleObj) {
                 let resource = this.props.skillSrc.find(skill => skill.id == this.props.skillSrc[0].id);
                 // this.scheduleObj.addResource(resource, "Skill", 1);
             }
         }
-        this.getDemandTemplates();
-        await this.loadDemandDatas();
+
+        if (this.props.demandTemplateId) {
+            this.getDemandTemplate(this.props.demandTemplateId);
+        }
+
+
+        // await this.loadDemandDatas();
         // 
     }
 
     componentDidUpdate = async (prevProps, prevState, snapshot) => {
-        if (prevProps.weekScheduleId != this.props.weekScheduleId && this.props.skillSrc) {
-            await this.loadDemandDatas();
+
+        if (this.props.demandTemplateId) {
+            if (prevProps.demandTemplateId != this.props.demandTemplateId)
+                this.getDemandTemplate(this.props.demandTemplateId);
+        }
+
+        if (_.isEmpty(prevProps.skillSrc) && !_.isEmpty(this.props.skillSrc)) {
+            this.setState({ selectedSkillId: this.props.skillSrc[0].id });
+            if (this.scheduleObj) {
+                let resource = this.props.skillSrc.find(skill => skill.id == this.props.skillSrc[0].id);
+                // this.scheduleObj.addResource(resource, "Skill", 1);
+            }
         }
     }
 
@@ -245,7 +290,6 @@ class DemandPage extends React.Component {
 
     popupClose = (args) => {
         if (args.type === 'Editor' && !isNullOrUndefined(args.data)) {
-
             //(args.data).Position = "Bartender";
 
             (args.data).workStart = this.PreInsertObj.workStart;
@@ -269,31 +313,32 @@ class DemandPage extends React.Component {
 
     onActionBegin = async (args) => {
         if (args.requestType == "eventChange") {
-            let updateObj = convertDemandData(args.changedRecords[0]);
-            updateDemand(updateObj);
-        } else if (args.requestType === 'eventCreate' && args.data.length > 0) {
-            let newObj = convertDemandData(args.data[0]);
-            //  
-            let responseData = await createDemand(
-                newObj, this.props.weekScheduleId
-            );
-            console.log(responseData);
-            args.data[0].id = responseData[0].id;
+            let { id, workStart, workEnd, quantity, level, skillId } = args.changedRecords[0];
+            const updateObj = { id, workStart, workEnd, quantity, level, skillId };
+            this.currentDemandTemplateRef.doc(args.changedRecords[0].id).update(updateObj);
 
+        } else if (args.requestType === 'eventCreate' && args.data.length > 0) {
+            let eventData = args.data[0];
+            let eventField = this.scheduleObj.eventFields;
+            let startDate = eventData[eventField.startTime];
+            let endDate = eventData[eventField.endTime];
+
+            //if a specific time slot already contains an shift, then no more shift can be added to that cell
+            // args.cancel = !this.scheduleObj.isSlotAvailable(new Date(startDate), new Date(endDate));
+            console.log(!args.cancel);
             if (!args.cancel) {
-                // const newShiftRef = this.refScheduleCurrentCollection.doc();
-                // args.data[0].Id = newShiftRef.id;
-                // 
-                // const data = convertShiftToFireBaseObj(args.data[0]);
-                // 
-                // newShiftRef.set(data);
+                console.log(this.currentDemandTemplateRef);
+                const newDemandRef = this.currentDemandTemplateRef.doc();
+                args.data[0].id = newDemandRef.id;
+                let { id, workStart, workEnd, quantity, level, skillId } = args.data[0];
+                const data = { id, workStart, workEnd, quantity, level, skillId };
+                console.log(data);
+                newDemandRef.set(data);
+                // this.updateTotalHoursPersWeek();
             }
 
-
         } else if (args.requestType == "eventRemove") {
-            // this.refScheduleCurrentCollection.doc(args.deletedRecords[0].Id).delete();
-            deleteDemand(args.deletedRecords[0].id);
-
+            this.currentDemandTemplateRef.doc(args.deletedRecords[0].id).delete();
         }
 
         // this.updateTotalHoursPersWeek();
@@ -319,7 +364,7 @@ class DemandPage extends React.Component {
     }
 
     eventTemplate = (props) => {
-
+        console.log(props);
         if (!props.quantity) {
             return (<div style={{ padding: 8, }}>
                 <Typography style={{ color: "#4e4f73" }} variant="h4">
@@ -350,11 +395,12 @@ class DemandPage extends React.Component {
     }
 
     getDateHeaderText(value) {
-        return this.instance.formatDate(value, { skeleton: 'Ed' });
+        return this.instance.formatDate(value, { skeleton: 'E' });
     }
+
     dateHeaderTemplate = (props) => {
         return (<div>
-            <Typography variant="subtitle1" >{format(new Date(props.date), "E d")}</Typography>
+            <Typography variant="subtitle1" >{format(new Date(props.date), "E")}</Typography>
         </div>);
     }
 
@@ -364,72 +410,9 @@ class DemandPage extends React.Component {
             <div className="template-wrap"> <Typography variant="h4" >{props.resourceData.name}</Typography></div>
         );
     }
-    componentWillUnmount() {
-        if (this.unSubGetDemandTempates)
-            this.unSubGetDemandTempates();
-    }
-
-    getDemandTemplates = () => {
-        const ref = firebase.firestore().collection("brands");
-        this.unSubGetDemandTempates = ref.doc(`${this.BrandId}-${this.StoreId}`).collection("demandTemplates").onSnapshot((snapshot) => {
-            console.log(snapshot.empty);
-            if (snapshot.empty) {
-            } else {
-                let tmp = [];
-                snapshot.forEach((doc) => {
-                    let demandTemplate = doc.data();
-                    console.log(demandTemplate);
-                    tmp.push(demandTemplate);
-                });
-                this.setState({ demandTemplates: tmp });
-            }
-        });
-    }
-
-    renderGetDemandTemplateDialog = () => {
-        const handleClose = () => {
-            this.setState({ openGetDemandTemplateDialog: false });
-        }
-        return (<GetDemandTemplateDialog
-            handleClose={handleClose}
-            handleSubmit={this.handleSubmitGetDemandTemplate}
-            open={this.state.openGetDemandTemplateDialog}
-            demandTemplates={this.state.demandTemplates} />);
-    }
-
-    handleSubmitGetDemandTemplate = (templateId) => {
-        const ref = firebase.firestore().collection("brands");
-        ref.doc(`${this.BrandId}-${this.StoreId}`)
-            .collection("demandTemplates")
-            .doc(templateId)
-            .collection("demands")
-            .get().then(async (snapshot) => {
-
-                let src = snapshot.docs.map(e => {
-                    return {
-                        ...e.data(),
-                        id: undefined,
-                        workStart: convertToJSONDateWithoutChangeValue(convertDateFromTemplate(e.data().workStart.toDate(), this.props.dateStart)),
-                        workEnd: convertToJSONDateWithoutChangeValue(convertDateFromTemplate(e.data().workEnd.toDate(), this.props.dateStart)),
-                        weekScheduleId: this.props.weekScheduleId
-                    }
-                });
-                // src.forEach(demand => {
-
-
-                // });
-
-                let responseData = await createDemands(src);
-
-                this.loadDemandDatas();
-
-
-            });
-    }
-
-
 
     render() {
+
         const classes = this.props.classes;
 
         return (
@@ -438,19 +421,11 @@ class DemandPage extends React.Component {
                     this.props.skillSrc && this.props.skillSrc.length != 0 ? (
                         <Box>
                             <CardHeader title="" action={
-                                <Grid container justify="flex-end" alignItems="center" spacing={1} direction="row">
-                                    <Grid item>
-                                        <Button color="primary" variant="outlined"
-                                            onClick={() => { this.setState({ openGetDemandTemplateDialog: true }) }}>
-                                            Get from template
-                                        </Button>
-                                    </Grid>
+                                <Grid container justify="flex-end" spacing={1} direction="row">
                                     <Grid item>
                                         <FormControl >
                                             <FormLabel>Select Skill</FormLabel>
                                             <Select
-                                                labelId="demo-simple-select-label"
-                                                id="demo-simple-select"
                                                 value={this.state.selectedSkillId}
                                                 label="Select Skill"
                                                 variant="outlined"
@@ -488,13 +463,14 @@ class DemandPage extends React.Component {
 
                             <ScheduleComponent
                                 resourceHeaderTemplate={this.resourceHeaderTemplate}
-                                currentView="Week" selectedDate={this.currentDate}
+                                currentView="Week"
+                                selectedDate={this.currentDate}
                                 cssClass="schedule-custom"
-                                height="70vh"
+                                height="69vh"
                                 cellTemplate={this.cellTemplate}
                                 showTimeIndicator={false}
                                 startHour={`${this.state.minHour}:00`}
-                                // dateHeaderTemplate={this.dateHeaderTemplate}
+                                dateHeaderTemplate={this.dateHeaderTemplate}
                                 showHeaderBar={false}
                                 eventSettings={{
                                     fields: {
@@ -514,8 +490,8 @@ class DemandPage extends React.Component {
                                 firstDayOfWeek={1}
                                 group={{ byDate: this.state.byDate, resources: ['Skill'] }}
                                 showQuickInfo={false}
-                                minDate={new Date(this.props.dateStart)}
-                                maxDate={addDays((new Date(this.props.dateStart)), 6)}
+                            // minDate={new Date(this.props.dateStart)}
+                            // maxDate={addDays((new Date(this.props.dateStart)), 6)}
                             >
 
                                 <ResourcesDirective>
@@ -540,17 +516,12 @@ class DemandPage extends React.Component {
                             </ScheduleComponent>
                         </Box>) : "...Loading"
                 }
-                {
-                    this.state.demandTemplates ?
-                        (this.renderGetDemandTemplateDialog()) : null
-                }
             </div >
         );
     }
 
 
 }
-
 const mapStateToProps = (state) => {
     return {
         skillSrc: state.schedule.skillSrc,
@@ -560,9 +531,8 @@ const mapStateToProps = (state) => {
 
 export default connect(
     mapStateToProps, {
-
 }
-)(withStyles(styles, { withTheme: true })(DemandPage));
+)(withStyles(styles, { withTheme: true })(DemandTemplateContent));
 
 
 

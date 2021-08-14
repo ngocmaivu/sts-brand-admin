@@ -88,6 +88,7 @@ class ScheduleMain extends React.Component {
                     BrandId: this.BrandId,
                     StoreId: this.StoreId,
                 };
+
                 ref.doc(`${this.BrandId}-${this.StoreId}`)
                     .set(data)
                     .then(() => {
@@ -576,7 +577,7 @@ class ScheduleMain extends React.Component {
                 <Divider />
                 <Grid container style={{ height: 40, }}
                     direction="row"
-                    justifyContent="center"
+
                     wrap="nowrap"
                     justify="center"
 
@@ -586,7 +587,7 @@ class ScheduleMain extends React.Component {
                     {this.props.skillSrc ? this.props.skillSrc.map((skill, index) => {
 
                         return (<Grid item container alignContent="center" alignItems="baseline"
-                            justify="center" justifyContent="center" key={skill.id}>
+                            justify="center" key={skill.id}>
                             <Grid item >
                                 <Box style={{ backgroundColor: this.SkillColors[index], borderRadius: 50, height: 12, width: 12, marginRight: 10 }}></Box>
                             </Grid>
@@ -675,7 +676,6 @@ const mapStateToProps = (state) => {
     return {
         currentSchedule: state.schedule.currentSchedule,
         skillSrc: state.schedule.skillSrc,
-        defaultConfig: state.schedule.defaultConfig
     }
 }
 

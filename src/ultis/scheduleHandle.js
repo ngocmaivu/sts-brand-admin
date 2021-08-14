@@ -267,7 +267,7 @@ export const getConstraintDefaultFromFirebase = (storeId, brandId, callBack) => 
                 StoreId: storeId,
                 DefaultScheduleConfig: {
                     constraints: getConstraintDefault(),
-                    operatingTimes: getOperatingTimesDefault()
+                    operatingTimes: getOperatingTimesDefault(),
                 }
             };
 
@@ -282,10 +282,11 @@ export const getConstraintDefaultFromFirebase = (storeId, brandId, callBack) => 
                 });
         } else {
             if (!doc.data().DefaultScheduleConfig) {
-                ref.doc(`${this.BrandId}-${this.StoreId}`).update({
+                ref.doc(`${brandId}-${storeId}`).update({
                     DefaultScheduleConfig: {
                         constraints: getConstraintDefault(),
-                        operatingTimes: getOperatingTimesDefault()
+                        operatingTimes: getOperatingTimesDefault(),
+
                     }
                 });
                 callBack({ constraints: getConstraintDefault(), operatingTimes: getOperatingTimesDefault() });
@@ -309,4 +310,20 @@ export const getDaysArray = function (start, end) {
         arr.push(new Date(dt));
     }
     return arr;
+};
+
+export const convertDateFromTemplate = (src, dateStart) => {
+    console.log(src);
+    let day = src.getDay();
+    day = day + (day === 0 ? 6 : -1);
+
+    let hour = src.getHours();
+    let minutes = src.getMinutes();
+
+    let result = new Date(dateStart);
+    result = addDays(result, day);
+    result.setHours(hour);
+    result.setMinutes(minutes);
+    console.log(result);
+    return result;
 };

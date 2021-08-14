@@ -1,5 +1,5 @@
 import { authHeader } from '../_helpers';
-
+import { getOfficialAPI } from '../apis/sts';
 export const staffService = {
     create,
     getAllByPage,
@@ -14,7 +14,7 @@ function getAllByPage(pageNumber, pageSize) {
         headers: { ...authHeader(), 'Content-Type': 'application/json' },
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/brands?PageNumber=${pageNumber}&PageSize=${pageSize}`, requestOptions).then(handleResponse);
+    return fetch(`${getOfficialAPI()}brands?PageNumber=${pageNumber}&PageSize=${pageSize}`, requestOptions).then(handleResponse);
 }
 
 function getById(id) {
@@ -23,7 +23,7 @@ function getById(id) {
         headers: { ...authHeader(), 'Content-Type': 'application/json' },
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/brands/${id}`, requestOptions).then(handleResponse);
+    return fetch(`${getOfficialAPI()}brands/${id}`, requestOptions).then(handleResponse);
 }
 
 function create(brand) {
@@ -33,7 +33,7 @@ function create(brand) {
         body: JSON.stringify(brand)
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/brands`, requestOptions).then(handleResponse);
+    return fetch(`${getOfficialAPI()}brands`, requestOptions).then(handleResponse);
 }
 
 function update(brand) {
@@ -43,7 +43,7 @@ function update(brand) {
         body: JSON.stringify(brand)
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/brands/${brand.id}`, requestOptions).then(handleResponse);;
+    return fetch(`${getOfficialAPI()}brands/${brand.id}`, requestOptions).then(handleResponse);;
 }
 
 function _delete(id) {
@@ -52,7 +52,7 @@ function _delete(id) {
         headers: authHeader()
     };
 
-    return fetch(`https://sts-project.azurewebsites.net/api/brands/${id}`, requestOptions).then(handleResponse);
+    return fetch(`${getOfficialAPI()}brands/${id}`, requestOptions).then(handleResponse);
 }
 
 function handleResponse(response) {
