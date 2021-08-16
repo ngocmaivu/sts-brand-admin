@@ -64,7 +64,7 @@ const columns = [
         headerName: 'Start',
         type: 'datetime',
         valueFormatter: ({ value }) => format(new Date(value), "HH:mm"),
-        width:200,
+        width:120,
     },
     {
         field: 'timeEnd',
@@ -73,7 +73,7 @@ const columns = [
         headerAlign: "center",
         type: 'datetime',
         valueFormatter: ({ value }) => format(new Date(value), "HH:mm"),
-        width:200,
+        width:120,
     },
     {
         field: 'timeCheckIn',
@@ -88,7 +88,7 @@ const columns = [
             }
             return format(date, "HH:mm");
         },
-        width:200,
+        width:150,
     },
     {
         field: 'timeCheckOut',
@@ -104,7 +104,7 @@ const columns = [
             }
             return format(date, "HH:mm");
         },
-        width:200,
+        width:150,
     },
 
     {

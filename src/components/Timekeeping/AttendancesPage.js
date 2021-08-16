@@ -353,39 +353,45 @@ class AttendancesPage extends React.Component {
                                         <TableBody>
                                             {
                                                 this.state.attandances ?
-                                                    this.state.attandances.map(
-                                                        (attandance, index) => {
-                                                            return (
-                                                                <TableRow selected={this.state.selectRowIndex == index} key={index}
-                                                                    className={this.props.classes.row}
-                                                                    onClick={() => { this.setState({ selectRowIndex: index, currentAttandance: attandance }) }}>
-                                                                    <TableCell >
-                                                                        <Typography variant="subtitle1">{attandance.username}</Typography>
-                                                                    </TableCell>
-                                                                    <TableCell >
-                                                                        <Typography variant="subtitle1">{format(
-                                                                            new Date(attandance.timeCheck), "dd/MM/yyyy"
-                                                                        )}</Typography>
-                                                                    </TableCell>
-                                                                    <TableCell align="left">
-                                                                        <Typography variant="subtitle1" >
-                                                                            {format(
-                                                                                new Date(attandance.timeCheck), "HH:mm a"
-                                                                            )}</Typography></TableCell>
-                                                                    <TableCell align="center">
-                                                                        <Chip label={this.getCheckType(attandance.checkType)} color="primary" variant="outlined" />
-                                                                    </TableCell>
-                                                                    <TableCell align="center"><Typography variant="subtitle1">{attandance.deviceCode}</Typography></TableCell>
-                                                                    {/* <TableCell align="center"><Typography variant="subtitle1">{attandance.createBy}</Typography></TableCell> */}
-                                                                    <TableCell align="center">
-                                                                        <IconButton onClick={() => { this.handleDelete(attandance.id) }}>
-                                                                            <DeleteOutlineOutlinedIcon />
-                                                                        </IconButton>
-                                                                    </TableCell>
-                                                                </TableRow>
-                                                            );
-                                                        }
-                                                    ) : "loading"
+
+                                                    this.state.attandances.length == 0 ?
+                                                        (<TableRow > <TableCell colSpan={6} align="center">No Records</TableCell></TableRow>)
+                                                        :
+                                                        (this.state.attandances.map(
+                                                            (attandance, index) => {
+                                                                return (
+                                                                    <TableRow selected={this.state.selectRowIndex == index} key={index}
+                                                                        className={this.props.classes.row}
+                                                                        onClick={() => { this.setState({ selectRowIndex: index, currentAttandance: attandance }) }}>
+                                                                        <TableCell >
+                                                                            <Typography variant="subtitle1">{attandance.username}</Typography>
+                                                                        </TableCell>
+                                                                        <TableCell >
+                                                                            <Typography variant="subtitle1">{format(
+                                                                                new Date(attandance.timeCheck), "dd/MM/yyyy"
+                                                                            )}</Typography>
+                                                                        </TableCell>
+                                                                        <TableCell align="left">
+                                                                            <Typography variant="subtitle1" >
+                                                                                {format(
+                                                                                    new Date(attandance.timeCheck), "HH:mm a"
+                                                                                )}</Typography></TableCell>
+                                                                        <TableCell align="center">
+                                                                            <Chip label={this.getCheckType(attandance.checkType)} color="primary" variant="outlined" />
+                                                                        </TableCell>
+                                                                        <TableCell align="center"><Typography variant="subtitle1">{attandance.deviceCode}</Typography></TableCell>
+                                                                        {/* <TableCell align="center"><Typography variant="subtitle1">{attandance.createBy}</Typography></TableCell> */}
+                                                                        <TableCell align="center">
+                                                                            <IconButton onClick={() => { this.handleDelete(attandance.id) }}>
+                                                                                <DeleteOutlineOutlinedIcon />
+                                                                            </IconButton>
+                                                                        </TableCell>
+                                                                    </TableRow>
+                                                                );
+                                                            }
+                                                        ))
+
+                                                    :     (<TableRow > <TableCell colSpan={6} align="center">Loading...</TableCell></TableRow>)
                                             }
                                         </TableBody>
 
