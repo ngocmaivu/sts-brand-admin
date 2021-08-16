@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, CardHeader, CardContent, Divider, Grid, Select, InputLabel, FormControl, MenuItem, FormLabel, Paper, TextField, makeStyles } from '@material-ui/core';
+import { Card, CardHeader, CardContent, Divider, Grid, Select, InputLabel, FormControl, MenuItem, FormLabel, Paper, TextField, makeStyles, Typography } from '@material-ui/core';
 import { KeyboardTimePicker, TimePicker } from "@material-ui/pickers";
 import { DateTimePickerComponent, TimePickerComponent } from '@syncfusion/ej2-react-calendars';
 import { MultiSelectComponent } from '@syncfusion/ej2-react-dropdowns';
@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
 
 }));
 
-const DemandEditor = ({ parentProps, setWorkStart, setWorkEnd, setSkillId, skillDataSrc, defaultConfig }) => {
+const DemandEditor = ({ parentProps, setWorkStart, setWorkEnd, setSkillId, skillSrc, defaultConfig }) => {
 
     const classes = useStyles();
     const [start, setStart] = useState("");
@@ -84,6 +84,18 @@ const DemandEditor = ({ parentProps, setWorkStart, setWorkEnd, setSkillId, skill
             <Divider />
             <CardContent>
                 <Grid container spacing={3}>
+                    <Grid item xs={12}>
+                        <Typography variant="subtitle1">{skillSrc.find(e => e.id == parentProps.skillId)?.name} - {parentProps.workStart ? format(new Date(parentProps.workStart), "dd/MM/yyyy") : null}</Typography>
+                        {/* {
+                            skillSrc ?
+                                (<FormControl fullWidth>
+                                    <TextField
+                                        variant="outlined" size="small"
+                                        value={`${skillSrc.find(e => e.id == parentProps.skillId)?.name} -  ${format(new Date(parentProps.workStart), "dd/MM/yyyy")}`}
+                                        readonly
+                                    /> </FormControl>) : null
+                        } */}
+                    </Grid>
                     <Grid item xs={12}>
                         <FormControl fullWidth>
                             <FormLabel >Level</FormLabel>

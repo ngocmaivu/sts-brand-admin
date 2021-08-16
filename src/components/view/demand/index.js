@@ -2,7 +2,7 @@ import { createStyles, Tab, Tabs, withStyles, Grid, CardHeader, CardContent, Car
 import React from 'react';
 
 import { loadSkills, getWeekScheduleDemand, updateDemand, deleteDemand, createDemand, createDemands } from "../../../_services";
-import { addDays, differenceInDays, format } from 'date-fns';
+import { addDays, compareAsc, differenceInDays, format } from 'date-fns';
 import { levelInit, levels } from "../../../_constants/levelData";
 import { convertDemandData, convertDateFromTemplate, convertToJSONDateWithoutChangeValue } from "../../../ultis/scheduleHandle";
 import {
@@ -17,6 +17,7 @@ import "./demand.css";
 import { connect } from 'react-redux';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import GetDemandTemplateDialog from './GetDemandTemplateDialog';
+import _ from 'lodash';
 
 const styles = (theme) => createStyles({
 
@@ -59,6 +60,17 @@ const styles = (theme) => createStyles({
 
 });
 
+L10n.load({
+    'en-US': {
+        'schedule': {
+            'saveButton': 'Save',
+            'cancelButton': 'Close',
+            'deleteButton': 'Remove',
+            'newEvent': 'New',
+            'editEvent': "Edit"
+        }
+    }
+});
 
 class DemandPage extends React.Component {
 
@@ -101,7 +113,7 @@ class DemandPage extends React.Component {
 
         var demandDatas = await getWeekScheduleDemand(this.props.weekScheduleId);
         var NotOperatingTime = this.loadOperatingTimes();
-        console.log([...demandDatas, ...NotOperatingTime]);
+        // console.log([...demandDatas, ...NotOperatingTime]);
         if (this.scheduleObj != null) {
             // this.setState({ dataSource: demandDatas });
 
@@ -237,6 +249,7 @@ class DemandPage extends React.Component {
         return ((props !== undefined) ?
             <DemandEditor
                 parentProps={props}
+                skillSrc={this.props.skillSrc}
                 setWorkStart={this.setWorkStart}
                 setWorkEnd={this.setWorkEnd}
                 setSkillId={this.setSkillId}
@@ -267,33 +280,74 @@ class DemandPage extends React.Component {
         }
     }
 
+    checkValidDate = (newObj) => {
+        // get demand have same skill, level, date
+        let dataSrc = this.scheduleObj.eventSettings.dataSource.filter(e => {
+            let compareDate = new Date(e.workStart);
+            let newDate = new Date(newObj.workStart);
+
+            let c1 = compareAsc(new Date(e.workStart), new Date(newObj.workEnd));
+            let c2 = compareAsc(new Date(newObj.workStart), new Date(e.workEnd));
+
+            let c3 = true;
+            if (newObj.id) {
+                c3 = newObj.id !== e.id;
+            }
+
+            return e.skillId == newObj.skillId
+                && e.level == newObj.level
+                && compareDate.getDate() == newDate.getDate()
+                && !(c1 >= 0 || c2 >= 0) && c3;
+        }
+
+        );
+        console.log(dataSrc);
+        if (!_.isEmpty(dataSrc)) {
+
+            return false;
+        }
+
+        return true;
+    }
+
     onActionBegin = async (args) => {
         if (args.requestType == "eventChange") {
-            let updateObj = convertDemandData(args.changedRecords[0]);
-            updateDemand(updateObj);
-        } else if (args.requestType === 'eventCreate' && args.data.length > 0) {
-            let newObj = convertDemandData(args.data[0]);
-            //  
-            let responseData = await createDemand(
-                newObj, this.props.weekScheduleId
-            );
-            console.log(responseData);
-            args.data[0].id = responseData[0].id;
+
+            let updateObj = args.changedRecords[0];
+            args.cancel = !this.checkValidDate(updateObj);
 
             if (!args.cancel) {
-                // const newShiftRef = this.refScheduleCurrentCollection.doc();
-                // args.data[0].Id = newShiftRef.id;
-                // 
-                // const data = convertShiftToFireBaseObj(args.data[0]);
-                // 
-                // newShiftRef.set(data);
+                updateObj = convertDemandData(args.changedRecords[0]);
+                updateDemand(updateObj);
+            }
+            console.log(args);
+
+        } else if (args.requestType === 'eventCreate' && args.data.length > 0) {
+
+            let newObj = args.data[0];
+
+            args.cancel = !this.checkValidDate(newObj);
+
+
+            if (!args.cancel) {
+                let newObj1 = convertDemandData(args.data[0]);
+                let responseData = await createDemand(
+                    newObj1, this.props.weekScheduleId
+                );
+                console.log(responseData);
+                args.data[0].id = responseData[0].id;
+                
+                console.log(args);
+                this.scheduleObj.refreshEvents();
             }
 
 
         } else if (args.requestType == "eventRemove") {
             // this.refScheduleCurrentCollection.doc(args.deletedRecords[0].Id).delete();
-            deleteDemand(args.deletedRecords[0].id);
-
+            // deleteDemand(args.deletedRecords[0].id);
+            args.deletedRecords.forEach(demand => {
+                deleteDemand(demand.id);
+            });
         }
 
         // this.updateTotalHoursPersWeek();
@@ -409,17 +463,27 @@ class DemandPage extends React.Component {
                     return {
                         ...e.data(),
                         id: undefined,
-                        workStart: convertToJSONDateWithoutChangeValue(convertDateFromTemplate(e.data().workStart.toDate(), this.props.dateStart)),
-                        workEnd: convertToJSONDateWithoutChangeValue(convertDateFromTemplate(e.data().workEnd.toDate(), this.props.dateStart)),
+                        workStart: convertDateFromTemplate(e.data().workStart.toDate(), this.props.dateStart),
+                        workEnd: convertDateFromTemplate(e.data().workEnd.toDate(), this.props.dateStart),
                         weekScheduleId: this.props.weekScheduleId
                     }
                 });
-                // src.forEach(demand => {
 
+                let filterSrc = src.filter(demand => {
+                    return this.checkValidDate(demand);
+                });
 
-                // });
+                if (_.isEmpty(filterSrc)) return;
 
-                let responseData = await createDemands(src);
+                filterSrc = filterSrc.map(e => {
+                    return {
+                        ...e,
+                        workStart: convertToJSONDateWithoutChangeValue(e.workStart),
+                        workEnd: convertToJSONDateWithoutChangeValue(e.workEnd),
+                    }
+                });
+
+                let responseData = await createDemands(filterSrc);
 
                 this.loadDemandDatas();
 

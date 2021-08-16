@@ -17,15 +17,17 @@ import { getScheduleDataInput } from "../../../_actions";
 import { connect } from 'react-redux';
 import AlertDialog from '../../AlertDialog';
 import format from 'date-fns/format';
+import _ from 'lodash';
+import { compareAsc } from 'date-fns';
 
 L10n.load({
     'en-US': {
         'schedule': {
-            'saveButton': 'Add',
+            'saveButton': 'Save',
             'cancelButton': 'Close',
             'deleteButton': 'Remove',
-            'newEvent': 'New Shift',
-            'editEvent': "Edit Shift"
+            'newEvent': 'New',
+            'editEvent': "Edit"
         }
     }
 });
@@ -59,7 +61,7 @@ class ScheduleMain extends React.Component {
             endHout: 46,
         }
         this.SkillColors = [
-            "#c7adff", "#ecb677", "#e28bb4", "#cbf9d9"
+            "#c7adff", "#ecb677", "#e28bb4", "#cbf9d9", '#0078d65c'
         ];
 
         this.rootRef = React.createRef(null);
@@ -271,9 +273,9 @@ class ScheduleMain extends React.Component {
 
 
     onEventRendered = (args) => {
-        console.log(this.props.skillSrc);
+        // console.log(this.props.skillSrc);
         let skillColor = this.SkillColors[this.props.skillSrc.findIndex(skill => skill.id == args.data.SkillId)];
-        console.log(skillColor);
+        // console.log(skillColor);
         args.element.style.border = "2px solid #4e4f73";
         args.element.style.backgroundColor = skillColor;
         args.element.style.borderRadius = "4px";
@@ -284,7 +286,7 @@ class ScheduleMain extends React.Component {
     }
 
     eventTemplate = (props) => {
-        console.log(props);
+        // console.log(props);
         return (<div style={{ padding: 4, width: "100%" }}>
             <Grid container direction="column" spacing={1}>
                 <Grid item >
@@ -408,11 +410,44 @@ class ScheduleMain extends React.Component {
 
     // }
 
+    checkValidDate = (newObj) => {
+        // get demand have same skill, level, date
+        let dataSrc = this.scheduleObj.eventSettings.dataSource.filter(e => {
+            let compareDate = new Date(e.StartTime);
+            let newDate = new Date(newObj.StartTime);
+
+            let c1 = compareAsc(new Date(e.StartTime), new Date(newObj.EndTime));
+            let c2 = compareAsc(new Date(newObj.StartTime), new Date(e.EndTime));
+
+            let c3 = true;
+            if (newObj.id) {
+                c3 = newObj.Id !== e.Id;
+            }
+
+            return e.StaffId == newObj.StaffId
+                && compareDate.getDate() == newDate.getDate()
+                && !(c1 >= 0 || c2 >= 0) && c3;
+        }
+
+        );
+        console.log(dataSrc);
+        if (!_.isEmpty(dataSrc)) {
+
+            return false;
+        }
+
+        return true;
+    }
+
     onActionBegin = async (args) => {
         console.log(args);
         if (args.requestType == "eventChange") {
-            this.refScheduleCurrentCollection.doc(args.changedRecords[0].Id).update(convertShiftToFireBaseObj(args.changedRecords[0]));
-            this.updateTotalHoursPersWeek();
+            args.cancel = !this.checkValidDate(args.changedRecords[0]);
+            if (!args.cancel) {
+                this.refScheduleCurrentCollection.doc(args.changedRecords[0].Id).update(convertShiftToFireBaseObj(args.changedRecords[0]));
+                this.updateTotalHoursPersWeek();
+            }
+
         } else if (args.requestType === 'eventCreate' && args.data.length > 0) {
 
             let eventData = args.data[0];
@@ -421,7 +456,7 @@ class ScheduleMain extends React.Component {
             let endDate = eventData[eventField.endTime];
 
             //if a specific time slot already contains an shift, then no more shift can be added to that cell
-            // args.cancel = !this.scheduleObj.isSlotAvailable(new Date(startDate), new Date(endDate));
+            args.cancel = !this.checkValidDate(args.data[0]);
             console.log(!args.cancel);
             if (!args.cancel) {
                 console.log(this.refScheduleCurrentCollection);
@@ -450,8 +485,15 @@ class ScheduleMain extends React.Component {
         if (!shiftScheduleResultId) {
             return;
         }
+
+        this.countTime = 0;
         this.checkResultInterval = setInterval(async () => {
             let result = await this.checkComputeResult(shiftScheduleResultId);
+            if (this.countTime > 40) {
+                clearInterval(this.checkResultInterval);
+                this.setState({ openAlertDialog: true, openWaitingComputeModal: false });
+            }
+
             if (result)
                 if (result.shiftAssignments) {
                     clearInterval(this.checkResultInterval);
@@ -485,6 +527,7 @@ class ScheduleMain extends React.Component {
                         this.setState({ openAlertDialog: true });
                     }
                 } {
+                this.countTime++;
                 console.log("...Waiting");
             }
 
