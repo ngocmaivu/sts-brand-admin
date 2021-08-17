@@ -381,3 +381,21 @@ export const updateWeekScheduleName = async (weekScheduleId, name) => {
     }
 };
 
+
+export const createAttandance = async (attandance) => {
+    try {
+
+        const response = await sts.post("/attendances",
+            {
+                ...attandance,
+                timeCheck: convertToJSONDateWithoutChangeValue(attandance.timeCheck)
+            }, { headers: authHeader() });
+        return response.data;
+
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+};
+
+

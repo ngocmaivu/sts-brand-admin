@@ -7,13 +7,15 @@ import MuiAlert from '@material-ui/lab/Alert';
 
 import { DateRangePicker, DateRangePickerComponent } from '@syncfusion/ej2-react-calendars';
 import { getFirstDayOfWeek } from "../../ultis/scheduleHandle";
-import { fetchAllAttandances, fetchAttandances, getStaffs, deleteAttandance } from "../../_services";
+import { fetchAllAttandances, fetchAttandances, getStaffs, deleteAttandance, createAttandance } from "../../_services";
 import DeleteOutlineOutlinedIcon from '@material-ui/icons/DeleteOutlineOutlined';
 import addDays from 'date-fns/addDays';
 
 import clsx from 'clsx';
 import { DatePicker, TimePicker } from '@material-ui/pickers';
 import format from 'date-fns/format';
+import { AddAttandanceDialog } from './AddAttandanceDialog';
+import ConfirmDialog from '../ConfirmDialog';
 function Alert(props) {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -105,8 +107,13 @@ class AttendancesPage extends React.Component {
             fromDate, toDate
         };
 
+        const user = JSON.parse(localStorage.getItem("jwt_decode"));
+        this.StoreId = user.storeId;
+
         this.state = {
             searchValue: '', openDeleteDialog: false, deleteUserId: null, openAttendanceDialog: false,
+            openDeleleDialog: false,
+            deleteId: null,
             pageSize: 10, rowCount: 0, pageIndex: 1, open: true, setOpen: false,
             selectedDate: '2014-08-18T21:11:54', selectedUser: null,
             fromDate: fromDate,
@@ -176,62 +183,46 @@ class AttendancesPage extends React.Component {
         const handleClose = () => { this.setState({ openAttendanceDialog: false }); };
 
         return (
-            <Dialog
-                onClose={handleClose}
-                fullWidth={true}
-                maxWidth="sm"
-                open={this.state.openAttendanceDialog}>
-                <DialogTitle id="customized-dialog-title" onClose={handleClose}>
-                    <Typography variant="h3">Add Attandance</Typography>
-                </DialogTitle>
-                <DialogContent dividers>
-                    <Grid container spacing={2}>
-                        <Grid item xs={6}>
-                            <FormControl fullWidth>
-                                <FormLabel>Staff Name</FormLabel>
-                                <TextField id="outlined-basic" variant="outlined" size="small" value="Ly Van Cuong"
-                                    inputProps={{ readonly: true }} />
+            this.state.staffs ?
+                <AddAttandanceDialog open={this.state.openAttendanceDialog} handleClose={handleClose}
+                    staffCurrent={this.state.currentUsername}
+                    handleSubmit={this.handleSaveAttandance}
+                    storeId={this.StoreId}
+                    staffs={this.state.staffs} /> : null);
+    }
 
-                            </FormControl>
-                        </Grid>
-                        <Grid container item direction="row" spacing={2} justify="space-between">
-                            <Grid item xs={6}>
-                                <FormControl fullWidth>
-                                    <FormLabel>Date</FormLabel>
-                                    <DatePicker inputVariant="outlined" size="small" />
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <FormControl fullWidth>
-                                    <FormLabel>Time check</FormLabel>
-                                    <TimePicker size="small" inputVariant="outlined" />
-                                </FormControl>
-                            </Grid>
-                        </Grid>
-                        <Grid item xs={12}>
-                            <FormControl fullWidth>
-                                <FormLabel>Note:</FormLabel>
-                                <TextField id="outlined-basic" variant="outlined" size="small" multiline rows={5}
-                                    inputProps={{ readonly: true }} />
-
-                            </FormControl>
-                        </Grid>
-                    </Grid>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} color="primary"> Close</Button>
-                    <Button onClick={handleClose} color="primary"> Save</Button>
-                </DialogActions>
-            </Dialog>);
+    handleSaveAttandance = async (attandance) => {
+        const response = await createAttandance(attandance);
+        this.loadAttandances(this.state.currentUsername, this.state.fromDate, this.state.toDate);
+        return response;
     }
 
     getCheckType(type) {
+        if (type == 3) return "Manual";
         return "Camera";
     }
 
     handleDelete = async (id) => {
         await deleteAttandance(id);
         this.loadAttandances(this.state.currentUsername, this.state.fromDate, this.state.toDate);
+    }
+
+    renderConfirmDeleteDialog = () => {
+        const handleClose = () => { this.setState({ openDeleleDialog: false }); };
+        return (
+            <ConfirmDialog
+                open={this.state.openDeleleDialog}
+                message={`Do you want to delete this attandance ?`}
+                title="Delete"
+                handleClose={handleClose}
+                handleConfirm={
+                    async () => {
+                        this.handleDelete(this.state.deleteId);
+                        handleClose();
+                    }
+                }
+            />
+        )
     }
 
     render() {
@@ -382,7 +373,9 @@ class AttendancesPage extends React.Component {
                                                                         <TableCell align="center"><Typography variant="subtitle1">{attandance.deviceCode}</Typography></TableCell>
                                                                         {/* <TableCell align="center"><Typography variant="subtitle1">{attandance.createBy}</Typography></TableCell> */}
                                                                         <TableCell align="center">
-                                                                            <IconButton onClick={() => { this.handleDelete(attandance.id) }}>
+                                                                            <IconButton onClick={() => {
+                                                                                this.setState({ openDeleleDialog: true, deleteId: attandance.id });
+                                                                            }}>
                                                                                 <DeleteOutlineOutlinedIcon />
                                                                             </IconButton>
                                                                         </TableCell>
@@ -391,7 +384,7 @@ class AttendancesPage extends React.Component {
                                                             }
                                                         ))
 
-                                                    :     (<TableRow > <TableCell colSpan={6} align="center">Loading...</TableCell></TableRow>)
+                                                    : (<TableRow > <TableCell colSpan={6} align="center">Loading...</TableCell></TableRow>)
                                             }
                                         </TableBody>
 
@@ -414,34 +407,43 @@ class AttendancesPage extends React.Component {
                                                 <Typography variant="h5" color="textPrimary">
                                                     Time Check in: {format(new Date(this.state.currentAttandance.timeCheck), "dd/MM/yyyy - HH:mm a")}
                                                 </Typography>
-                                                <Typography variant="h5" color="textPrimary">
-                                                    Image:
-                                                </Typography>
-                                                {/* <CardMedia
-                                                    style={{
-                                                        height: 300,
+                                                {
+                                                    this.state.currentAttandance.checkType == 0 ?
+                                                        (
+                                                            <React.Fragment>
+                                                                <Typography variant="h5" color="textPrimary">
+                                                                    Image:
+                                                                </Typography>
+                                                                <img src={this.state.currentAttandance.imageUrl} style={{
+                                                                    // height: 300,
+                                                                    width: "100%"
+                                                                }} />
+                                                                <CardContent>
+                                                                    <Grid container direction="row" alignItems="center" spacing={1}>
+                                                                        <Grid item>
+                                                                            <Typography variant="subtitle1" color="textSecondary">
+                                                                                Recognize Percentage:
+                                                                            </Typography></Grid>
+                                                                        <Grid item>
+                                                                            <Typography variant="h3" color="textPrimary">
+                                                                                {this.state.currentAttandance.recognizePercentage.toFixed(2)}%
+                                                                            </Typography>
+                                                                        </Grid>
+                                                                    </Grid>
+                                                                </CardContent>
+                                                            </React.Fragment>
+                                                        ) :
+                                                        this.state.currentAttandance.checkType == 3 ?
+                                                            (<React.Fragment>
+                                                                {
 
-                                                    }}
-                                                    image={this.state.currentAttandance.imageUrl}
-                                                    title="Contemplative Reptile"
-                                                /> */}
-                                                <img src={this.state.currentAttandance.imageUrl} style={{
-                                                    // height: 300,
-                                                    width: "100%"
-                                                }} />
-                                                <CardContent>
-                                                    <Grid container direction="row" alignItems="center" spacing={1}>
-                                                        <Grid item>
-                                                            <Typography variant="subtitle1" color="textSecondary">
-                                                                Recognize Percentage:
-                                                            </Typography></Grid>
-                                                        <Grid item>
-                                                            <Typography variant="h3" color="textPrimary">
-                                                                {this.state.currentAttandance.recognizePercentage.toFixed(2)}%
-                                                            </Typography>
-                                                        </Grid>
-                                                    </Grid>
-                                                </CardContent>
+                                                                }
+                                                            </React.Fragment>
+
+
+                                                            ) : null
+                                                }
+
                                                 <CardContent>
                                                     <Grid container direction="column" spacing={1}>
                                                         <Grid item>
@@ -460,7 +462,12 @@ class AttendancesPage extends React.Component {
                                         </Grid>
                                         <Grid item>
 
-                                            <Button style={{ backgroundColor: "#ea3529", color: "#fff", padding: "10px 20px", width: "100%" }}>
+                                            <Button style={{ backgroundColor: "#ea3529", color: "#fff", padding: "10px 20px", width: "100%" }}
+                                                onClick={
+                                                    () => {
+                                                        this.setState({ openDeleleDialog: true, deleteId: this.state.currentAttandance.id });
+                                                    }
+                                                }>
                                                 Reject
                                             </Button>
 
@@ -474,6 +481,7 @@ class AttendancesPage extends React.Component {
                     </Grid>
                 </Grid>
                 {this.renderAttandanceDialog()}
+                {this.renderConfirmDeleteDialog()}
             </React.Fragment>
 
         );

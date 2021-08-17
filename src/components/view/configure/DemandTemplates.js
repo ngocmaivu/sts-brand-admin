@@ -6,7 +6,7 @@ import DemandTemplateEditor from './DemandTemplateEditor';
 import { fetchSkillSrc, fetchDefaultConfig } from "../../../_actions/";
 import { connect } from 'react-redux';
 import DemandTemplateContent from './DemandTemplateContent';
-import ConfirmDialog from './ConfirmDialog';
+import ConfirmDialog from '../../ConfirmDialog';
 const styles = (Theme) => createStyles({
     inputAutoComplete: {
         "& .MuiInputBase-root": {
