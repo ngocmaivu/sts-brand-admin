@@ -413,9 +413,9 @@ class StoreTimekeeping extends React.Component {
                                                         <Grid item xs>
                                                             <Skeleton animation="wave" variant="rect" height="40px" />
                                                         </Grid>
-                                                        <Grid item xs>
+                                                        {/* <Grid item xs>
                                                             <Skeleton animation="wave" variant="rect" height="20px" />
-                                                        </Grid>
+                                                        </Grid> */}
                                                     </Grid>
                                                 </TableCell>
                                             </TableRow>

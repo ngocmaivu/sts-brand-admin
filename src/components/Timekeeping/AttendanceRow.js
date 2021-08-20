@@ -43,7 +43,7 @@ export function AttendanceRow(props) {
             <TableCell align="left" variant="head" >{`${user.firstName} ${user.lastName}`}</TableCell>
             <TableCell align="center" variant="head">{totalShifts}</TableCell>
             <TableCell align="center" variant="head">{totalHours}</TableCell>
-            <TableCell align="center" variant="head">{totalShifts - count_Attendances}</TableCell>
+            {/* <TableCell align="center" variant="head">{totalShifts - count_Attendances}</TableCell> */}
             <TableCell align="center" variant="head">{comeLately}</TableCell>
             <TableCell align="center" variant="head">{leaveEarly}</TableCell>
         </TableRow>
