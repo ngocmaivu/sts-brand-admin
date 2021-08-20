@@ -125,9 +125,9 @@ export function AttendanceDetailTable(props) {
                             <TableCell classes={{
                                 "root": classes.cellTh
                             }}>Check out Time</TableCell>
-                            <TableCell classes={{
+                            {/* <TableCell classes={{
                                 "root": classes.cellTh
-                            }}>Real working time(hrs)</TableCell>
+                            }}>Real working time(hrs)</TableCell> */}
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -226,9 +226,9 @@ export function AttendanceDetailTable(props) {
                                     }}>
                                         {checkOutTimeRender}
                                     </TableCell>
-                                    <TableCell classes={{
+                                    {/* <TableCell classes={{
                                         "root": classes.cell
-                                    }}> {timeReals}</TableCell>
+                                    }}> {timeReals}</TableCell> */}
 
                                 </TableRow>
                             );
