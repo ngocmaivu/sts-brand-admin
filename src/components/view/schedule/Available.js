@@ -17,6 +17,7 @@ import { Skeleton } from '@material-ui/lab';
 import { fetchWeekSchedules } from "../../../_actions/";
 import { connect } from 'react-redux';
 import _ from 'lodash';
+import addDays from 'date-fns/addDays';
 
 const styles = (Theme) => createStyles({
     container: {
@@ -198,13 +199,13 @@ class AvailablePage extends React.Component {
                             <TableHead >
                                 <TableRow >
                                     <TableCell align="left" variant="head" ><Typography variant="h4">Username</Typography></TableCell>
-                                    <TableCell align="center"><Typography variant="h4">Mon, {this.state.dateStart.getDate()}</Typography></TableCell>
-                                    <TableCell align="center"><Typography variant="h4">Tue, {this.state.dateStart.getDate() + 1}</Typography></TableCell>
-                                    <TableCell align="center"><Typography variant="h4">Wed, {this.state.dateStart.getDate() + 2}</Typography></TableCell>
-                                    <TableCell align="center"><Typography variant="h4">Thu, {this.state.dateStart.getDate() + 3}</Typography></TableCell>
-                                    <TableCell align="center"><Typography variant="h4">Fri, {this.state.dateStart.getDate() + 4}</Typography></TableCell>
-                                    <TableCell align="center"><Typography variant="h4">Sat, {this.state.dateStart.getDate() + 5}</Typography></TableCell>
-                                    <TableCell align="center"><Typography variant="h4">Sun, {this.state.dateStart.getDate() + 6}</Typography></TableCell>
+                                    <TableCell align="center"><Typography variant="h4">{format(this.state.dateStart, "EE dd")}</Typography></TableCell>
+                                    <TableCell align="center"><Typography variant="h4">{format(addDays(this.state.dateStart, 1), "EE dd")}</Typography></TableCell>
+                                    <TableCell align="center"><Typography variant="h4">{format(addDays(this.state.dateStart, 2), "EE dd")}</Typography></TableCell>
+                                    <TableCell align="center"><Typography variant="h4">{format(addDays(this.state.dateStart, 3), "EE dd")}</Typography></TableCell>
+                                    <TableCell align="center"><Typography variant="h4">{format(addDays(this.state.dateStart, 4), "EE dd")}</Typography></TableCell>
+                                    <TableCell align="center"><Typography variant="h4">{format(addDays(this.state.dateStart, 5), "EE dd")}</Typography></TableCell>
+                                    <TableCell align="center"><Typography variant="h4">{format(addDays(this.state.dateStart, 6), "EE dd")}</Typography></TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -212,9 +213,9 @@ class AvailablePage extends React.Component {
                                     this.state.shiftRegisterDatas ?
 
 
-                                        
-                                            this.renderAvailableRows()
-                                        
+
+                                        this.renderAvailableRows()
+
 
 
                                         : (
