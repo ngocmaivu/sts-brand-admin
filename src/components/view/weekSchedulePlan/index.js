@@ -143,7 +143,7 @@ class WeekPlanManage extends React.Component {
                     <TableCell align="center">{format(new Date(weekSchedule.dateStart), dateFormat)}</TableCell>
                     <TableCell align="center">{format(addDays((new Date(weekSchedule.dateStart)), 6), dateFormat)}</TableCell>
                     <TableCell align="center">{format(new Date(weekSchedule.dateCreated), dateFormat)}</TableCell>
-                    <TableCell align="center">{weekSchedule.createBy}</TableCell>
+                    <TableCell align="center">{weekSchedule.createdBy}</TableCell>
                     {/* <TableCell align="center">Last result</TableCell> */}
                     <TableCell align="center" onClick={(e) => { e.stopPropagation(); }}>
                         {
