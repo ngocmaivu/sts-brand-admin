@@ -145,7 +145,7 @@ function CustomToolbar() {
     );
 }
 
-function CustomFooter({ storeTotalWorkHours, storeTotalArriveLate,
+function CustomFooter({ storeTotalWorkHours, storeTotalAssignedHours, storeTotalArriveLate,
     storeTotalLeaveEarly, storeTotalAbsent,
     storeTotalLackCheckIn, storeTotalLackCheckOut }) {
     return (
@@ -155,10 +155,14 @@ function CustomFooter({ storeTotalWorkHours, storeTotalArriveLate,
                 <Grid item container xs={12} justify="space-between"
                     justifyContent="center" alignContent="center"
                     alignItems="center" >
-                    <Grid item xs={2}
-                    >
+                    <Grid item xs={2}>
                         <Typography variant="subtitle1" align="center">
                             Total Working: {storeTotalWorkHours}
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={2}>
+                        <Typography variant="subtitle1" align="center">
+                            Total Assigned: {storeTotalAssignedHours}
                         </Typography>
                     </Grid>
                     <Grid item xs={2} >

@@ -54,6 +54,13 @@ const columnsStart = [
         headerAlign: "center",
         align: "center",
     },
+    {
+        field: 'staffTotalAssignedHours',
+        headerName: 'Total Assgined',
+        width: 200,
+        headerAlign: "center",
+        align: "center",
+    },
 ];
 
 const columnsEnd = [
@@ -97,9 +104,10 @@ const columnsEnd = [
 const INIT_STORE = {
     summary: {
         "storeTotalWorkHours": 0.0,
+        "storeTotalAssignedHours": 0.0,
         "storeTotalArriveLate": 0,
         "storeTotalLeaveEarly": 0,
-        "storeTotalAbsent": 17,
+        "storeTotalAbsent": 0,
         "storeTotalLackCheckIn": 0,
         "storeTotalLackCheckOut": 0,
     },
