@@ -30,7 +30,7 @@ export function AttendanceRow(props) {
 
     const { user, onRowClick, index } = props;
     const classes = useRowStyles();
-    const totalHours = getTotalHoursPerWeek(user.assignments, 'timeCheckIn', "timeCheckOut").toFixed(2);
+    const totalHours = getTotalHoursPerWeek(user.assignments, 'timeStart', "timeEnd").toFixed(2);
     const totalShifts = getTotalShift(user.assignments);
     const count_Attendances = countAttendances(user.assignments);
     const { comeLately, leaveEarly } = getCountEarlyAndLately(user.assignments);

@@ -387,7 +387,7 @@ class StoreTimekeeping extends React.Component {
 
                                     <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Total Shift</Typography></TableCell>
                                     <TableCell align="center"><Typography variant="h4" className={classes.theadCell}>
-                                        Total Hours</Typography></TableCell>
+                                        Total Assign Hours</Typography></TableCell>
                                     {/* <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Absent</Typography></TableCell> */}
                                     <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Late Check in</Typography></TableCell>
                                     <TableCell align="center"><Typography className={classes.theadCell} variant="h4">Early Check out</Typography></TableCell>
