@@ -128,7 +128,7 @@ export function getTotalHoursPerWeek(timeWorks, timeStartKey, timeEndKey) {
     let totalMinutesPerWeek = 0;
 
     timeWorks.forEach(timeWork => {
-        if (timeWork[timeStartKey]  && timeWork[timeEndKey]) {
+        if (timeWork[timeStartKey] && timeWork[timeEndKey]) {
             let duration = intervalToDuration({
                 start: new Date(timeWork[timeStartKey]),
                 end: new Date(timeWork[timeEndKey])
@@ -136,7 +136,7 @@ export function getTotalHoursPerWeek(timeWorks, timeStartKey, timeEndKey) {
 
             totalMinutesPerWeek += duration.hours * 60 + duration.minutes;
         }
-        
+
     });
 
     return totalMinutesPerWeek / 60;
@@ -160,6 +160,7 @@ export const getSchedulesDataFromFirebase = (weekScheduleId, storeId, brandId, g
         ref.doc(`${brandId}-${storeId}`).get().then((doc) => {
             if (!doc.exists) {
                 getScheduleCallback([]);
+                return;
             }
 
             ref.doc(`${brandId}-${storeId}`).collection("schedules").get().then(
@@ -186,12 +187,17 @@ export const getSchedulesDataFromFirebase = (weekScheduleId, storeId, brandId, g
                                             }
                                         });
                                         getScheduleCallback(src);
+                                        return;
                                     }
                                 );
 
                         }
                     });
-                    getScheduleCallback([]);
+                    if (isExistWeekSchedule == false) {
+                        getScheduleCallback([]);
+                        return;
+                    }
+
                 }
             )
         });
