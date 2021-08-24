@@ -63,13 +63,13 @@ class App extends React.Component {
     return (
       <div>
         <ThemeProvider theme={theme}>
-          <Snackbar open={this.state.open} autoHideDuration={3000} onClose={() => this.state.open = false} >
+          {/* <Snackbar open={this.state.open} autoHideDuration={3000} onClose={() => this.state.open = false} >
             <Alert severity="success">
               {alert.message &&
                 <div className={`alert ${alert.type}`}>{alert.message}</div>
               }
             </Alert>
-          </Snackbar>
+          </Snackbar> */}
           {/* <MuiPickersUtilsProvider utils={DatePicker}> */}
           <MuiPickersUtilsProvider utils={DateFnsUtils}>
             <Router history={history} >
